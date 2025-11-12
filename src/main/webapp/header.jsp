@@ -16,8 +16,8 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="trangchu.jsp">
-            <i class="bi bi-cup-hot-fill"></i> Căn Tin VN
+        <a class="navbar-brand" href="trangchu">
+            <i class="bi bi-cup-hot-fill"></i> NTC Cateen
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -45,7 +45,7 @@
                     <i class="bi bi-cart3 fs-5"></i>
                     <span class="cart-badge" id="cartCount">0</span>
                 </a>
-                <button class="btn btn-gradient">Đăng Nhập</button>
+                <button class="btn btn-gradient" href = "dangnhap">Đăng Nhập</button>
             </div>
         </div>
     </div>

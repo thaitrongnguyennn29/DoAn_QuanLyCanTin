@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("main.js loaded for page:", window.location.pathname);
 
-    if (window.location.pathname.includes("login")) {
-        console.log("▶️ Login page script active");
+    if (window.location.pathname.includes("dangnhap") || window.location.pathname.includes("login")) {
+        console.log("Login page script active");
 
         window.showTab = function(tabName, evt) {
             const contents = document.querySelectorAll('.tab-content');
@@ -17,9 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    if (window.location.pathname.includes("home") ||
-        window.location.pathname.endsWith("/") ||
-        window.location.pathname.includes("index")) {
+    if (window.location.pathname.includes("trangchu") || window.location.pathname === "/" || window.location.pathname.includes("index")) {
         console.log("Home page script active");
 
         let cartCount = 0;
@@ -40,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    if (window.location.pathname.includes("menu")) {
+    if (window.location.pathname.includes("thucdon") || window.location.pathname.includes("menu")) {
         console.log("Menu page script active");
 
         const filterButtons = document.querySelectorAll('.filter-btn');
