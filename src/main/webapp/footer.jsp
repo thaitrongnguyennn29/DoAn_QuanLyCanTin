@@ -24,9 +24,9 @@
             <div class="col-lg-4 col-md-6 footer-col">
                 <h5 class="footer-title">Liên Hệ</h5>
                 <ul class="list-unstyled text-white-50 mb-4">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>123 Đường ABC, Quận 1, TP.HCM</li>
-                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>0901 234 567</li>
-                    <li class="mb-3"><i class="bi bi-envelope-fill me-2"></i>contact@cantinvn.com</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Đường số 24, Linh Đông, Thủ Đức, TP.HCM</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>0833 333 333</li>
+                    <li class="mb-3"><i class="bi bi-envelope-fill me-2"></i>ntccanteen@canteen.vn</li>
                 </ul>
 
                 <!-- Google Map -->
