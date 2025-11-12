@@ -172,8 +172,8 @@
 
     <div class="form-body p-4">
         <div class="form-tabs">
-            <button class="tab-btn active" onclick="showTab('login', event)">Đăng Nhập</button>
-            <button class="tab-btn" onclick="showTab('register', event)">Đăng Ký</button>
+            <button class="tab-btn active" onclick="showTab('loginTab', event)">Đăng nhập</button>
+            <button class="tab-btn" onclick="showTab('registerTab', event)">Đăng ký</button>
         </div>
 
         <div id="login" class="tab-content active">
@@ -229,15 +229,6 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script>
-    function showTab(tabName, evt) {
-        const contents = document.querySelectorAll('.tab-content');
-        contents.forEach(c => c.classList.remove('active'));
-        const buttons = document.querySelectorAll('.tab-btn');
-        buttons.forEach(b => b.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        evt.currentTarget.classList.add('active');
-    }
-</script>
+<script src="${pageContext.request.contextPath}/assets/js/scritp.js"></script>
 </body>
 </html>
