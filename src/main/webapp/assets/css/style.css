@@ -1,71 +1,92 @@
+/* ================== GLOBAL ================== */
 * {
     font-family: 'Inter', sans-serif;
 }
-
 :root {
     --primary-gradient: linear-gradient(135deg, #005C97 0%, #363795 100%);
     --primary-color: #005C97;
     --secondary-color: #363795;
 }
-
 body {
     overflow-x: hidden;
 }
 
-/* Navigation */
+/* ================== HEADER / NAVBAR ================== */
 .navbar {
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     background: white !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
 }
 
 .navbar-brand {
-    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand span {
+    font-family: 'Pacifico', cursive;
     font-size: 1.5rem;
+    font-weight: 600;
     background: var(--primary-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
 }
 
+.navbar-brand i {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+/* Menu */
 .nav-link {
     font-weight: 500;
     color: #333 !important;
-    transition: all 0.3s;
     position: relative;
+    transition: all 0.3s ease;
+    margin: 0 6px;
 }
 
 .nav-link:hover {
-    color: #005C97 !important;
+    color: var(--primary-color) !important;
 }
 
-.nav-link.active {
-    color: #005C97 !important;
-}
-
-.nav-link.active::after {
+.nav-link::after {
     content: '';
     position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
+    left: 50%;
+    bottom: -4px;
+    width: 0;
     height: 3px;
     background: var(--primary-gradient);
+    transition: all 0.3s ease;
     border-radius: 2px;
 }
 
-.btn-gradient {
-    background: var(--primary-gradient);
-    border: none;
-    color: white;
-    font-weight: 600;
-    transition: all 0.3s;
-    box-shadow: 0 4px 15px rgba(0, 92, 151, 0.3);
+.nav-link:hover::after,
+.nav-link.active::after {
+    left: 0;
+    width: 100%;
 }
 
-.btn-gradient:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 92, 151, 0.4);
-    color: white;
+.nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+/* Giỏ hàng */
+.bi-cart3 {
+    transition: transform 0.3s, color 0.3s;
+}
+
+.bi-cart3:hover {
+    transform: scale(1.15);
+    color: var(--primary-color);
 }
 
 .cart-badge {
@@ -84,7 +105,34 @@ body {
     font-weight: 600;
 }
 
-/* Hero Section */
+/* Button gradient */
+.btn-gradient {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 92, 151, 0.3);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+}
+
+.btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 92, 151, 0.4);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .navbar-nav .nav-item {
+        margin: 8px 0;
+        text-align: center;
+    }
+}
+
+
+/* ================== HERO SECTION ================== */
 .hero-section {
     background: var(--primary-gradient);
     color: white;
@@ -92,7 +140,6 @@ body {
     position: relative;
     overflow: hidden;
 }
-
 .hero-section::before {
     content: '';
     position: absolute;
@@ -104,21 +151,18 @@ body {
     transform: skewX(-15deg);
     z-index: 1;
 }
-
 .hero-title {
     font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 1.5rem;
 }
-
 .hero-subtitle {
     font-size: 1.3rem;
     font-weight: 400;
     opacity: 0.95;
     margin-bottom: 2rem;
 }
-
 .btn-hero {
     background: white;
     color: #005C97;
@@ -130,15 +174,12 @@ body {
     border: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
-
 .btn-hero:hover {
     transform: translateY(-3px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     background: linear-gradient(135deg, #00467F 0%, #002E73 100%);
     color: #fff;
 }
-
-
 .hero-image {
     border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
@@ -146,12 +187,11 @@ body {
     position: relative;
     z-index: 2;
 }
-
 .hero-image:hover {
     transform: scale(1.05) rotate(2deg);
 }
 
-/* Featured Dishes */
+/* ================== FEATURED DISHES ================== */
 .section-title {
     font-size: 2.5rem;
     font-weight: 800;
@@ -161,13 +201,11 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .section-subtitle {
     color: #666;
     font-size: 1.1rem;
     margin-bottom: 3rem;
 }
-
 .dish-card {
     border: none;
     border-radius: 15px;
@@ -176,27 +214,22 @@ body {
     box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     height: 100%;
 }
-
 .dish-card:hover {
     transform: translateY(-10px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.2);
 }
-
 .dish-image {
     height: 250px;
     object-fit: cover;
     transition: all 0.5s;
 }
-
 .dish-card:hover .dish-image {
     transform: scale(1.1);
 }
-
 .dish-image-wrapper {
     overflow: hidden;
     position: relative;
 }
-
 .hot-badge {
     position: absolute;
     top: 15px;
@@ -209,14 +242,12 @@ body {
     font-size: 0.85rem;
     z-index: 10;
 }
-
 .dish-name {
     font-size: 1.2rem;
     font-weight: 700;
     color: #333;
     margin-bottom: 0.5rem;
 }
-
 .dish-price {
     font-size: 1.5rem;
     font-weight: 800;
@@ -225,7 +256,6 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .btn-add-cart {
     background: var(--primary-gradient);
     color: white;
@@ -235,19 +265,17 @@ body {
     font-weight: 600;
     transition: all 0.3s;
 }
-
 .btn-add-cart:hover {
     transform: scale(1.05);
     box-shadow: 0 5px 15px rgba(0, 92, 151, 0.3);
     color: white;
 }
 
-/* About Section */
+/* ================== ABOUT SECTION ================== */
 .about-section {
     background: linear-gradient(135deg, rgba(0, 92, 151, 0.05) 0%, rgba(54, 55, 149, 0.05) 100%);
     padding: 80px 0;
 }
-
 .about-image {
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
@@ -255,11 +283,9 @@ body {
     height: 200px;
     object-fit: cover;
 }
-
 .about-image:hover {
     transform: scale(1.05);
 }
-
 .about-title {
     font-size: 2.5rem;
     font-weight: 800;
@@ -269,18 +295,15 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .about-text {
     font-size: 1.1rem;
     line-height: 1.8;
     color: #555;
 }
-
 .stats-box {
     text-align: center;
     padding: 20px;
 }
-
 .stats-number {
     font-size: 2.5rem;
     font-weight: 800;
@@ -289,105 +312,203 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-
 .stats-label {
     color: #666;
     font-size: 1rem;
     font-weight: 500;
 }
 
-/* Footer */
+/* ================== FOOTER ================== */
 .footer {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
     color: white;
-    padding: 60px 0 20px;
+    padding: 70px 0 35px;
 }
 
-.footer-title {
-    font-size: 1.3rem;
+.footer-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.footer .footer-title {
+    font-size: 1.25rem;
     font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: white;
+    color: #fff;
+    margin-bottom: 1rem;
+    position: relative;
 }
 
-.footer-brand {
-    font-size: 1.8rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #005C97 0%, #00d4ff 100%);
+.footer .footer-title::after {
+    content: "";
+    display: block;
+    width: 45px;
+    height: 3px;
+    background: linear-gradient(90deg, #00d4ff, #0077ff);
+    border-radius: 5px;
+    margin-top: 8px;
+}
+
+.footer-brand span {
+    font-family: 'Pacifico', cursive;
+    font-size: 1.7rem;
+    background: linear-gradient(135deg, #00d4ff, #0077ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 1rem;
 }
 
-.footer-link {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    transition: all 0.3s;
-    display: block;
-    margin-bottom: 10px;
+.footer-brand i {
+    background: linear-gradient(135deg, #00d4ff, #66ccff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-.footer-link:hover {
-    color: #00d4ff;
-    padding-left: 5px;
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .social-icon {
-    width: 45px;
-    height: 45px;
-    background: rgba(255,255,255,0.1);
+    width: 42px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.08);
     border-radius: 50%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 10px;
-    transition: all 0.3s;
-    color: white;
-    text-decoration: none;
+    margin-right: 12px;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
 }
 
 .social-icon:hover {
-    background: var(--primary-gradient);
-    transform: translateY(-5px);
+    background: linear-gradient(135deg, #00d4ff, #0077ff);
+    transform: scale(1.1);
     color: white;
 }
 
 .footer-input {
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     padding: 12px 15px;
+    border-radius: 8px 0 0 8px;
 }
 
 .footer-input:focus {
-    background: rgba(255,255,255,0.15);
+    background: rgba(255, 255, 255, 0.15);
     border-color: #00d4ff;
+    outline: none;
     color: white;
-    box-shadow: none;
 }
 
 .footer-input::placeholder {
-    color: rgba(255,255,255,0.5);
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-hours ul {
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.footer-hours li {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.footer-hours i {
+    color: #00d4ff;
+    font-size: 1.1rem;
 }
 
 .btn-subscribe {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #00d4ff, #0077ff);
     border: none;
-    padding: 12px 25px;
-    font-weight: 600;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 8px 8px 0;
+    transition: all 0.3s ease;
+    transform: scale(1);
 }
 
+.btn-subscribe:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 18px rgba(0, 212, 255, 0.6);
+}
+
+.btn-subscribe i {
+    font-size: 1.3rem;
+}
+
+.border-white-25 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Google Map in Footer */
+.footer-map {
+    width: 100%;
+    height: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-top: -10px; /* 👈 Kéo map lên gần hơn */
+}
+
+.footer-map iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.footer-map:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+}
+
+@media (max-width: 992px) {
+    .footer {
+        text-align: center;
+    }
+
+    .footer .footer-brand {
+        justify-content: center;
+    }
+
+    .footer-col {
+        align-items: center;
+    }
+
+    .social-icon {
+        margin-right: 8px;
+    }
+
+    .footer-input {
+        border-radius: 8px;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .btn-subscribe {
+        border-radius: 8px;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .footer-hours {
+        margin-bottom: 2rem;
+    }
+}
+
+/* ================== RESPONSIVE ================== */
 @media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-
-    .section-title {
-        font-size: 2rem;
-    }
+    .hero-title { font-size: 2.5rem; }
+    .hero-subtitle { font-size: 1.1rem; }
+    .section-title { font-size: 2rem; }
 }

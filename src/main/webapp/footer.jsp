@@ -3,58 +3,79 @@
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-3 col-md-6 mb-4">
-                <div class="footer-brand">
-                    <i class="bi bi-cup-hot-fill"></i> Căn Tin VN
+        <div class="row gy-5">
+            <!-- Column 1: Brand + Description -->
+            <div class="col-lg-4 col-md-6 footer-col">
+                <div class="footer-brand d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-fork-knife fs-3"></i>
+                    <span>NTC Canteen</span>
                 </div>
-                <p style="color: rgba(255,255,255,0.7);">Nơi hội tụ hương vị Việt Nam truyền thống</p>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="footer-title">Liên Hệ</h5>
-                <p style="color: rgba(255,255,255,0.7);">
-                    <i class="bi bi-geo-alt-fill me-2"></i> 123 Đường ABC, Quận 1, TP.HCM
+                <p class="text-white-50 mb-4">
+                    Điểm đến ẩm thực lý tưởng với thực đơn phong phú và phục vụ chuyên nghiệp.
                 </p>
-                <p style="color: rgba(255,255,255,0.7);">
-                    <i class="bi bi-telephone-fill me-2"></i> 0901 234 567
-                </p>
-                <p style="color: rgba(255,255,255,0.7);">
-                    <i class="bi bi-envelope-fill me-2"></i> contact@cantinvn.com
-                </p>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="footer-title">Liên Kết Nhanh</h5>
-                <a href="#" class="footer-link">Chính sách bảo mật</a>
-                <a href="#" class="footer-link">Điều khoản sử dụng</a>
-                <a href="#" class="footer-link">Hướng dẫn đặt hàng</a>
-                <a href="#" class="footer-link">Câu hỏi thường gặp</a>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h5 class="footer-title">Theo Dõi Chúng Tôi</h5>
-                <div class="mb-3">
+                <div class="d-flex align-items-center">
                     <a href="#" class="social-icon"><i class="bi bi-facebook"></i></a>
                     <a href="#" class="social-icon"><i class="bi bi-instagram"></i></a>
                     <a href="#" class="social-icon"><i class="bi bi-envelope"></i></a>
                 </div>
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
-                    Đăng ký nhận tin tức và ưu đãi mới nhất
-                </p>
-                <div class="input-group">
-                    <input type="email" class="form-control footer-input" placeholder="Email của bạn">
-                    <button class="btn btn-subscribe" type="button">Gửi</button>
+            </div>
+
+            <!-- Column 2: Contact + Google Map -->
+            <div class="col-lg-4 col-md-6 footer-col">
+                <h5 class="footer-title">Liên Hệ</h5>
+                <ul class="list-unstyled text-white-50 mb-4">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>123 Đường ABC, Quận 1, TP.HCM</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>0901 234 567</li>
+                    <li class="mb-3"><i class="bi bi-envelope-fill me-2"></i>contact@cantinvn.com</li>
+                </ul>
+
+                <!-- Google Map -->
+                <div class="footer-map">
+                    <iframe
+                            src="https://www.google.com/maps?q=10.85190287402083,106.74018002793846&z=16&output=embed"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+
+
+            <!-- Column 3: Hours + Subscribe -->
+            <div class="col-lg-4 col-md-12 footer-col">
+                <div class="footer-hours mb-4">
+                    <h5 class="footer-title mb-3">Giờ Hoạt Động</h5>
+                    <ul class="list-unstyled text-white-50 mb-0">
+                        <li><i class="bi bi-clock me-2"></i>Thứ 2 - Thứ 6: 7:00 - 19:00</li>
+                        <li><i class="bi bi-clock me-2"></i>Thứ 7 - CN: 8:00 - 17:00</li>
+                    </ul>
+                </div>
+
+                <div class="footer-subscribe">
+                    <h5 class="footer-title mb-2">Đăng Ký Nhận Tin</h5>
+                    <p class="text-white-50 mb-3" style="font-size: 0.9rem;">
+                        Nhận tin tức và ưu đãi mới nhất từ NTC Canteen
+                    </p>
+                    <form class="input-group">
+                        <input type="email" class="form-control footer-input" placeholder="Nhập email của bạn">
+                        <button class="btn btn-subscribe" type="button"><i class="bi bi-send"></i></button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="border-top pt-4 mt-4 text-center" style="border-color: rgba(255,255,255,0.1) !important;">
-            <p style="color: rgba(255,255,255,0.5); margin: 0;">
-                &copy; 2025 Căn Tin VN. Tất cả quyền được bảo lưu.
-            </p>
+
+        <!-- Copyright -->
+        <div class="text-center border-top pt-4 mt-5 border-white-25">
+            <p class="text-white-50 mb-0">&copy; <span id="year"></span> NTC Canteen. Mang món ăn ngon đến bạn.</p>
         </div>
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/scritp.js"></script>
+<script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/script.js"></script>
 </body>
 </html>

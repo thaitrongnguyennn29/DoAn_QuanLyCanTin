@@ -7,21 +7,29 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
     <div class="container">
-        <a class="navbar-brand" href="trangchu">
-            <i class="bi bi-cup-hot-fill"></i> NTC Cateen
+        <!-- Logo + Tên thương hiệu -->
+        <a class="navbar-brand d-flex align-items-center gap-2" href="trangchu">
+            <i class="bi bi-fork-knife fs-4"></i>
+            <span>NTC Canteen</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+        <!-- Nút toggle cho mobile -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Menu chính -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
@@ -40,13 +48,16 @@
                     <a class="nav-link <%= "Liên Hệ".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="#">Liên Hệ</a>
                 </li>
             </ul>
+
+            <!-- Giỏ hàng + Đăng nhập -->
             <div class="d-flex align-items-center gap-3">
-                <a href="#" class="text-dark position-relative">
+                <a href="#" class="text-dark position-relative" data-bs-toggle="tooltip" title="Giỏ hàng">
                     <i class="bi bi-cart3 fs-5"></i>
                     <span class="cart-badge" id="cartCount">0</span>
                 </a>
-                <button class="btn btn-gradient" href = "dangnhap">Đăng Nhập</button>
+                <a href="dangnhap" class="btn btn-gradient px-4 py-2 rounded-pill">Đăng Nhập</a>
             </div>
         </div>
     </div>
 </nav>
+
