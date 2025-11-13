@@ -1,0 +1,70 @@
+package Model;
+
+public class MonAn {
+    private int maMonAn;
+    private String tenMonAn;
+    private float gia;
+    private String moTa;
+    private String hinhAnh;
+    private int maQuay;
+
+    public MonAn(int maMonAn, String tenMonAn, String moTa, float gia, String hinhAnh, int maQuay) {
+        this.maMonAn = maMonAn;
+        this.tenMonAn = tenMonAn;
+        this.moTa = moTa;
+        this.gia = gia;
+        this.hinhAnh = hinhAnh;
+        this.maQuay = maQuay;
+    }
+
+    public MonAn() {
+    }
+
+    public int getMaMonAn() {
+        return maMonAn;
+    }
+
+    public void setMaMonAn(int maMonAn) {
+        this.maMonAn = maMonAn;
+    }
+
+    public String getTenMonAn() {
+        return tenMonAn;
+    }
+
+    public void setTenMonAn(String tenMonAn) {
+        this.tenMonAn = tenMonAn;
+    }
+
+    public float getGia() {
+        return gia;
+    }
+
+    public void setGia(float gia) {
+        this.gia = gia;
+    }
+
+    public String getMoTa() {
+        return moTa;
+    }
+
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
+    }
+
+    public String getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(String hinhAnh) {
+        this.hinhAnh = hinhAnh;
+    }
+
+    public int getMaQuay() {
+        return maQuay;
+    }
+
+    public void setMaQuay(int maQuay) {
+        this.maQuay = maQuay;
+    }
+}
