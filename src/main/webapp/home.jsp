@@ -36,7 +36,7 @@
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
                         <span class="hot-badge">HOT</span>
-                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/mi_MiVitTiem.jpg"
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
                              class="card-img-top dish-image"
                              alt="Cơm Tấm Sườn Nướng">
                     </div>
@@ -55,7 +55,7 @@
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
                         <span class="hot-badge">HOT</span>
-                        <img src="https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop"
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/pho_PhoBo.jpg"
                              class="card-img-top dish-image"
                              alt="Phở Bò Đặc Biệt">
                     </div>
@@ -74,12 +74,12 @@
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
                         <span class="hot-badge">HOT</span>
-                        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400&h=300&fit=crop"
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/mi_MiQuang.jpg"
                              class="card-img-top dish-image"
-                             alt="Bún Chả Hà Nội">
+                             alt="Mì Quảng">
                     </div>
                     <div class="card-body">
-                        <h5 class="dish-name">Bún Chả Hà Nội</h5>
+                        <h5 class="dish-name">Mì Quảng</h5>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="dish-price">42.000đ</span>
                             <button class="btn btn-add-cart" onclick="addToCart()">
@@ -93,12 +93,12 @@
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
                         <span class="hot-badge">HOT</span>
-                        <img src="https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400&h=300&fit=crop"
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/pho_PhoTron.jpg"
                              class="card-img-top dish-image"
-                             alt="Bánh Mì Thịt Nướng">
+                             alt="Phở Trộn">
                     </div>
                     <div class="card-body">
-                        <h5 class="dish-name">Bánh Mì Thịt Nướng</h5>
+                        <h5 class="dish-name">Phở Trộn</h5>
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="dish-price">25.000đ</span>
                             <button class="btn btn-add-cart" onclick="addToCart()">

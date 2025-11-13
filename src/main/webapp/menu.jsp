@@ -30,123 +30,176 @@
 
         <div class="row g-4">
             <!-- Cơm -->
-            <div class="col-md-4 menu-item" data-category="com">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="com">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <span class="hot-badge">Hot</span>
-                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComChienCaMan.jpg" class="card-img-top dish-image" alt="Cơm sườn trứng">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Cơm Sườn Trứng</h5>
-                        <p class="dish-price">45.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 menu-item" data-category="com">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="com">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/com-ga.jpg" class="dish-image" alt="Cơm Gà Xối Mỡ">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Cơm Gà Xối Mỡ</h5>
-                        <p class="dish-price">42.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 menu-item" data-category="com">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="com">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/com-tam-bi.jpg" class="dish-image" alt="Cơm Tấm Bì Chả">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Cơm Tấm Bì Chả</h5>
-                        <p class="dish-price">38.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Mì -->
-            <div class="col-md-4 menu-item" data-category="mi">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="mi">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/mi-xao.jpg" class="dish-image" alt="Mì Xào Bò">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Mì Xào Bò</h5>
-                        <p class="dish-price">40.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 menu-item" data-category="mi">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="mi">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/mi-tom.jpg" class="dish-image" alt="Mì Tôm Trứng">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Mì Tôm Trứng</h5>
-                        <p class="dish-price">25.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 menu-item" data-category="mi">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="mi">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/mi-tron.jpg" class="dish-image" alt="Mì Trộn Gà">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Mì Trộn Gà</h5>
-                        <p class="dish-price">37.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Phở -->
-            <div class="col-md-4 menu-item" data-category="pho">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="pho">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/pho-bo.jpg" class="dish-image" alt="Phở Bò Tái">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Phở Bò Tái</h5>
-                        <p class="dish-price">35.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 menu-item" data-category="pho">
+            <div class="col-lg-3 col-md-6 menu-item" data-category="pho">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/pho-ga.jpg" class="dish-image" alt="Phở Gà">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Phở Gà</h5>
-                        <p class="dish-price">33.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Đồ uống -->
-            <div class="col-md-4 menu-item" data-category="do-uong">
+        <div class="col-lg-3 col-md-6 menu-item" data-category="do-uong">
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
-                        <img src="${pageContext.request.contextPath}/assets/images/tra-sua.jpg" class="dish-image" alt="Trà Sữa">
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                             class="card-img-top dish-image"
+                             alt="Cơm Tấm Sườn Nướng">
                     </div>
-                    <div class="card-body text-center">
-                        <h5 class="dish-name">Trà Sữa Trân Châu</h5>
-                        <p class="dish-price">25.000đ</p>
-                        <button class="btn btn-add-cart">Thêm vào giỏ</button>
+                    <div class="card-body">
+                        <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="dish-price">45.000đ</span>
+                            <button class="btn btn-add-cart" onclick="addToCart()">
+                                <i class="bi bi-cart-plus"></i> Thêm
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
