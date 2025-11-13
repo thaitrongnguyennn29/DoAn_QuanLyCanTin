@@ -1,4 +1,4 @@
-package com.example.doan_quanlyquan;
+package com.example.doan_quanlycantin;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
