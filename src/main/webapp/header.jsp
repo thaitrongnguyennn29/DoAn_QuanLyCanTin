@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Căn Tin VN - <%= request.getAttribute("pageTitle") != null ? request.getAttribute("pageTitle") : "Trang Chủ" %></title>
+    <title>NTC Canteen - <%= request.getAttribute("pageTitle") != null ? request.getAttribute("pageTitle") : "Trang Chủ" %></title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,10 +42,7 @@
                     <a class="nav-link <%= "Theo Dõi Đơn Hàng".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="#">Theo Dõi Đơn Hàng</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "Giới Thiệu".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="#">Giới Thiệu</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <%= "Liên Hệ".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="#">Liên Hệ</a>
+                    <a class="nav-link <%= "Giới Thiệu".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="gioithieu">Giới Thiệu</a>
                 </li>
             </ul>
 

@@ -25,7 +25,7 @@
 </section>
 
 <!-- Featured Dishes -->
-<section class="py-5" style="padding: 80px 0 !important;">
+<section class="py-5">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Món Ăn Nổi Bật</h2>

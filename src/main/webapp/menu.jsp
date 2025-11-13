@@ -6,7 +6,6 @@
 <%@ include file="header.jsp" %>
 
 <!-- Hero Section -->
-<!-- Hero Section -->
 <section class="hero-section text-center position-relative">
     <div class="container position-relative z-2">
         <h1 class="hero-title">Thực Đơn Mỗi Ngày</h1>
@@ -208,7 +207,7 @@
 </section>
 
 <!-- About Section -->
-<section class="about-section">
+<section id = "menu-about" class="about-section">
     <div class="container">
         <div class="row align-items-center gy-4">
             <div class="col-md-6">
@@ -217,10 +216,10 @@
             </div>
 
             <div class="col-md-6">
-                <h2 class="about-title mb-3">Vì sao chọn Căn Tin VN?</h2>
+                <h2 class="about-title mb-3">Vì sao chọn NTC Canteen?</h2>
                 <p class="about-text mb-4">
                     Mỗi món ăn đều được chế biến từ nguyên liệu tươi ngon, đảm bảo an toàn và dinh dưỡng.
-                    Chúng tôi mang đến hương vị quen thuộc, phục vụ nhanh chóng với giá cả hợp lý cho sinh viên và nhân viên văn phòng.
+                    Chúng tôi mang đến hương vị quen thuộc, phục vụ nhanh chóng với giá cả hợp lý cho sinh viên và tất cả mọi người.
                 </p>
 
                 <div class="row text-start">
