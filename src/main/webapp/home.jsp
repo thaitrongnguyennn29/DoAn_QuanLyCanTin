@@ -9,7 +9,7 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <h1 class="hero-title">Bữa Trưa Năng Lượng,<br>Khởi Đầu Thành Công</h1>
+                <h1 class="hero-title">Bữa Ăn Chất Lượng,<br>Khởi Đầu Thành Công</h1>
                 <p class="hero-subtitle">Thưởng thức món ăn Việt Nam đậm chất truyền thống, được chế biến tươi mới mỗi ngày</p>
                 <button class="btn btn-hero">
                     Xem Thực Đơn Ngay <i class="bi bi-arrow-right ms-2"></i>
@@ -28,7 +28,7 @@
 <section class="py-5" style="padding: 80px 0 !important;">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">Món Ăn Nổi Bật Hôm Nay</h2>
+            <h2 class="section-title">Món Ăn Nổi Bật</h2>
             <p class="section-subtitle">Được yêu thích nhất bởi thực khách</p>
         </div>
         <div class="row g-4">
@@ -36,7 +36,7 @@
                 <div class="card dish-card">
                     <div class="dish-image-wrapper">
                         <span class="hot-badge">HOT</span>
-                        <img src="https://images.unsplash.com/photo-1569562211093-4ed0d0758f12?w=400&h=300&fit=crop"
+                        <img src="${pageContext.request.contextPath}/assets/images/MonAn/mi_MiVitTiem.jpg"
                              class="card-img-top dish-image"
                              alt="Cơm Tấm Sườn Nướng">
                     </div>
@@ -139,30 +139,10 @@
             <div class="col-lg-6">
                 <h2 class="about-title">Về Chúng Tôi</h2>
                 <p class="about-text">
-                    Căn Tin VN tự hào là địa chỉ tin cậy cung cấp bữa ăn sạch, ngon và tiện lợi cho cộng đồng.
+                    NTC Canteen tự hào là địa chỉ tin cậy cung cấp bữa ăn sạch, ngon và tiện lợi cho mọi người.<br>
                     Với đội ngũ đầu bếp giàu kinh nghiệm và nguyên liệu tươi ngon được tuyển chọn kỹ lưỡng,
                     chúng tôi cam kết mang đến những món ăn chất lượng nhất với giá cả phải chăng.
                 </p>
-                <div class="row mt-4">
-                    <div class="col-4">
-                        <div class="stats-box">
-                            <div class="stats-number">500+</div>
-                            <div class="stats-label">Món ăn</div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="stats-box">
-                            <div class="stats-number">10k+</div>
-                            <div class="stats-label">Khách hàng</div>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="stats-box">
-                            <div class="stats-number">5⭐</div>
-                            <div class="stats-label">Đánh giá</div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
