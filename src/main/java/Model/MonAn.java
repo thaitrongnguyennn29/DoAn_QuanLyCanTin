@@ -3,12 +3,12 @@ package Model;
 public class MonAn {
     private int maMonAn;
     private String tenMonAn;
-    private float gia;
+    private double gia;
     private String moTa;
     private String hinhAnh;
     private int maQuay;
 
-    public MonAn(int maMonAn, String tenMonAn, String moTa, float gia, String hinhAnh, int maQuay) {
+    public MonAn(int maMonAn, String tenMonAn, double gia, String moTa, String hinhAnh, int maQuay) {
         this.maMonAn = maMonAn;
         this.tenMonAn = tenMonAn;
         this.moTa = moTa;
@@ -36,7 +36,7 @@ public class MonAn {
         this.tenMonAn = tenMonAn;
     }
 
-    public float getGia() {
+    public double getGia() {
         return gia;
     }
 
