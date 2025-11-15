@@ -1,6 +1,8 @@
 package RepositoryImp;
 
 import Model.MonAn;
+import Model.Page;
+import Model.PageRequest;
 import Model.Quay;
 import Repository.QuayRepository;
 
@@ -29,6 +31,11 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
             e.printStackTrace();
         }
         return quays;
+    }
+
+    @Override
+    public Page<Quay> findAll(PageRequest pageRequest) {
+        return null;
     }
 
     @Override
@@ -113,5 +120,10 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public int countSearch(String keyword) {
+        return 0;
     }
 }

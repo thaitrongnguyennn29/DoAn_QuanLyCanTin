@@ -7,9 +7,10 @@ import java.util.List;
 
 public interface Repository <T>{
     List<T> findAll();
-    //Page<T> findAll(PageRequest pageRequest);
+    Page<T> findAll(PageRequest pageRequest);
     T findById(int id);
     T create(T entity);
     boolean update(T entity);
     boolean delete(T entity);
+    int countSearch(String keyword);
 }

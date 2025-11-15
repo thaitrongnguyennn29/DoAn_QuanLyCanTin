@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface MonAnService {
     List<MonAn> finAll();
+    Page<MonAn> finAll(PageRequest pageRequest);
     MonAn findById(int id);
     boolean create(MonAn monAn);
     boolean update(MonAn monAn);

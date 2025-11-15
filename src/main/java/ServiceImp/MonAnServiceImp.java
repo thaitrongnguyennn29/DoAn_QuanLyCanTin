@@ -1,6 +1,8 @@
 package ServiceImp;
 
 import Model.MonAn;
+import Model.Page;
+import Model.PageRequest;
 import Repository.MonAnRepository;
 import RepositoryImp.MonAnRepositoryImp;
 import Service.MonAnService;
@@ -15,6 +17,13 @@ public class MonAnServiceImp implements MonAnService {
     @Override
     public List<MonAn> finAll() {
         return monAnRepository.findAll();
+    }
+
+    @Override
+    public Page<MonAn> finAll(PageRequest pageRequest) {
+        List<MonAn> data = monAnRepository.findAll(pageRequest).getData();
+        int totalItems = monAnRepository.countSearch(pageRequest.getKeyword());
+        return new Page<>(data, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
     }
 
     @Override

@@ -26,9 +26,6 @@ public class MonAnServlet extends HttpServlet {
 
     private MonAnService monAnService;
 
-    // ⚠️ QUAN TRỌNG: Thay đổi đường dẫn này thành đường dẫn project của bạn
-    // Ví dụ: "C:/Users/YourName/IdeaProjects/DoAn_QuanLyCantin"
-    // Hoặc: "D:/Projects/DoAn_QuanLyCantin"
     private static final String PROJECT_PATH = "D:/Program Files/SPKT/Web/DoAn_QuanLyCantin";
 
     @Override

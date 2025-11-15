@@ -4,17 +4,31 @@
 <%@ page import="java.util.Locale" %>
 <%@ page import="Model.MonAn" %>
 <%@ page import="Model.Quay" %>
+<%@ page import="Model.Page" %>
+<%@ page import="Model.PageRequest" %>
 
 <%
-    // Lấy dữ liệu từ Request
-    List<MonAn> danhSachMon = (List<MonAn>) request.getAttribute("DanhSachMon");
+    Page<MonAn> monAnPage = (Page<MonAn>) request.getAttribute("result");
     List<Quay> danhSachQuay = (List<Quay>) request.getAttribute("DanhSachQuay");
+    PageRequest pageRequest = (PageRequest) request.getAttribute("pageRequest");
 
-    if (danhSachMon == null) {
+    List<MonAn> danhSachMon = null;
+
+    if (monAnPage != null) {
+        danhSachMon = monAnPage.getData();
+    } else {
         danhSachMon = java.util.Collections.emptyList();
+        // Khởi tạo rỗng an toàn nếu dữ liệu không tồn tại
+        monAnPage = new Page<MonAn>(danhSachMon, 1, 10, 0);
     }
+
     if (danhSachQuay == null) {
         danhSachQuay = java.util.Collections.emptyList();
+    }
+
+    if (pageRequest == null) {
+        // Khởi tạo mặc định nếu chưa có (Phòng trường hợp lỗi null)
+        pageRequest = new PageRequest("", "asc", "gia", 10, 1);
     }
 
     // Định dạng tiền tệ Việt Nam
@@ -31,7 +45,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Căn Tin - Admin Dashboard</title>
 
-    <!-- Bootstrap 4 CDN -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
@@ -143,11 +156,15 @@
         .custom-file-label::after {
             content: "Chọn";
         }
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
     </style>
 </head>
 <body>
 
-<!-- Sidebar -->
 <div class="sidebar">
     <h3 class="text-center mb-4">
         <i class="fas fa-utensils"></i> Quản Lý Căn Tin
@@ -166,15 +183,13 @@
     </a>
 </div>
 
-<!-- Content -->
 <div class="content">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2><i class="fas fa-cogs"></i> Quản Trị Hệ Thống</h2>
         <span class="badge badge-primary p-2">Admin: Nguyễn Văn A</span>
     </div>
 
-    <!-- Thông báo -->
-        <%
+    <%
         String successMessage = (String) session.getAttribute("message");
         String errorMessage = (String) session.getAttribute("error");
         if (successMessage != null) {
@@ -185,7 +200,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-        <%
+    <%
             session.removeAttribute("message");
         }
         if (errorMessage != null) {
@@ -196,12 +211,11 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-        <%
+    <%
             session.removeAttribute("error");
         }
     %>
 
-    <!-- Dashboard Tab -->
     <div id="dashboard" class="tab-content-item">
         <h3 class="mb-4">Tổng Quan</h3>
         <div class="row">
@@ -220,23 +234,21 @@
             <div class="col-md-4">
                 <div class="card p-3 text-center" id="card-monan">
                     <p class="card-title">Tổng Món Ăn</p>
-                    <p class="card-value"><i class="fas fa-cube"></i> <%= danhSachMon.size() %></p>
+                    <p class="card-value"><i class="fas fa-cube"></i> <%= monAnPage.getTotalItems() %></p>
                 </div>
             </div>
         </div>
     </div>
 
     <hr/>
-    <!-- Quản Lý Món Ăn Tab -->
     <div id="quanlymonan" class="tab-content-item" style="display:none;">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3><i class="fas fa-utensils"></i> Quản Lý Món Ăn</h3>
+            <h3> Quản Lý Món Ăn</h3>
             <button type="button" class="btn btn-primary" onclick="showAddMonAnForm()">
                 <i class="fas fa-plus"></i> Thêm Món Ăn Mới
             </button>
         </div>
 
-        <!-- Form Thêm/Sửa Món Ăn -->
         <div id="monan-form-container" class="form-monan" style="display:none;">
             <h4 id="form-monan-title">Thêm Món Ăn Mới</h4>
             <form id="monanForm" action="<%= contextPath %>/MonAnServlet" method="POST" enctype="multipart/form-data">
@@ -275,7 +287,6 @@
                     </div>
                 </div>
 
-                <!-- Phần upload ảnh -->
                 <div class="form-group">
                     <label>Hình Ảnh</label>
 
@@ -304,8 +315,27 @@
                 </button>
             </form>
         </div>
+        <div class="card p-3 mb-3 d-flex">
+            <form action="<%= contextPath %>/Admin" method="GET" class="form-inline w-100">
+                <input type="hidden" name="activeTab" value="quanlymonan">
+                <input type="hidden" name="sort" value="<%= pageRequest.getSortField() %>">
+                <input type="hidden" name="order" value="<%= pageRequest.getSortOrder() %>">
 
-        <!-- Bảng Danh Sách Món Ăn -->
+                <div class="form-group mr-2">
+                    <label for="keyword" class="sr-only">Tìm Kiếm</label>
+                    <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Nhập tên món ăn..."
+                           value="<%= pageRequest.getKeyword() != null ? pageRequest.getKeyword() : "" %>">
+                </div>
+                <div class="form-group mr-2">
+                </div>
+                <button type="submit" class="btn btn-info mr-2">
+                    <i class="fas fa-search"></i> Tìm
+                </button>
+                <a href="<%= contextPath %>/Admin?activeTab=quanlymonan" class="btn btn-outline-secondary">
+                    <i class="fas fa-sync-alt"></i> Xóa tìm kiếm
+                </a>
+            </form>
+        </div>
         <div class="card p-3">
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
@@ -313,8 +343,18 @@
                     <tr>
                         <th>#</th>
                         <th>Ảnh</th>
-                        <th>Tên Món</th>
-                        <th>Giá</th>
+                        <th>
+                            Tên Món
+                            <a href="<%= contextPath %>/Admin?activeTab=quanlymonan&page=1&size=<%= pageRequest.getPageSize() %>&sort=tenMonAn&order=<%= pageRequest.getSortField().equals("tenMonAn") && pageRequest.getSortOrder().equals("asc") ? "desc" : "asc" %>&keyword=<%= pageRequest.getKeyword() %>" class="text-white">
+                                <i class="fas fa-sort<%= pageRequest.getSortField().equals("tenMonAn") ? (pageRequest.getSortOrder().equals("asc") ? "-up" : "-down") : "" %> ml-1"></i>
+                            </a>
+                        </th>
+                        <th>
+                            Giá
+                            <a href="<%= contextPath %>/Admin?activeTab=quanlymonan&page=1&size=<%= pageRequest.getPageSize() %>&sort=gia&order=<%= pageRequest.getSortField().equals("gia") && pageRequest.getSortOrder().equals("asc") ? "desc" : "asc" %>&keyword=<%= pageRequest.getKeyword() %>" class="text-white">
+                                <i class="fas fa-sort<%= pageRequest.getSortField().equals("gia") ? (pageRequest.getSortOrder().equals("asc") ? "-up" : "-down") : "" %> ml-1"></i>
+                            </a>
+                        </th>
                         <th>Mô Tả</th>
                         <th>Quầy</th>
                         <th>Thao Tác</th>
@@ -329,6 +369,9 @@
                     </tr>
                     <%
                     } else {
+                        // Tính số thứ tự bắt đầu
+                        int startIndex = (monAnPage.getCurrentPage() - 1) * pageRequest.getPageSize();
+
                         for (int i = 0; i < danhSachMon.size(); i++) {
                             MonAn monan = danhSachMon.get(i);
 
@@ -352,12 +395,11 @@
                             String imageSrc = "";
 
                             if (hinhAnh != null && !hinhAnh.isEmpty()) {
-                                // Database chỉ lưu tên file: "download.png"
                                 imageSrc = contextPath + "/assets/images/MonAn/" + hinhAnh;
                             }
                     %>
                     <tr>
-                        <td><%= i + 1 %></td>
+                        <td><%= startIndex + i + 1 %></td>
                         <td>
                             <%
                                 if (!imageSrc.isEmpty()) {
@@ -376,7 +418,8 @@
                         <td><%= currencyFormatter.format(monan.getGia()) %></td>
                         <td><%= monan.getMoTa() != null ? monan.getMoTa() : "" %></td>
                         <td><%= tenQuayHienThi %></td>
-                        <td>
+                        <td class="d-flex align-items-center">
+                            <div class="action-buttons">
                             <button type="button" class="btn btn-sm btn-info mr-1"
                                     onclick="editMonAn(
                                             '<%= monan.getMaMonAn() %>',
@@ -394,6 +437,7 @@
                                onclick="return confirm('Bạn có chắc chắn muốn xóa món ăn <%= tenMonJs %> không?')">
                                 <i class="fas fa-trash-alt"></i> Xóa
                             </a>
+                                </div>
                         </td>
                     </tr>
                     <%
@@ -403,10 +447,80 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <%
+                            int totalPages = monAnPage.getTotalPage();
+                            int currentPage = monAnPage.getCurrentPage();
+                            String paginationBaseUrl = contextPath + "/Admin?activeTab=quanlymonan&size=" + pageRequest.getPageSize() + "&sort=" + pageRequest.getSortField() + "&order=" + pageRequest.getSortOrder() + "&keyword=" + pageRequest.getKeyword();
+
+                            // Nút Previous
+                            if (currentPage > 1) {
+                        %>
+                        <li class="page-item">
+                            <a class="page-link" href="<%= paginationBaseUrl %>&page=<%= currentPage - 1 %>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <%
+                            }
+
+                            // Các Nút Số Trang
+                            int startPage = Math.max(1, currentPage - 2);
+                            int endPage = Math.min(totalPages, currentPage + 2);
+
+                            if (startPage > 1) {
+                        %>
+                        <li class="page-item"><a class="page-link" href="<%= paginationBaseUrl %>&page=1">1</a></li>
+                        <%
+                            if (startPage > 2) {
+                        %>
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <%
+                                }
+                            }
+
+
+                            for (int i = startPage; i <= endPage; i++) {
+                                String activeClass = (i == currentPage) ? "active" : "";
+                        %>
+                        <li class="page-item <%= activeClass %>">
+                            <a class="page-link" href="<%= paginationBaseUrl %>&page=<%= i %>"><%= i %></a>
+                        </li>
+                        <%
+                            }
+
+                            if (endPage < totalPages) {
+                                if (endPage < totalPages - 1) {
+                        %>
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        <%
+                            }
+                        %>
+                        <li class="page-item"><a class="page-link" href="<%= paginationBaseUrl %>&page=<%= totalPages %>"><%= totalPages %></a></li>
+                        <%
+                            }
+
+
+                            // Nút Next
+                            if (currentPage < totalPages) {
+                        %>
+                        <li class="page-item">
+                            <a class="page-link" href="<%= paginationBaseUrl %>&page=<%= currentPage + 1 %>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <%
+                            }
+                        %>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 
-    <!-- Quản Lý Quầy Tab -->
     <div id="quanlyquay" class="tab-content-item" style="display:none;">
         <h3><i class="fas fa-store"></i> Quản Lý Quầy</h3>
         <p class="text-muted">Giao diện quản lý quầy sẽ được xây dựng tương tự Quản lý Món ăn.</p>
@@ -417,12 +531,10 @@
 
 </div>
 
-<!-- jQuery, Popper.js, Bootstrap JS -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- JavaScript -->
 <script>
     // Khai báo biến DOM
     const monanFormContainer = document.getElementById('monan-form-container');
@@ -455,31 +567,33 @@
         }
     }
 
-    // Khi trang load xong
+    // Khi trang load xong (Cập nhật logic chuyển tab)
     document.addEventListener('DOMContentLoaded', function() {
-        // Xử lý chuyển tab
+        // Lấy tab active từ URL (sau khi tìm kiếm/phân trang/thêm/sửa/xóa)
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('activeTab') || 'dashboard'; // Mặc định là dashboard
+
+        // Xử lý hiển thị tab
         const tabContents = document.querySelectorAll('.tab-content-item');
         tabContents.forEach(item => {
-            if (item.id !== 'dashboard') {
+            if (item.id === activeTab) {
+                item.style.display = 'block';
+            } else {
                 item.style.display = 'none';
             }
         });
 
+        // Xử lý active link trên Sidebar
         document.querySelectorAll('.nav-link-item').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('data-target') === activeTab) {
+                link.classList.add('active');
+            }
+            // Sửa logic click để chuyển hướng và reset các tham số phân trang/tìm kiếm
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-
-                tabContents.forEach(item => {
-                    item.style.display = 'none';
-                });
-
                 const targetId = this.getAttribute('data-target');
-                document.getElementById(targetId).style.display = 'block';
-
-                document.querySelectorAll('.nav-link-item').forEach(item =>
-                    item.classList.remove('active')
-                );
-                this.classList.add('active');
+                window.location.href = '<%= contextPath %>/Admin?activeTab=' + targetId;
             });
         });
 
@@ -519,7 +633,7 @@
         resetMonAnForm();
     }
 
-    // HÀM SỬA MÓN ĂN - ĐÃ FIX
+    // HÀM SỬA MÓN ĂN
     function editMonAn(maMon, tenMon, gia, moTa, hinhAnh, maQuay) {
         resetMonAnForm();
 
@@ -538,11 +652,6 @@
         //XỬ LÝ HIỂN THỊ ẢNH
         if (hinhAnh && hinhAnh.trim() !== '') {
             const contextPath = '<%= contextPath %>';
-
-            // ⚠️ DEBUG - In ra console
-            console.log('contextPath:', contextPath);
-            console.log('hinhAnh:', hinhAnh);
-            console.log('Full path:', contextPath + '/assets/images/MonAn/' + hinhAnh);
 
             // Tạo đường dẫn đầy đủ
             monanCurrentImg.src = contextPath + '/assets/images/MonAn/' + hinhAnh;

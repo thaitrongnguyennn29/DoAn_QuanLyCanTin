@@ -1,6 +1,8 @@
 package RepositoryImp;
 
 import Model.MonAn;
+import Model.Page;
+import Model.PageRequest;
 import Repository.MonAnRepository;
 
 import javax.sql.DataSource;
@@ -34,6 +36,71 @@ public class MonAnRepositoryImp extends DBConnect implements MonAnRepository {
             e.printStackTrace();
         }
         return monAns;
+    }
+
+    @Override
+    public Page<MonAn> findAll(PageRequest pageRequest) {
+        List<MonAn> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM MonAn WHERE 1=1");
+
+        String keyword = pageRequest.getKeyword();
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        if (hasKeyword) {
+            sql.append(" AND (TenMon LIKE ? OR MoTa LIKE ? OR CAST(Gia AS CHAR) LIKE ?");
+
+            if (keyword.matches("\\d+")) {
+                sql.append(" OR MaMon = ?");
+            }
+            sql.append(")");
+        }
+        if ("gia".equals(pageRequest.getSortField())) {
+            sql.append(" ORDER BY gia ").append(pageRequest.getSortOrder().toUpperCase());
+        } else if ("tenMonAn".equals(pageRequest.getSortField())) {
+            sql.append(" ORDER BY TenMon ").append(pageRequest.getSortOrder().toUpperCase());
+        } else {
+            // Mặc định: gia ASC
+            sql.append(" ORDER BY gia ASC");
+        }
+
+        // 3. PHÂN TRANG
+        sql.append(" LIMIT ? OFFSET ?");
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            String kw = "%" + keyword + "%";
+
+            if (hasKeyword) {
+                ps.setString(paramIndex++, kw); // TenMon
+                ps.setString(paramIndex++, kw); // MoTa
+                ps.setString(paramIndex++, kw); // Gia (CAST AS CHAR)
+
+                if (keyword.matches("\\d+")) {
+                    ps.setInt(paramIndex++, Integer.parseInt(keyword)); // MaMon
+                }
+            }
+            ps.setInt(paramIndex++, pageRequest.getPageSize()); // LIMIT
+            ps.setInt(paramIndex++, pageRequest.getOffset());   // OFFSET
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new MonAn(
+                        rs.getInt("MaMon"),
+                        rs.getString("TenMon"),
+                        rs.getDouble("gia"),
+                        rs.getString("MoTa"),
+                        rs.getString("HinhAnh"),
+                        rs.getInt("MaQuay")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Hàm countSearch đã được đồng bộ hóa và hoạt động đúng
+        int totalItems = countSearch(pageRequest.getKeyword());
+        return new Page<>(list, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
     }
 
     @Override
@@ -124,5 +191,46 @@ public class MonAnRepositoryImp extends DBConnect implements MonAnRepository {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public int countSearch(String keyword) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM MonAn WHERE 1=1");
+
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        if (hasKeyword) {
+            sql.append(" AND (TenMon LIKE ? OR MoTa LIKE ? OR CAST(Gia AS CHAR) LIKE ?)");
+
+            // Bạn có thể tùy chọn thêm tìm kiếm theo MaMon nếu keyword là số nguyên
+            if (keyword.matches("\\d+")) {
+                sql.append(" OR MaMon = ?");
+            }
+            sql.append(")");
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            if (hasKeyword) {
+                String kw = "%" + keyword + "%";
+                int paramIndex = 1;
+
+                ps.setString(paramIndex++, kw); // TenMon
+                ps.setString(paramIndex++, kw); // MoTa
+                ps.setString(paramIndex++, kw); // Gia (đã ép kiểu sang chuỗi)
+
+                if (keyword.matches("\\d+")) {
+                    // Chỉ gán nếu là số nguyên
+                    ps.setInt(paramIndex++, Integer.parseInt(keyword)); // MaMon
+                }
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+
+        } catch (SQLException | NumberFormatException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
