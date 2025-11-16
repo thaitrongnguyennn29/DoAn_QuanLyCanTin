@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
 </head>
 <body>
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
     <div class="container">
@@ -39,20 +38,20 @@
                     <a class="nav-link <%= "Thực Đơn".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="thucdon">Thực Đơn</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "Theo Dõi Đơn Hàng".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="#">Theo Dõi Đơn Hàng</a>
+                    <a class="nav-link <%= "Giới Thiệu".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="gioithieu">Giới Thiệu</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <%= "Giới Thiệu".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="gioithieu">Giới Thiệu</a>
+                    <a class="nav-link <%= "Liên Hệ".equals(request.getAttribute("pageTitle")) ? "active" : "" %>" href="lienhe">Liên Hệ</a>
                 </li>
             </ul>
 
             <!-- Giỏ hàng + Đăng nhập -->
             <div class="d-flex align-items-center gap-3">
-                <a href="#" class="text-dark position-relative" data-bs-toggle="tooltip" title="Giỏ hàng">
+                <a href="giohang" class="cart text-dark position-relative" title="Giỏ hàng">
                     <i class="bi bi-cart3 fs-5"></i>
-                    <span class="cart-badge" id="cartCount">0</span>
+                    <span class="cart-badge">0</span>
                 </a>
-                <a href="dangnhap" class="btn btn-gradient px-4 py-2 rounded-pill">Đăng Nhập</a>
+                <a href="dangnhap" class="btn btn-gradient px-4 py-2">Đăng Nhập</a>
             </div>
         </div>
     </div>

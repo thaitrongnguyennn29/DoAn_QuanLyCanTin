@@ -1,6 +1,4 @@
-package RepositoryImp;
-
-import Util.DataSourceUtil;
+package Util;
 
 import javax.sql.DataSource;
 import java.sql.Connection;

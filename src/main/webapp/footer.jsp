@@ -57,7 +57,7 @@
                         Nhận tin tức và ưu đãi mới nhất từ NTC Canteen
                     </p>
                     <form class="input-group">
-                        <input type="email" class="form-control footer-input" placeholder="Nhập email của bạn">
+                        <input type="email" class="footer-input" placeholder="Nhập email của bạn">
                         <button class="btn btn-subscribe" type="button"><i class="bi bi-send"></i></button>
                     </form>
                 </div>
@@ -70,10 +70,6 @@
         </div>
     </div>
 </footer>
-
-<script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/scritp.js"></script>
