@@ -11,6 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuayRepositoryImp extends DBConnect implements QuayRepository {
+    public QuayRepositoryImp() {
+        super();
+    }
+    private Quay mapRowToQuay(ResultSet rs) throws SQLException {
+        return new Quay(
+                rs.getInt("MaQuay"),
+                rs.getString("TenQuay"),
+                rs.getString("MoTa"),
+                rs.getInt("MaTK")
+        );
+    }
     @Override
     public List<Quay> findAll() {
         List<Quay> quays = new ArrayList<>();
@@ -19,13 +30,7 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                Quay q = new Quay(
-                        rs.getInt("MaQuay"),
-                        rs.getString("TenQuay"),
-                        rs.getString("MoTa"),
-                        rs.getInt("MaTK")
-                );
-                quays.add(q);
+                quays.add(mapRowToQuay(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -35,7 +40,71 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
 
     @Override
     public Page<Quay> findAll(PageRequest pageRequest) {
-        return null;
+        List<Quay> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM Quay WHERE 1=1");
+
+        String keyword = pageRequest.getKeyword();
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+
+        // 1. Điều kiện tìm kiếm (WHERE clause)
+        if (hasKeyword) {
+            // Tìm kiếm theo TenQuay, MoTa
+            sql.append(" AND (TenQuay LIKE ? OR MoTa LIKE ?");
+
+            // Tìm kiếm theo MaQuay nếu keyword là số
+            if (keyword.matches("\\d+")) {
+                sql.append(" OR MaQuay = ?");
+            }
+            sql.append(")");
+        }
+
+        // 2. Sắp xếp
+        String sortField = pageRequest.getSortField() != null ? pageRequest.getSortField() : "MaQuay";
+        // Ánh xạ tên trường JSP sang tên cột SQL
+        String sqlSortField;
+        if (sortField.equalsIgnoreCase("tenQuay")) {
+            sqlSortField = "TenQuay";
+        } else {
+            sqlSortField = "MaQuay"; // Mặc định hoặc khi sort field không khớp
+        }
+
+        String sortOrder = pageRequest.getSortOrder().toUpperCase();
+        sql.append(" ORDER BY ").append(sqlSortField).append(" ").append(sortOrder);
+
+        // 3. Phân trang
+        sql.append(" LIMIT ? OFFSET ?");
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            String kw = "%" + keyword + "%";
+
+            // Gán tham số TÌM KIẾM
+            if (hasKeyword) {
+                ps.setString(paramIndex++, kw); // TenQuay
+                ps.setString(paramIndex++, kw); // MoTa
+
+                if (keyword.matches("\\d+")) {
+                    ps.setInt(paramIndex++, Integer.parseInt(keyword)); // MaQuay
+                }
+            }
+
+            // Gán tham số PHÂN TRANG
+            ps.setInt(paramIndex++, pageRequest.getPageSize()); // LIMIT
+            ps.setInt(paramIndex++, pageRequest.getOffset());   // OFFSET
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapRowToQuay(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Lấy tổng số item (cần dùng countSearch)
+        int totalItems = countSearch(pageRequest.getKeyword());
+        return new Page<>(list, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
     }
 
     @Override
@@ -48,12 +117,7 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Quay(
-                            rs.getInt("MaQuay"),
-                            rs.getString("TenQuay"),
-                            rs.getString("MoTa"),
-                            rs.getInt("MaTK")
-                    );
+                    return mapRowToQuay(rs);
                 }
             }
         } catch (SQLException e) {

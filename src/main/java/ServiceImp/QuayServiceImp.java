@@ -1,10 +1,9 @@
 package ServiceImp;
 
-import Model.MonAn;
+import Model.Page;
+import Model.PageRequest;
 import Model.Quay;
-import Repository.MonAnRepository;
 import Repository.QuayRepository;
-import RepositoryImp.MonAnRepositoryImp;
 import RepositoryImp.QuayRepositoryImp;
 import Service.QuayService;
 
@@ -18,6 +17,13 @@ public class QuayServiceImp implements QuayService {
     @Override
     public List<Quay> finAll() {
         return quayRepository.findAll();
+    }
+
+    @Override
+    public Page<Quay> finAll(PageRequest pageRequest) {
+        List<Quay> data = quayRepository.findAll(pageRequest).getData();
+        int totalItems = quayRepository.countSearch(pageRequest.getKeyword());
+        return new Page<>(data, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
     }
 
     @Override

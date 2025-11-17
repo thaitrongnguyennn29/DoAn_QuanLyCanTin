@@ -38,7 +38,6 @@ public class MonAnServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
-
         if ("DELETE".equalsIgnoreCase(action)) {
             deleteMon(req, resp);
         } else {
