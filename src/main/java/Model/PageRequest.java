@@ -6,12 +6,24 @@ public class PageRequest {
     private String sortField;
     private String sortOrder;
     private String keyword;
+    private String trangThai;
+    private String locNgay;
     public PageRequest(String keyword, String sortOrder, String sortField, int pageSize, int page) {
         this.keyword = keyword;
         this.sortOrder = sortOrder;
         this.sortField = sortField;
         this.pageSize = pageSize;
         this.page = page;
+    }
+    public PageRequest(String keyword, String sortOrder, String sortField, int pageSize, int page,
+                       String trangThai, String locNgay) {
+        this.keyword = keyword;
+        this.sortOrder = sortOrder;
+        this.sortField = sortField;
+        this.pageSize = pageSize;
+        this.page = page;
+        this.trangThai = trangThai;
+        this.locNgay = locNgay;
     }
     public PageRequest() {
     }
@@ -58,5 +70,21 @@ public class PageRequest {
 
     public int getOffset() {
         return (page - 1) * pageSize;
+    }
+
+    public String getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+
+    public String getLocNgay() {
+        return locNgay;
+    }
+
+    public void setLocNgay(String locNgay) {
+        this.locNgay = locNgay;
     }
 }

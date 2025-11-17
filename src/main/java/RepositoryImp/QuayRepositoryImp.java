@@ -188,6 +188,48 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
 
     @Override
     public int countSearch(String keyword) {
-        return 0;
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM Quay WHERE 1=1");
+        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
+        int count = 0;
+
+        // 1. Xây dựng điều kiện tìm kiếm (WHERE clause)
+        if (hasKeyword) {
+            // Phải khớp với logic tìm kiếm trong findAll(PageRequest)
+            sql.append(" AND (TenQuay LIKE ? OR MoTa LIKE ?");
+
+            // Tìm kiếm theo MaQuay nếu keyword là số
+            if (keyword.matches("\\d+")) {
+                sql.append(" OR MaQuay = ?");
+            }
+            sql.append(")");
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            String kw = "%" + keyword + "%";
+
+            // Gán tham số TÌM KIẾM
+            if (hasKeyword) {
+                ps.setString(paramIndex++, kw); // TenQuay
+                ps.setString(paramIndex++, kw); // MoTa
+
+                if (keyword.matches("\\d+")) {
+                    ps.setInt(paramIndex++, Integer.parseInt(keyword)); // MaQuay
+                }
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // Lấy giá trị của COUNT(*)
+                    count = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Trả về 0 nếu có lỗi
+        }
+        return count;
     }
 }

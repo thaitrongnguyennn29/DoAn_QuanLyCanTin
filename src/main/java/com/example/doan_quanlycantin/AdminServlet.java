@@ -1,12 +1,9 @@
 package com.example.doan_quanlycantin;
 
+import DTO.ChiTietDonHangDTO;
 import Model.*;
-import Service.MonAnService;
-import Service.QuayService;
-import Service.TaiKhoanService;
-import ServiceImp.MonAnServiceImp;
-import ServiceImp.QuayServiceImp;
-import ServiceImp.TaiKhoanServiceImp;
+import Service.*;
+import ServiceImp.*;
 import Util.RequestUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/Admin")
@@ -25,6 +23,8 @@ public class AdminServlet extends HttpServlet {
     private MonAnService monAnService;
     private QuayService quayService;
     private TaiKhoanService taiKhoanService;
+    private DonHangService donHangService;
+    private ChiTietDonHangService chiTietDonHangService;
     // TODO: Thêm các service khác khi cần
     // private DonHangService donHangService;
     // private MenuService menuService;
@@ -34,6 +34,8 @@ public class AdminServlet extends HttpServlet {
         this.monAnService = new MonAnServiceImp();
         this.quayService = new QuayServiceImp();
         this.taiKhoanService = new TaiKhoanServiceImp();
+        this.donHangService = new DonHangServiceImp();
+        this.chiTietDonHangService = new ChiTietDonHangServiceImp();
     }
 
     @Override
@@ -154,8 +156,8 @@ public class AdminServlet extends HttpServlet {
                 return "/quan-ly-quay-admin.jsp";
             case "quanlytaikhoan":
                 return "/quan-ly-tai-khoan-admin.jsp";
-//            case "quanlydonhang":
-//                return "/WEB-INF/views/admin/pages/quan-ly-don-hang.jsp";
+            case "quanlydonhang":
+                return "/quan-ly-don-hang-admin.jsp";
 //            case "quanlymenu":
 //                return "/WEB-INF/views/admin/pages/quan-ly-menu.jsp";
 //            case "thongke":
@@ -246,16 +248,94 @@ public class AdminServlet extends HttpServlet {
      * Load data cho trang Quản Lý Đơn Hàng
      */
     private void loadDonHangData(HttpServletRequest request) {
-        // TODO: Implement khi có DonHangService
-        /*
         PageRequest pageRequest = buildPageRequest(request, "ngayDat");
-        Page<DonHang> donHangPage = donHangService.finAll(pageRequest);
-        request.setAttribute("donHangPage", donHangPage);
-        request.setAttribute("pageRequest", pageRequest);
-        */
 
-        // Tạm thời set empty page
-        request.setAttribute("donHangPage", new Page<>(java.util.Collections.emptyList(), 1, 10, 0));
+        // Load Page<DonHang> - Danh sách đơn hàng
+        Page<DonHang> donHangPage = donHangService.finAll(pageRequest);
+
+        // Load danh sách tài khoản (để hiển thị tên khách hàng)
+        List<TaiKhoan> taiKhoans = taiKhoanService.finAll();
+
+        // Set attributes cho danh sách
+        request.setAttribute("donHangPage", donHangPage);
+        request.setAttribute("DanhSachTK", taiKhoans);
+        request.setAttribute("pageRequest", pageRequest);
+
+        // ===== PHẦN MỚI: XỬ LÝ CHI TIẾT ĐƠN HÀNG =====
+        String maDonParam = request.getParameter("maDon");
+
+        if (maDonParam != null && !maDonParam.isEmpty()) {
+            try {
+                int maDon = Integer.parseInt(maDonParam);
+
+                // 1. Load thông tin đơn hàng
+                DonHang donHangDetail = donHangService.findById(maDon);
+
+                // 2. Load chi tiết món ăn
+                List<ChiTietDonHang> chiTietList = chiTietDonHangService.finAllByMaDon(maDon);
+
+                // 3. Load danh sách món ăn và quầy (để JOIN thông tin)
+                List<MonAn> danhSachMonAn = monAnService.finAll();
+                List<Quay> danhSachQuay = quayService.finAll();
+
+                // 4. Tạo List<ChiTietDonHangDTO> để hiển thị
+                List<ChiTietDonHangDTO> chiTietDTOList = new ArrayList<>();
+
+                for (ChiTietDonHang ct : chiTietList) {
+                    // Tìm thông tin món ăn
+                    String tenMon = "";
+                    String hinhAnh = "";
+                    int maQuay = 0;
+
+                    for (MonAn mon : danhSachMonAn) {
+                        if (mon.getMaMonAn() == ct.getMaMonAn()) {
+                            tenMon = mon.getTenMonAn();
+                            hinhAnh = mon.getHinhAnh();
+                            maQuay = mon.getMaQuay();
+                            break;
+                        }
+                    }
+
+                    // Tìm thông tin quầy
+                    String tenQuay = "";
+                    for (Quay quay : danhSachQuay) {
+                        if (quay.getMaQuay() == maQuay) {
+                            tenQuay = quay.getTenQuay();
+                            break;
+                        }
+                    }
+
+                    // Tạo DTO
+                    ChiTietDonHangDTO dto = new ChiTietDonHangDTO(
+                            ct, tenMon, hinhAnh, maQuay, tenQuay
+                    );
+                    chiTietDTOList.add(dto);
+                }
+
+                // 5. Tìm thông tin khách hàng
+                TaiKhoan khachHang = null;
+                if (donHangDetail != null) {
+                    for (TaiKhoan tk : taiKhoans) {
+                        if (tk.getMaTaiKhoan() == donHangDetail.getMaTaiKhoan()) {
+                            khachHang = tk;
+                            break;
+                        }
+                    }
+                }
+
+                // 6. Set attributes cho chi tiết
+                request.setAttribute("donHangDetail", donHangDetail);
+                request.setAttribute("chiTietDTOList", chiTietDTOList);
+                request.setAttribute("khachHang", khachHang);
+                request.setAttribute("viewMode", "detail"); // Flag để hiển thị chi tiết
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                request.setAttribute("error", "Mã đơn hàng không hợp lệ");
+            }
+        } else {
+            request.setAttribute("viewMode", "list"); // Flag để hiển thị danh sách
+        }
     }
 
     /**
@@ -307,6 +387,13 @@ public class AdminServlet extends HttpServlet {
         String order = RequestUtil.getString(request, "order", "asc");
         String keyword = RequestUtil.getString(request, "keyword", "");
 
-        return new PageRequest(keyword, order, sort, size, page);
+        // Lấy thêm tham số lọc cho đơn hàng
+        String trangThai = RequestUtil.getString(request, "trangThai", "");
+        String locNgay = RequestUtil.getString(request, "locNgay", "");
+
+        // Tạo PageRequest với constructor mới
+        PageRequest pageRequest = new PageRequest(keyword, order, sort, size, page, trangThai, locNgay);
+
+        return pageRequest;
     }
 }

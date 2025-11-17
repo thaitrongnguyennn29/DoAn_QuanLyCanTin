@@ -37,7 +37,7 @@ public class MonAn {
     }
 
     public double getGia() {
-        return gia;
+        return   gia;
     }
 
     public void setGia(double gia) {
