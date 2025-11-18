@@ -12,8 +12,14 @@
 
 <%!
     // =================================================================
-    // KHỐI KHAI BÁO JSP (ĐÃ XÓA escapeJson)
+    // KHỐI KHAI BÁO JSP (ĐỂ KHÔNG GẶP LỖI Biên dịch/Scriptlet)
     // =================================================================
+
+    // Hàm này giúp escape các ký tự đặc biệt trong chuỗi JS/JSON (chủ yếu là dấu nháy kép)
+    public String escapeJson(String input) {
+        if (input == null) return "";
+        return input.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
 
     // Hàm Java helper để tạo HTML cho món đã chọn
     public static String createSelectedMonItemHtml(String maMon, String tenMon, String giaText, String trangThai) {
@@ -41,7 +47,7 @@
         );
     }
 
-    // Hàm Java helper để tạo HTML cho món có sẵn (đã xóa escapeJson)
+    // Hàm Java helper để tạo HTML cho món có sẵn
     public static String createAvailableMonItemHtml(String maMon, String tenMon, String giaText, String giaRaw) {
         return String.format(
                 "<li class='list-group-item d-flex justify-content-between align-items-center'>" +
@@ -51,8 +57,7 @@
                         "<label for='mon_%s' class='mb-0 font-weight-bold'>%s</label>" +
                         "</div>" +
                         "<span class='item-gia'>%s</span>" +
-                        "</li>",
-                maMon, maMon, tenMon, giaRaw, maMon, tenMon, giaText // Sử dụng tenMon TRỰC TIẾP
+                        "</li>"
         );
     }
 %>
@@ -90,9 +95,13 @@
 
     List<String> trangThaiLoc = List.of("Còn bán", "Hết món");
 
+    String viewMode = request.getParameter("viewMode") != null ? request.getParameter("viewMode") : "list";
+    String maQuayEdit = request.getParameter("maQuayEdit");
+    String ngayEdit = request.getParameter("ngayEdit");
+
     // Giá trị mặc định cho Detail View
-    int defaultMaQuay = 1;
-    String defaultNgay = today.format(dateFormatter);
+    int defaultMaQuay = maQuayEdit != null ? Integer.parseInt(maQuayEdit) : 1;
+    String defaultNgay = ngayEdit != null ? ngayEdit : today.format(dateFormatter);
 
     String filterQuay = request.getParameter("filterQuay") != null ? request.getParameter("filterQuay") : "";
     String filterNgay = request.getParameter("filterNgay") != null ? request.getParameter("filterNgay") : "";
@@ -100,7 +109,7 @@
 %>
 
 <style>
-    /* CSS đã cung cấp */
+    /* CSS TỪ TRANG QUẢN LÝ MÓN ĂN & MENU NGÀY */
     .page-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -124,6 +133,7 @@
     .fade-in {
         animation: fadeIn 0.5s ease;
     }
+    /* CSS RIÊNG CHO MENU NGÀY */
     .menu-header-card {
         background-color: #f7f7f7;
         border: 1px solid #e0e0e0;
@@ -175,7 +185,7 @@
     <%-- ========================================================= --%>
     <%-- 1. DANH SÁCH MENU NGÀY (LIST VIEW) --%>
     <%-- ========================================================= --%>
-    <div id="listView" style="display: block;">
+    <div id="listView" style="display: <%= viewMode.equals("list") ? "block" : "none" %>;">
 
         <div class="card p-4 mb-4">
             <h4 class="mb-3 pb-2 border-bottom">
@@ -295,7 +305,7 @@
     <%-- ========================================================= --%>
     <%-- 2. FORM THIẾT LẬP MENU (DETAIL/CREATE/UPDATE VIEW) --%>
     <%-- ========================================================= --%>
-    <div id="detailView" style="display: none;">
+    <div id="detailView" style="display: <%= viewMode.equals("detail") ? "block" : "none" %>;">
 
         <button type="button" class="btn btn-outline-secondary mb-3" onclick="showListView()">
             <i class="fas fa-arrow-left"></i> Quay lại Danh sách Menu
@@ -311,27 +321,27 @@
                 <div class="row align-items-center">
                     <%-- 1. Chọn Quầy --%>
                     <div class="col-md-5 form-group">
-                        <label class="filter-label" for="maQuayDetail">
+                        <label class="filter-label" for="maQuay">
                             <i class="fas fa-store"></i> Quầy Bán
                         </label>
-                        <select class="form-control custom-select" id="maQuayDetail" name="maQuay" required onchange="loadMenuContent()">
+                        <select class="form-control custom-select" id="maQuay" name="maQuay" required onchange="loadMenuContent()">
                             <option value="">-- Chọn Quầy --</option>
                             <% for (Map.Entry<Integer, String> entry : mockQuaysMap.entrySet()) { %>
-                            <option value="<%= entry.getKey() %>"><%= entry.getValue() %></option>
+                            <option value="<%= entry.getKey() %>" <%= entry.getKey() == defaultMaQuay ? "selected" : "" %>><%= entry.getValue() %></option>
                             <% } %>
                         </select>
                     </div>
 
                     <%-- 2. Chọn Ngày --%>
                     <div class="col-md-4 form-group">
-                        <label class="filter-label" for="ngayMenuDetail">
+                        <label class="filter-label" for="ngayMenu">
                             <i class="fas fa-calendar-day"></i> Ngày Áp Dụng
                         </label>
                         <input type="date"
                                class="form-control"
-                               id="ngayMenuDetail"
+                               id="ngayMenu"
                                name="ngayMenu"
-                               value="<%= today.format(dateFormatter) %>"
+                               value="<%= defaultNgay %>"
                                onchange="loadMenuContent()"
                                required>
                     </div>
@@ -363,7 +373,7 @@
                             </div>
                             <div class="scrollable-list">
                                 <ul class="list-group list-group-flush" id="availableItemsList">
-                                    <%-- Nội dung được tải bằng JS --%>
+                                    <%-- Nội dung sẽ được tải bằng JS/AJAX (dữ liệu tĩnh ban đầu) --%>
                                 </ul>
                             </div>
                         </div>
@@ -394,7 +404,7 @@
                             </div>
                             <div class="scrollable-list">
                                 <ul class="list-group list-group-flush" id="selectedItemsList">
-                                    <%-- Nội dung được tải bằng JS --%>
+                                    <%-- Nội dung sẽ được tải bằng JS/AJAX (dữ liệu tĩnh ban đầu) --%>
                                 </ul>
                             </div>
                         </div>
@@ -455,45 +465,39 @@
 </div>
 
 <script>
-    // --- KHỐI TẠO DỮ LIỆU JS TỪ JAVA (ĐÃ XÓA escapeJson) ---
+    // --- KHỐI THAY THẾ GSON BẰNG MANUAL STRING BUILDING ---
     <%
-        // TẠO JSON DỮ LIỆU MÓN CÓ SẴN (RAW STRING)
         StringBuilder jsonAvailable = new StringBuilder("[");
         for (int i = 0; i < mockMonAnAvailable.size(); i++) {
             String[] mon = mockMonAnAvailable.get(i);
-            // SỬ DỤNG mon[i] TRỰC TIẾP (Chấp nhận rủi ro lỗi cú pháp JS nếu có dấu ")
             jsonAvailable.append(String.format("[\"%s\",\"%s\",\"%s\"]",
-                mon[0],
-                mon[1],
-                mon[2]
+                escapeJson(mon[0]),
+                escapeJson(mon[1]),
+                escapeJson(mon[2])
             ));
             if (i < mockMonAnAvailable.size() - 1) jsonAvailable.append(",");
         }
         jsonAvailable.append("]");
 
-        // TẠO JSON DỮ LIỆU MÓN ĐÃ CHỌN (RAW STRING)
         StringBuilder jsonSelected = new StringBuilder("[");
         for (int i = 0; i < mockMonDaCo.size(); i++) {
             String[] mon = mockMonDaCo.get(i);
-             // SỬ DỤNG mon[i] TRỰC TIẾP
             jsonSelected.append(String.format("[\"%s\",\"%s\",\"%s\",\"%s\"]",
-                mon[0],
-                mon[1],
-                mon[2],
-                mon[3]
+                escapeJson(mon[0]),
+                escapeJson(mon[1]),
+                escapeJson(mon[2]),
+                escapeJson(mon[3])
             ));
             if (i < mockMonDaCo.size() - 1) jsonSelected.append(",");
         }
         jsonSelected.append("]");
 
-        // TẠO JSON DỮ LIỆU TÊN QUẦY (RAW STRING)
         StringBuilder jsonQuayNames = new StringBuilder("{");
         int count = 0;
         for (Entry<Integer, String> entry : mockQuaysMap.entrySet()) {
-             // SỬ DỤNG entry.getValue() TRỰC TIẾP
             jsonQuayNames.append(String.format("\"%s\":\"%s\"",
                 entry.getKey(),
-                entry.getValue()
+                escapeJson(entry.getValue())
             ));
             if (count < mockQuaysMap.size() - 1) jsonQuayNames.append(",");
             count++;
@@ -510,6 +514,7 @@
     // CÁC HÀM XỬ LÝ JAVASCRIPT
     // =================================================================
 
+    // Định dạng tiền tệ VNĐ (sử dụng NumberFormat)
     const currencyFormatter = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' });
 
     // Hàm tạo HTML cho món đã được thêm vào Menu Ngày (JavaScript)
@@ -553,6 +558,7 @@
         `;
     }
 
+    // Toggle checkbox tất cả
     function toggleCheckAll() {
         const checkAll = document.getElementById('checkAllAvailable');
         const checkboxes = document.querySelectorAll('.available-checkbox');
@@ -562,6 +568,7 @@
         });
     }
 
+    // Hàm cập nhật số lượng món
     function updateItemCount() {
         const availableCount = document.querySelectorAll('#availableItemsList li:not(.empty-message)').length;
         const selectedCount = document.querySelectorAll('#selectedItemsList li:not(.empty-message)').length;
@@ -569,6 +576,7 @@
         document.getElementById('selectedCount').textContent = selectedCount;
     }
 
+    // Hàm cập nhật thông báo rỗng
     function updateEmptyMessage(listId, message, iconClass) {
         const list = document.getElementById(listId);
         const currentItems = list.querySelectorAll('li:not(.empty-message)').length;
@@ -587,6 +595,7 @@
         updateItemCount();
     }
 
+    // Hàm chuyển món đã chọn sang Menu Ngày
     function moveSelectedToMenu() {
         const availableList = document.getElementById('availableItemsList');
         const selectedList = document.getElementById('selectedItemsList');
@@ -615,6 +624,7 @@
         updateEmptyMessage('selectedItemsList', 'Menu Ngày này đang trống.', 'fa-utensils');
     }
 
+    // Hàm xóa món khỏi Menu Ngày và đưa về danh sách có sẵn
     function removeMon(button, maMon) {
         if (!confirm('Bạn có chắc muốn xóa món này khỏi Menu Ngày không? Món sẽ trở lại danh sách có sẵn.')) {
             return;
@@ -633,6 +643,7 @@
         updateEmptyMessage('selectedItemsList', 'Menu Ngày này đang trống.', 'fa-utensils');
     }
 
+    // Hàm xử lý việc thêm món mới (Mock)
     function addAndSelectNewMon() {
         const tenMon = document.getElementById('newTenMon').value;
         const gia = document.getElementById('newGia').value;
@@ -659,18 +670,21 @@
         updateEmptyMessage('selectedItemsList', 'Menu Ngày này đang trống.', 'fa-utensils');
     }
 
+    // Hàm tải dữ liệu (Mock) cho Detail View
     function loadMenuContent() {
-        const maQuay = document.getElementById('maQuayDetail').value;
-        const ngayMenu = document.getElementById('ngayMenuDetail').value;
-        const quayDropdown = document.getElementById('maQuayDetail');
+        const maQuay = document.getElementById('maQuay').value;
+        const ngayMenu = document.getElementById('ngayMenu').value;
+        const quayDropdown = document.getElementById('maQuay');
         const quayName = quayDropdown.options[quayDropdown.selectedIndex].text;
 
-        if (!maQuay || !ngayMenu || maQuay === '') {
+        if (!maQuay || !ngayMenu) {
             return;
         }
 
+        // Cập nhật tên quầy trong modal
         document.getElementById('selectedQuayName').textContent = quayName;
 
+        // --- Tải dữ liệu Mock ---
         const availableList = document.getElementById('availableItemsList');
         const selectedList = document.getElementById('selectedItemsList');
 
@@ -696,47 +710,44 @@
             selectedList.insertAdjacentHTML('beforeend', createSelectedMonItem(maMon, tenMon, giaRaw, trangThai));
         });
 
+        // Cập nhật thông báo rỗng và số lượng
         updateEmptyMessage('availableItemsList', 'Tất cả món đã được thêm vào Menu Ngày.', 'fa-check');
         updateEmptyMessage('selectedItemsList', 'Menu Ngày này đang trống.', 'fa-utensils');
 
         console.log(`Đã tải Mock Menu cho: ${quayName} vào ngày ${ngayMenu}`);
     }
 
-    // Nút "Thêm Menu Ngày Mới" (Ẩn/Hiện form)
+    // Nút "Thêm Menu Ngày Mới" (Đã sửa lỗi)
     function showMenuForm() {
-        document.getElementById('listView').style.display = 'none';
-        document.getElementById('detailView').style.display = 'block';
-
-        // Thiết lập giá trị mặc định khi thêm mới (Quầy 1, Ngày hiện tại)
-        document.getElementById('maQuayDetail').value = '1';
-        document.getElementById('ngayMenuDetail').value = '<%= today.format(dateFormatter) %>';
-        loadMenuContent();
+        window.location.href = '<%= contextPath %>/Admin?activeTab=quanlymenungay&viewMode=detail';
     }
 
-    // Nút "Sửa" trong List View (Ẩn/Hiện form và điền dữ liệu)
+    // Nút "Sửa" trong List View (Đã sửa lỗi)
     function editMenuNgay(maQuay, ngayHienThi) {
-        document.getElementById('listView').style.display = 'none';
-        document.getElementById('detailView').style.display = 'block';
-
         // Chuyển đổi định dạng ngày từ DD/MM/YYYY sang YYYY-MM-DD
         const parts = ngayHienThi.split('/');
-        const ngayFormatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        if (parts.length !== 3) {
+            alert('Lỗi định dạng ngày!');
+            return;
+        }
+        const ngayFormatted = `${parts[2]}-${parts[1]}-${parts[0]}`; // YYYY-MM-DD
 
-        // Điền giá trị vào form chi tiết
-        document.getElementById('maQuayDetail').value = maQuay;
-        document.getElementById('ngayMenuDetail').value = ngayFormatted;
-
-        loadMenuContent();
+        window.location.href = `<%= contextPath %>/Admin?activeTab=quanlymenungay&viewMode=detail&maQuayEdit=${maQuay}&ngayEdit=${ngayFormatted}`;
     }
 
     // Chuyển về List View
     function showListView() {
-        document.getElementById('detailView').style.display = 'none';
-        document.getElementById('listView').style.display = 'block';
+        window.location.href = '<%= contextPath %>/Admin?activeTab=quanlymenungay&viewMode=list';
     }
 
     // Khởi tạo ban đầu
     document.addEventListener('DOMContentLoaded', function() {
-        // Không cần loadMenuContent() ở đây vì detailView mặc định là none.
+        const currentViewMode = '<%= viewMode %>';
+
+        if (currentViewMode === 'detail') {
+            // Tải dữ liệu ban đầu cho Detail View
+            loadMenuContent();
+        }
     });
+
 </script>

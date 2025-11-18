@@ -164,7 +164,6 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
 
     @Override
     public DonHang create(DonHang donHang) {
-        // Chỉ cần chèn MaTK và TongTien. NgayDat và TrangThai sẽ dùng DEFAULT.
         String sql = "INSERT INTO DonHang (MaTK, TongTien) VALUES (?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -225,7 +224,6 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
         }
     }
 
-    // --- PHIÊN BẢN countSearch MỚI (3 THAM SỐ) ---
     public int countSearch(String keyword, String trangThai, String locNgay) {
         int count = 0;
 
@@ -296,12 +294,8 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
         }
         return count;
     }
-
-    // --- PHIÊN BẢN countSearch CŨ (1 THAM SỐ) ---
-    // (Giữ lại để tương thích với các interface/code cũ nếu có)
     @Override
     public int countSearch(String keyword) {
-        // Gọi phiên bản mới với tham số lọc mặc định là null
         return countSearch(keyword, null, null);
     }
 }

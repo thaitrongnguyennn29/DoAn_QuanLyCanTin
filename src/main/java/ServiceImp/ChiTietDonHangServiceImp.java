@@ -8,7 +8,7 @@ import Service.ChiTietDonHangService;
 import java.util.List;
 
 public class ChiTietDonHangServiceImp implements ChiTietDonHangService {
-    private ChiTietDonHangRepository chiTietDonHangRepository;
+    private final ChiTietDonHangRepository chiTietDonHangRepository;
     public ChiTietDonHangServiceImp() {
         this.chiTietDonHangRepository = new ChiTietDonHangRepositoryImp();
     }

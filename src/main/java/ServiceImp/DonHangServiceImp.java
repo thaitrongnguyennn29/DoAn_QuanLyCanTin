@@ -10,7 +10,7 @@ import Service.DonHangService;
 import java.util.List;
 
 public class DonHangServiceImp implements DonHangService {
-    private DonHangRepository donHangRepository;
+    private final DonHangRepository donHangRepository;
     public DonHangServiceImp() {
         this.donHangRepository = new DonHangRepositoryImp();
     }
