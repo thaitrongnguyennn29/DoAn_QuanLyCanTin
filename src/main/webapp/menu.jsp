@@ -1,5 +1,9 @@
+<%@ page import="Model.MonAn" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-
+<%
+    request.setAttribute("pageTitle", "Thực Đơn");
+%>
 <%@ include file="header.jsp" %>
 
 <div class="menu-page">
@@ -21,44 +25,70 @@
             <p class="menu-section-subtitle text-muted text-center mb-4">Tươi ngon, dinh dưỡng và chuẩn vị căn tin sinh viên.</p>
 
             <div id="menulist" class="menu-filter-btn d-flex flex-wrap justify-content-center gap-2 mb-5">
-                <button class="btn btn-outline-primary active" data-filter="all">Tất cả</button>
-                <button class="btn btn-outline-primary" data-filter="com">Cơm</button>
-                <button class="btn btn-outline-primary" data-filter="mi">Mì</button>
-                <button class="btn btn-outline-primary" data-filter="pho">Phở</button>
-                <button class="btn btn-outline-primary" data-filter="do-uong">Đồ Uống</button>
+                <a class="btn btn-outline-primary filter-btn
+                    <%= (request.getParameter("filter") == null
+                    || "all".equals(request.getParameter("filter"))) ? "active" : "" %>"
+                   href="thucdon?filter=all"
+                   data-filter="all">
+                    Tất cả
+                </a>
+
+                <%
+                    List<Model.Quay> listQuay = (List<Model.Quay>) request.getAttribute("listQuay");
+                    if(listQuay != null) {
+                        for(Model.Quay q : listQuay) {
+                %>
+                <a class="btn btn-outline-primary filter-btn
+                    <%= String.valueOf(q.getMaQuay()).equals(request.getParameter("filter")) ? "active" : "" %>"
+                   href="thucdon?filter=<%= q.getMaQuay() %>"
+                   data-filter="<%= q.getMaQuay() %>">
+                    <%= q.getTenQuay() %>
+                </a>
+                <%
+                        }
+                    }
+                %>
             </div>
 
+
             <div class="row g-4">
-                                <!-- CARD ITEM -->
-                <div class="col-lg-3 col-md-6 menu-card-item" data-category="com">
+
+                <%
+                    List<MonAn> list = (List<Model.MonAn>) request.getAttribute("listMonAn");
+
+                    if (list != null) {
+                        for (Model.MonAn mon : list) {
+                %>
+
+                <div class="col-lg-3 col-md-6 menu-card-item"
+                     data-category="<%= mon.getMaQuay() %>">
+
                     <div class="dish-card">
                         <div class="dish-image-wrapper">
-                            <img src="assets/images/MonAn/com_ComBo.jpg" class="dish-image w-100" alt="Cơm Bò Lúc Lắc">
+                            <img src="<%= request.getContextPath() + "/" + mon.getHinhAnh() %>"
+                                 class="dish-image w-100"
+                                 alt="<%= mon.getTenMonAn() %>">
                         </div>
+
                         <div class="p-3">
-                            <h5 class="dish-name">Cơm Bò Lúc Lắc</h5>
+                            <h5 class="dish-name"><%= mon.getTenMonAn() %></h5>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">65.000đ</span>
-                                <button class="btn-add-cart btn-sm"><i class="bi bi-cart-plus"></i> Thêm</button>
+                                <span class="dish-price">
+                                    <%= String.format("%,.0f", mon.getGia()) %>đ
+                                </span>
+
+                                <button class="btn-add-cart btn-sm" data-mamon="<%= mon.getMaMonAn() %>">
+                                    <i class="bi bi-cart-plus"></i> Thêm
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 menu-card-item" data-category="com">
-                    <div class="dish-card">
-                        <div class="dish-image-wrapper">
-                            <img src="assets/images/MonAn/com_ComChienCaMan.jpg" class="dish-image w-100" alt="Cơm Chiên Cá Mặn">
-                        </div>
-                        <div class="p-3">
-                            <h5 class="dish-name">Cơm Chiên Cá Mặn</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">45.000đ</span>
-                                <button class="btn-add-cart btn-sm"><i class="bi bi-cart-plus"></i> Thêm</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <%
+                        }
+                    }
+                %>
             </div>
         </div>
     </section>
@@ -110,5 +140,4 @@
     </section>
 
 </div>
-
 <%@ include file="footer.jsp" %>

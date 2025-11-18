@@ -1,32 +1,54 @@
 package com.example.doan_quanlycantin;
 
+import Model.MonAn;
+import Model.Quay;
+
+import ServiceImp.MonAnServiceImp;
+import ServiceImp.QuayServiceImp;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.util.List;
 
-import Model.MonAn;
-import Repository.MonAnRepository;
-import RepositoryImp.MonAnRepositoryImp;
-import Service.MonAnService;
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
-
 @WebServlet("/thucdon")
 public class MenuServlet extends HttpServlet {
-    private MonAnRepository monAnRepository;
+
+    private MonAnServiceImp monAnService;
+    private QuayServiceImp quayService;
 
     @Override
-    public void init() throws ServletException {
-        this.monAnRepository = new MonAnRepositoryImp();
+    public void init(ServletConfig config) throws ServletException {
+        monAnService = new MonAnServiceImp();
+        quayService = new QuayServiceImp();
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        List<MonAn> monAns = monAnRepository.findAll();
-        request.setAttribute("DanhSachMon", monAns);
-        request.setAttribute("pageTitle", "Thực Đơn");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/menu.jsp");
-        dispatcher.forward(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Lấy tham số filter từ request
+        String filter = request.getParameter("filter");
+
+        List<MonAn> listMonAn;
+        if (filter == null || filter.equals("all")) {
+            listMonAn = monAnService.getAll();
+        } else {
+            try {
+                int maQuay = Integer.parseInt(filter);
+                listMonAn = monAnService.getByQuayId(maQuay);
+            } catch (NumberFormatException e) {
+                listMonAn = monAnService.getAll(); // fallback
+            }
+        }
+
+        List<Quay> listQuay = quayService.getAll();
+
+        request.setAttribute("listMonAn", listMonAn);
+        request.setAttribute("listQuay", listQuay);
+        request.getRequestDispatcher("/menu.jsp").forward(request, response);
     }
 }
+

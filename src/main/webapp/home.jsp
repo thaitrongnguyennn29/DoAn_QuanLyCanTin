@@ -16,7 +16,7 @@
                     <h1 class="hero-title">Bữa Ăn Chất Lượng,<br>Khởi Đầu Thành Công</h1>
                     <p class="hero-subtitle">Thưởng thức món ăn Việt Nam đậm chất truyền thống, được chế biến tươi mới mỗi ngày</p>
 
-                    <a class="btn btn-hero" href = "menu.jsp">
+                    <a class="btn btn-hero" href = "thucdon">
                         Xem Thực Đơn Ngay <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>

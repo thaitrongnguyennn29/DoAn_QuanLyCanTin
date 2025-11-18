@@ -4,7 +4,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
-public class DataSourceUtil {
+public final class DataSourceUtil {
     private static volatile DataSource ds;
 
     private DataSourceUtil() {}
@@ -13,7 +13,7 @@ public class DataSourceUtil {
         if (ds == null) {
             synchronized (DataSourceUtil.class) {
                 if (ds == null) {
-                    ds = lookup("java:comp/env/jdbc/QuanlyCanTinDB");
+                    ds = lookup("java:comp/env/jdbc/quanly_cantin");
                 }
             }
         }

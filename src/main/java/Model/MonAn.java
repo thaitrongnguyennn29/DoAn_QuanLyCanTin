@@ -40,7 +40,7 @@ public class MonAn {
         return gia;
     }
 
-    public void setGia(float gia) {
+    public void setGia(double gia) {
         this.gia = gia;
     }
 
