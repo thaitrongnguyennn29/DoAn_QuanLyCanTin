@@ -45,4 +45,9 @@ public class MonAnServiceImp implements MonAnService {
     public boolean delete(MonAn monAn) {
         return monAnRepository.delete(monAn);
     }
+
+    @Override
+    public List<MonAn> getByQuayId(int maQuay) {
+        return monAnRepository.findByQuayId(maQuay);
+    }
 }

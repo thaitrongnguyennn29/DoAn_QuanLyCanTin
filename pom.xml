@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>DoAn_QuanLyQuan</artifactId>
+    <artifactId>DoAn_QuanLyCanTin</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>DoAn_QuanLyQuan</name>
+    <name>DoAn_QuanLyCanTin</name>
     <packaging>war</packaging>
 
     <properties>

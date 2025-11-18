@@ -11,9 +11,10 @@ import java.util.List;
 
 public class TaiKhoanServiceImp implements TaiKhoanService {
     private final TaiKhoanRepository taiKhoanRepository;
-    public TaiKhoanServiceImp(){
+    public TaiKhoanServiceImp() {
         this.taiKhoanRepository = new TaiKhoanRepositoryImp();
     }
+
     @Override
     public List<TaiKhoan> finAll() {
         return taiKhoanRepository.findAll();

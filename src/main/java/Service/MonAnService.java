@@ -13,4 +13,5 @@ public interface MonAnService {
     boolean create(MonAn monAn);
     boolean update(MonAn monAn);
     boolean delete(MonAn monAn);
+    List<MonAn> getByQuayId(int maQuay);
 }

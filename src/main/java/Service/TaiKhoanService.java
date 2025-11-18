@@ -13,4 +13,6 @@ public interface TaiKhoanService {
     boolean create(TaiKhoan taiKhoan);
     boolean update(TaiKhoan taiKhoan);
     boolean delete(TaiKhoan taiKhoan);
+    TaiKhoan login(String username, String password);
+    boolean register(String username, String password, String fullname);
 }
