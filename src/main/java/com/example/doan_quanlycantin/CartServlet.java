@@ -106,7 +106,7 @@ public class CartServlet extends HttpServlet {
             }
         }
         if (isAdd) {
-            MonAn mon = monAnService.getById(maMon);
+            MonAn mon = monAnService.findById(maMon);
             if (mon != null) cart.add(new GioHang(mon, quantity));
         }
     }

@@ -46,4 +46,34 @@ public class TaiKhoanServiceImp implements TaiKhoanService {
     public boolean delete(TaiKhoan taiKhoan) {
         return taiKhoanRepository.delete(taiKhoan);
     }
+
+    @Override
+    public TaiKhoan login(String username, String password) {
+        TaiKhoan tk = taiKhoanRepository.findByUsername(username);
+        if (tk != null) {
+            // Logic kiểm tra mật khẩu
+            if (tk.getMatKhau().equals(password)) {
+                return tk;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean register(String username, String password, String fullname) {
+        // 1. Kiểm tra tên đăng nhập đã tồn tại chưa
+        if (taiKhoanRepository.findByUsername(username) != null) {
+            return false;
+        }
+
+        // 2. Tạo đối tượng mới
+        TaiKhoan newTk = new TaiKhoan();
+        newTk.setTenNguoiDung(fullname);
+        newTk.setTenDangNhap(username);
+        newTk.setMatKhau(password);
+        newTk.setVaiTro("user"); // Mặc định người đăng ký là USER
+
+        // 3. Gọi Repo để lưu
+        return taiKhoanRepository.addaccount(newTk);
+    }
 }

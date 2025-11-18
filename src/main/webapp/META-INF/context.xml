@@ -1,6 +1,6 @@
 <Context>
     <Resource
-            name="jdbc/QuanlyCanTinDB"
+            name="jdbc/quanly_cantin"
             auth="Container"
             type="javax.sql.DataSource"
             factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"

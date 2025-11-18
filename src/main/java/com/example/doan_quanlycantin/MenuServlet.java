@@ -34,17 +34,17 @@ public class MenuServlet extends HttpServlet {
 
         List<MonAn> listMonAn;
         if (filter == null || filter.equals("all")) {
-            listMonAn = monAnService.getAll();
+            listMonAn = monAnService.finAll();
         } else {
             try {
                 int maQuay = Integer.parseInt(filter);
                 listMonAn = monAnService.getByQuayId(maQuay);
             } catch (NumberFormatException e) {
-                listMonAn = monAnService.getAll(); // fallback
+                listMonAn = monAnService.finAll(); // fallback
             }
         }
 
-        List<Quay> listQuay = quayService.getAll();
+        List<Quay> listQuay = quayService.finAll();
 
         request.setAttribute("listMonAn", listMonAn);
         request.setAttribute("listQuay", listQuay);

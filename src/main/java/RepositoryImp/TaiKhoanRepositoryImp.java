@@ -229,4 +229,46 @@ public class TaiKhoanRepositoryImp extends DBConnect implements TaiKhoanReposito
         }
         return 0;
     }
+
+    @Override
+    public TaiKhoan findByUsername(String username) {
+        String sql = "SELECT * FROM TaiKhoan WHERE TenDangNhap = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new TaiKhoan(
+                            rs.getInt("MaTK"),
+                            rs.getString("TenNguoiDung"),
+                            rs.getString("TenDangNhap"),
+                            rs.getString("MatKhau"),
+                            rs.getString("VaiTro")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean addaccount(TaiKhoan taiKhoan) {
+        String sql = "INSERT INTO TaiKhoan (TenNguoiDung, TenDangNhap, MatKhau, VaiTro) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, taiKhoan.getTenNguoiDung());
+            ps.setString(2, taiKhoan.getTenDangNhap());
+            ps.setString(3, taiKhoan.getMatKhau());
+            ps.setString(4, taiKhoan.getVaiTro()); // ENUM trong DB sẽ nhận String này
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }
