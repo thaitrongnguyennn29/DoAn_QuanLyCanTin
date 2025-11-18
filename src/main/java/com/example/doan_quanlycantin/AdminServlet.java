@@ -158,8 +158,8 @@ public class AdminServlet extends HttpServlet {
                 return "/quan-ly-tai-khoan-admin.jsp";
             case "quanlydonhang":
                 return "/quan-ly-don-hang-admin.jsp";
-//            case "quanlymenu":
-//                return "/WEB-INF/views/admin/pages/quan-ly-menu.jsp";
+            case "quanlymenu":
+                return "/quan-ly-menu-ngay-admin.jsp";
 //            case "thongke":
 //                return "/WEB-INF/views/admin/pages/thong-ke.jsp";
             default:

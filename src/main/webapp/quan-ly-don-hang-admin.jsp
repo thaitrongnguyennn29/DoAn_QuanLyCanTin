@@ -468,117 +468,84 @@
                 </h5>
             </div>
             <div class="card-body p-0">
-                <form id="bulkUpdateForm" action="<%= contextPath %>/DonHangServlet" method="POST">
-                    <input type="hidden" name="action" value="updateMultiple">
-                    <input type="hidden" name="maDon" value="<%= donHangDetail.getMaDonHang() %>">
+                <%-- ĐÃ XÓA FORM bulkUpdateForm BAO QUANH TOÀN BỘ BẢNG --%>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="thead-light">
-                            <tr>
-                                <th style="width: 3%;">
-                                    <input type="checkbox" id="checkAll" onclick="toggleCheckAll()">
-                                </th>
-                                <th style="width: 5%;">#</th>
-                                <th style="width: 25%;">Tên Món</th>
-                                <th style="width: 10%;">Số Lượng</th>
-                                <th style="width: 12%;">Đơn Giá</th>
-                                <th style="width: 12%;">Thành Tiền</th>
-                                <th style="width: 18%;">Trạng Thái</th>
-                                <th style="width: 15%;" class="text-center">Hành Động</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <%
-                                for (int i = 0; i < chiTietDTOList.size(); i++) {
-                                    ChiTietDonHangDTO dto = chiTietDTOList.get(i);
-                            %>
-                            <tr>
-                                <td class="align-middle">
-                                    <input type="checkbox" class="item-checkbox" name="maCT[]" value="<%= dto.getMaCT() %>">
-                                </td>
-                                <td class="align-middle"><strong><%= i+1 %></strong></td>
-                                <td class="align-middle">
-                                    <strong><%= dto.getTenMonAn() %></strong>
-                                    <br><small class="text-muted">Quầy: <%= dto.getTenQuay() %></small>
-                                </td>
-                                <td class="align-middle">
-                                    <span class="badge badge-secondary">x<%= dto.getSoLuong() %></span>
-                                </td>
-                                <td class="align-middle"><%= currencyFormatter.format(dto.getDonGia()) %></td>
-                                <td class="align-middle">
-                                    <strong class="text-success"><%= currencyFormatter.format(dto.getThanhTien()) %></strong>
-                                </td>
-                                <td class="align-middle">
-                                    <form action="<%= contextPath %>/DonHangServlet" method="POST" style="display: inline;">
-                                        <input type="hidden" name="action" value="updateStatus">
-                                        <input type="hidden" name="maCT" value="<%= dto.getMaCT() %>">
-                                        <input type="hidden" name="maDon" value="<%= donHangDetail.getMaDonHang() %>">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 25%;">Tên Món</th>
+                            <th style="width: 10%;">Số Lượng</th>
+                            <th style="width: 12%;">Đơn Giá</th>
+                            <th style="width: 12%;">Thành Tiền</th>
+                            <th style="width: 18%;">Trạng Thái</th>
+                            <th style="width: 15%;" class="text-center">Hành Động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                            for (int i = 0; i < chiTietDTOList.size(); i++) {
+                                ChiTietDonHangDTO dto = chiTietDTOList.get(i);
+                        %>
+                        <tr>
+                            <td class="align-middle"><strong><%= i+1 %></strong></td>
+                            <td class="align-middle">
+                                <strong><%= dto.getTenMonAn() %></strong>
+                                <br><small class="text-muted">Quầy: <%= dto.getTenQuay() %></small>
+                            </td>
+                            <td class="align-middle">
+                                <span class="badge badge-secondary">x<%= dto.getSoLuong() %></span>
+                            </td>
+                            <td class="align-middle"><%= currencyFormatter.format(dto.getDonGia()) %></td>
+                            <td class="align-middle">
+                                <strong class="text-success"><%= currencyFormatter.format(dto.getThanhTien()) %></strong>
+                            </td>
+                            <td class="align-middle">
+                                <%-- FORM ĐƠN LẺ HIỆN TẠI ĐÃ HỢP LỆ VÌ KHÔNG BỊ LỒNG --%>
+                                <form action="<%= contextPath %>/DonHangServlet" method="POST" style="display: inline;" id="formStatus<%= dto.getMaCT() %>">
+                                    <input type="hidden" name="action" value="updateStatus">
+                                    <input type="hidden" name="maCT" value="<%= dto.getMaCT() %>">
+                                    <input type="hidden" name="maDon" value="<%= donHangDetail.getMaDonHang() %>">
 
-                                        <select class="form-control form-control-sm status-select"
-                                                name="trangThai"
-                                                id="status<%= dto.getMaCT() %>"
-                                                onchange="this.form.submit()">
-                                            <option value="Mới đặt" <%= "Mới đặt".equals(dto.getTrangThai()) ? "selected" : "" %>>Mới đặt</option>
-                                            <option value="Đã xác nhận" <%= "Đã xác nhận".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã xác nhận</option>
-                                            <option value="Đang giao" <%= "Đang giao".equals(dto.getTrangThai()) ? "selected" : "" %>>Đang giao</option>
-                                            <option value="Đã giao" <%= "Đã giao".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã giao</option>
-                                            <option value="Đã hủy" <%= "Đã hủy".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã hủy</option>
-                                        </select>
-                                    </form>
-                                </td>
-                                <td class="align-middle text-center">
-                                    <button type="button" class="btn btn-sm btn-primary"
-                                            onclick="document.getElementById('status<%= dto.getMaCT() %>').form.submit()">
-                                        <i class="fas fa-save"></i> Lưu
-                                    </button>
-                                </td>
-                            </tr>
-                            <%
-                                }
-                            %>
-                            </tbody>
-                            <tfoot class="bg-light">
-                            <tr>
-                                <td colspan="5" class="text-right"><strong>Tổng cộng:</strong></td>
-                                <td colspan="3">
-                                    <strong class="text-success" style="font-size: 1.2rem;">
-                                        <%= currencyFormatter.format(donHangDetail.getTongTien()) %>
-                                    </strong>
-                                </td>
-                            </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </form>
-            </div>
-
-            <div class="card-footer bg-light">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="form-inline">
-                            <label class="mr-2 font-weight-bold">Cập nhật hàng loạt:</label>
-                            <select class="form-control form-control-sm mr-2" id="bulkStatus" name="trangThai" form="bulkUpdateForm" style="width: 200px;">
-                                <option value="">-- Chọn trạng thái --</option>
-                                <option value="Mới đặt">Mới đặt</option>
-                                <option value="Đã xác nhận">Đã xác nhận</option>
-                                <option value="Đang giao">Đang giao</option>
-                                <option value="Đã giao">Đã giao</option>
-                                <option value="Đã hủy">Đã hủy</option>
-                            </select>
-                            <button type="button" class="btn btn-success btn-sm" onclick="capNhatHangLoat()">
-                                <i class="fas fa-check"></i> Áp dụng cho đã chọn
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-right">
-                        <small class="text-muted">
-                            <i class="fas fa-info-circle"></i>
-                            Chọn các món cần cập nhật, chọn trạng thái và nhấn "Áp dụng"
-                        </small>
-                    </div>
+                                    <select class="form-control form-control-sm status-select"
+                                            name="trangThai"
+                                            id="selectStatus<%= dto.getMaCT() %>">
+                                        <option value="Mới đặt" <%= "Mới đặt".equals(dto.getTrangThai()) ? "selected" : "" %>>Mới đặt</option>
+                                        <option value="Đã xác nhận" <%= "Đã xác nhận".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã xác nhận</option>
+                                        <option value="Đang giao" <%= "Đang giao".equals(dto.getTrangThai()) ? "selected" : "" %>>Đang giao</option>
+                                        <option value="Đã giao" <%= "Đã giao".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã giao</option>
+                                        <option value="Đã hủy" <%= "Đã hủy".equals(dto.getTrangThai()) ? "selected" : "" %>>Đã hủy</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td class="align-middle text-center">
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        onclick="document.getElementById('formStatus<%= dto.getMaCT() %>').submit()">
+                                    <i class="fas fa-save"></i> Lưu
+                                </button>
+                            </td>
+                        </tr>
+                        <%
+                            }
+                        %>
+                        </tbody>
+                        <tfoot class="bg-light">
+                        <tr>
+                            <td colspan="4" class="text-right"><strong>Tổng cộng:</strong></td>
+                            <td colspan="3">
+                                <strong class="text-success" style="font-size: 1.2rem;">
+                                    <%= currencyFormatter.format(donHangDetail.getTongTien()) %>
+                                </strong>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
+
+            <%-- ĐÃ XÓA KHỐI card-footer DÀNH CHO CẬP NHẬT HÀNG LOẠT --%>
+
         </div>
         <%
         } else if (viewMode.equals("detail")) {
@@ -594,39 +561,7 @@
 </div>
 
 <script>
-    // Toggle checkbox tất cả
-    function toggleCheckAll() {
-        const checkAll = document.getElementById('checkAll');
-        const checkboxes = document.querySelectorAll('.item-checkbox');
-
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = checkAll.checked;
-        });
-    }
-
-    // Cập nhật hàng loạt
-    function capNhatHangLoat() {
-        const bulkStatus = document.getElementById('bulkStatus').value;
-
-        if (!bulkStatus) {
-            alert('Vui lòng chọn trạng thái cần cập nhật!');
-            return;
-        }
-
-        const checkedItems = document.querySelectorAll('.item-checkbox:checked');
-
-        if (checkedItems.length === 0) {
-            alert('Vui lòng chọn ít nhất một món để cập nhật!');
-            return;
-        }
-
-        if (!confirm('Bạn có chắc muốn cập nhật ' + checkedItems.length + ' món sang trạng thái "' + bulkStatus + '"?')) {
-            return;
-        }
-
-        // Submit form
-        document.getElementById('bulkUpdateForm').submit();
-    }
+    // **ĐÃ XÓA các hàm JavaScript liên quan đến cập nhật hàng loạt (toggleCheckAll, capNhatHangLoat)**
 
     // Cập nhật màu cho select dựa trên giá trị
     document.addEventListener('DOMContentLoaded', function() {

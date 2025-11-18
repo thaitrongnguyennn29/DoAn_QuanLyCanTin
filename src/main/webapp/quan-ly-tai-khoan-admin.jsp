@@ -177,10 +177,11 @@
                     <thead class="thead-light">
                     <tr>
                         <th style="width:8%;">#</th>
-                        <th style="width:25%;">Tên đăng nhập</th>
-                        <th style="width:25%;">Mật khẩu</th>
-                        <th style="width:20%;">Vai trò</th>
-                        <th style="width:22%;" class="text-center">Thao Tác</th>
+                        <th style="width:20%;">Tên người dùng</th>
+                        <th style="width:20%;">Tên đăng nhập</th>
+                        <th style="width:20%;">Mật khẩu</th>
+                        <th style="width:15%;">Vai trò</th>
+                        <th style="width:17%;" class="text-center">Thao Tác</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -210,6 +211,10 @@
                     %>
                     <tr>
                         <td class="align-middle"><strong><%= startIndex + i + 1 %></strong></td>
+                        <td class="align-middle">
+                            <i class="fas fa-user-circle text-primary"></i>
+                            <strong><%= tk.getTenNguoiDung() %></strong>
+                        </td>
                         <td class="align-middle">
                             <i class="fas fa-user-circle text-primary"></i>
                             <strong><%= tk.getTenDangNhap() %></strong>

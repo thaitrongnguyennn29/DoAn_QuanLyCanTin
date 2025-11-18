@@ -2,12 +2,14 @@ package Model;
 
 public class TaiKhoan {
     private int maTaiKhoan;
+    private String tenNguoiDung;
     private String tenDangNhap;
     private String matKhau;
     private String vaiTro;
 
-    public TaiKhoan(int maTaiKhoan, String tenDangNhap, String matKhau, String vaiTro) {
+    public TaiKhoan(int maTaiKhoan, String tenNguoiDung, String tenDangNhap, String matKhau, String vaiTro) {
         this.maTaiKhoan = maTaiKhoan;
+        this.tenNguoiDung = tenNguoiDung;
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.vaiTro = vaiTro;
@@ -46,5 +48,13 @@ public class TaiKhoan {
 
     public void setVaiTro(String vaiTro) {
         this.vaiTro = vaiTro;
+    }
+
+    public String getTenNguoiDung() {
+        return tenNguoiDung;
+    }
+
+    public void setTenNguoiDung(String tenNguoiDung) {
+        this.tenNguoiDung = tenNguoiDung;
     }
 }

@@ -16,6 +16,7 @@ public class TaiKhoanRepositoryImp extends DBConnect implements TaiKhoanReposito
     private TaiKhoan mapRowToTaiKhoan(ResultSet rs) throws SQLException {
         return new TaiKhoan(
                 rs.getInt("MaTK"),
+                rs.getString("TenKhachHang"),
                 rs.getString("TenDangNhap"),
                 rs.getString("MatKhau"),
                 rs.getString("VaiTro")
