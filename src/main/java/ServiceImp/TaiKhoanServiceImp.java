@@ -72,7 +72,6 @@ public class TaiKhoanServiceImp implements TaiKhoanService {
         newTk.setTenDangNhap(username);
         newTk.setMatKhau(password);
         newTk.setVaiTro("user"); // Mặc định người đăng ký là USER
-
         // 3. Gọi Repo để lưu
         return taiKhoanRepository.addaccount(newTk);
     }

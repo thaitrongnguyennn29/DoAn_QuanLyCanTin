@@ -52,12 +52,15 @@
 
 
             <div class="row g-4">
-
                 <%
                     List<MonAn> list = (List<Model.MonAn>) request.getAttribute("listMonAn");
+                    String imageDirectory = "assets/images/MonAn/"; // <= ĐỊNH NGHĨA ĐƯỜNG DẪN THƯ MỤC CỐ ĐỊNH Ở ĐÂY
 
                     if (list != null) {
                         for (Model.MonAn mon : list) {
+
+                            // Xử lý đường dẫn ảnh: Ghép thư mục cố định + Tên file từ DB
+                            String fullImagePath = imageDirectory + mon.getHinhAnh();
                 %>
 
                 <div class="col-lg-3 col-md-6 menu-card-item"
@@ -65,7 +68,7 @@
 
                     <div class="dish-card">
                         <div class="dish-image-wrapper">
-                            <img src="<%= request.getContextPath() + "/" + mon.getHinhAnh() %>"
+                            <img src="<%= request.getContextPath() + "/" + fullImagePath %>"
                                  class="dish-image w-100"
                                  alt="<%= mon.getTenMonAn() %>">
                         </div>
@@ -73,9 +76,9 @@
                         <div class="p-3">
                             <h5 class="dish-name"><%= mon.getTenMonAn() %></h5>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">
-                                    <%= String.format("%,.0f", mon.getGia()) %>đ
-                                </span>
+                <span class="dish-price">
+                    <%= String.format("%,.0f", mon.getGia()) %>đ
+                </span>
 
                                 <button class="btn-add-cart btn-sm" data-mamon="<%= mon.getMaMonAn() %>">
                                     <i class="bi bi-cart-plus"></i> Thêm

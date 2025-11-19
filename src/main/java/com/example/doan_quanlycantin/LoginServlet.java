@@ -88,11 +88,11 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("user", tk);
             String role = tk.getVaiTro();
             if ("admin".equals(role)) {
-                resp.sendRedirect(req.getContextPath() + "/home.jsp");
+                resp.sendRedirect(req.getContextPath() + "/trangchu");
             } else if ("seller".equals(role)) {
-                resp.sendRedirect(req.getContextPath() + "/home.jsp");
+                resp.sendRedirect(req.getContextPath() + "/trangchu");
             } else {
-                resp.sendRedirect(req.getContextPath() + "/home.jsp");
+                resp.sendRedirect(req.getContextPath() + "/trangchu");
             }
         } else {
             req.setAttribute("messLogin", "Sai tên đăng nhập hoặc mật khẩu!");

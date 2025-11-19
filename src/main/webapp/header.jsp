@@ -90,7 +90,7 @@
 
                         <!-- Thông tin tài khoản -->
                         <li>
-                            <a class="dropdown-item" href="thongtin.jsp">
+                            <a class="dropdown-item" href="#">
                                 <i class="bi bi-person-gear me-2"></i>
                                 <span>Thông tin tài khoản</span>
                             </a>
@@ -101,21 +101,21 @@
                         <!-- Menu theo vai trò -->
                         <% if ("admin".equals(role)) { %>
                         <li>
-                            <a class="dropdown-item" href="admin/dashboard.jsp">
+                            <a class="dropdown-item" href="Admin">
                                 <i class="bi bi-speedometer2 me-2"></i>
                                 <span>Quản lý</span>
                             </a>
                         </li>
                         <% } else if ("seller".equals(role)) { %>
                         <li>
-                            <a class="dropdown-item" href="seller/home.jsp">
+                            <a class="dropdown-item" href="#">
                                 <i class="bi bi-shop me-2"></i>
                                 <span>Bán hàng</span>
                             </a>
                         </li>
                         <% } else { %>
                         <li>
-                            <a class="dropdown-item" href="donmua.jsp">
+                            <a class="dropdown-item" href="#">
                                 <i class="bi bi-bag-check me-2"></i>
                                 <span>Theo dõi đơn hàng</span>
                             </a>
@@ -124,7 +124,7 @@
 
                         <!-- Cài đặt -->
                         <li>
-                            <a class="dropdown-item" href="caidat.jsp">
+                            <a class="dropdown-item" href="#">
                                 <i class="bi bi-gear me-2"></i>
                                 <span>Cài đặt</span>
                             </a>
@@ -132,7 +132,7 @@
 
                         <!-- Trợ giúp -->
                         <li>
-                            <a class="dropdown-item" href="trogiup.jsp">
+                            <a class="dropdown-item" href="#">
                                 <i class="bi bi-question-circle me-2"></i>
                                 <span>Trợ giúp</span>
                             </a>
