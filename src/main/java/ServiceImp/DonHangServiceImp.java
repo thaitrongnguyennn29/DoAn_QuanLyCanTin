@@ -111,4 +111,9 @@ public class DonHangServiceImp implements DonHangService {
             return false;
         }
     }
+
+    @Override
+    public Page<DonHang> findDonHangByMaQuay(int maQuay, PageRequest pageRequest) {
+        return donHangRepository.findDonHangByMaQuay(maQuay, pageRequest);
+    }
 }

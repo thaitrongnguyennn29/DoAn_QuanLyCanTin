@@ -297,4 +297,107 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
     public int countSearch(String keyword) {
         return countSearch(keyword, null, null);
     }
+
+    @Override
+    public Page<DonHang> findDonHangByMaQuay(int maQuay, PageRequest pageRequest) {
+        List<DonHang> list = new ArrayList<>();
+        int limit = pageRequest.getPageSize();
+        int offset = (pageRequest.getPage() - 1) * limit;
+
+        // SQL CHUẨN: JOIN DonHang -> ChiTiet -> MonAn -> WHERE MaQuay
+        String sql = "SELECT DISTINCT dh.MaDon, dh.MaTK, dh.NgayDat, dh.TongTien, dh.TrangThai " +
+                "FROM DonHang dh " +
+                "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDon " +
+                "JOIN MonAn m ON ct.MaMon = m.MaMon " +
+                "WHERE m.MaQuay = ? ";
+
+        // Logic tìm kiếm/lọc
+        if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
+            sql += " AND dh.TrangThai = ? ";
+        }
+        if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
+            sql += " AND (dh.MaDon LIKE ? OR dh.MaTK LIKE ?) "; // Tìm theo mã đơn hoặc mã khách
+        }
+
+        sql += " ORDER BY dh.NgayDat DESC LIMIT ? OFFSET ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int i = 1;
+            ps.setInt(i++, maQuay); // QUAN TRỌNG: Truyền mã quầy vào
+
+            if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
+                ps.setString(i++, pageRequest.getTrangThai());
+            }
+            if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
+                String kw = "%" + pageRequest.getKeyword() + "%";
+                ps.setString(i++, kw);
+                ps.setString(i++, kw);
+            }
+            ps.setInt(i++, limit);
+            ps.setInt(i++, offset);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                DonHang dh = new DonHang();
+                dh.setMaDonHang(rs.getInt("MaDon"));
+                dh.setMaTaiKhoan(rs.getInt("MaTK"));
+
+                // Xử lý ngày giờ (Sửa tùy theo kiểu dữ liệu DB của bạn là DateTime hay Timestamp)
+                try {
+                    dh.setNgayDat(rs.getTimestamp("NgayDat").toLocalDateTime());
+                } catch (Exception e) { dh.setNgayDat(null); }
+
+                dh.setTongTien(rs.getBigDecimal("TongTien"));
+                dh.setTrangThai(rs.getString("TrangThai"));
+                list.add(dh);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+
+        int total = countDonHangByMaQuay(maQuay, pageRequest);
+        return new Page<>(list, pageRequest.getPage(), limit, total);
+    }
+
+    @Override
+    public int countDonHangByMaQuay(int maQuay, PageRequest pageRequest) {
+        int count = 0;
+        String sql = "SELECT COUNT(DISTINCT dh.MaDon) " +
+                "FROM DonHang dh " +
+                "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDonHang " +
+                "JOIN MonAn m ON ct.MaMonAn = m.MaMonAn " +
+                "WHERE m.MaQuay = ? ";
+
+        // (Copy y hệt phần logic nối chuỗi SQL lọc bên trên xuống đây)
+        if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
+            sql += " AND dh.TrangThai = ? ";
+        }
+        if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
+            sql += " AND (dh.MaDon LIKE ? OR dh.MaTK LIKE ?) ";
+        }
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, maQuay);
+
+            if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
+                ps.setString(paramIndex++, pageRequest.getTrangThai());
+            }
+            if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
+                String keyword = "%" + pageRequest.getKeyword() + "%";
+                ps.setString(paramIndex++, keyword);
+                ps.setString(paramIndex++, keyword);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

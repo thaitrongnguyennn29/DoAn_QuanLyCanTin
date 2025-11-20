@@ -231,4 +231,31 @@ public class QuayRepositoryImp extends DBConnect implements QuayRepository {
         }
         return count;
     }
+
+    @Override
+    public Quay findByMaTK(int maTK) {
+        Quay quay = null;
+        String sql = "SELECT * FROM Quay WHERE MaTK = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, maTK);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                quay = new Quay();
+                quay.setMaQuay(rs.getInt("MaQuay"));
+                quay.setTenQuay(rs.getString("TenQuay"));
+                quay.setMoTa(rs.getString("MoTa"));
+                quay.setMaTaiKhoan(rs.getInt("MaTK"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return quay; // Trả về null nếu không tìm thấy
+    }
 }

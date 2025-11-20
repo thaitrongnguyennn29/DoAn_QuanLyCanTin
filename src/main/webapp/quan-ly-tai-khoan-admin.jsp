@@ -103,21 +103,32 @@
         </div>
         <p class="mb-0 mt-2" style="opacity: 0.9;">Quản lý thông tin và vai trò người dùng</p>
     </div>
+
     <div id="tk-form-container" class="card p-4 mb-4" style="display:none;">
         <h4 id="form-tk-title" class="mb-4 pb-2 border-bottom"><i class="fas fa-user"></i> Thêm Tài Khoản</h4>
         <form id="tkForm" action="<%= contextPath %>/TaiKhoanServlet" method="POST">
             <input type="hidden" name="action" id="tk-action" value="ADD">
             <input type="hidden" name="maTK" id="maTK">
+
             <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label class="filter-label"><i class="fas fa-sign-in-alt"></i> Tên đăng nhập <span class="text-danger">*</span></label>
-                    <input type="text" name="tenDangNhap" id="tenDangNhap" class="form-control" placeholder="Tên đăng nhập" required>
+                <div class="form-group col-md-6">
+                    <label class="filter-label"><i class="fas fa-id-card"></i> Tên người dùng <span class="text-danger">*</span></label>
+                    <input type="text" name="tenNguoiDung" id="tenNguoiDung" class="form-control" placeholder="Họ và tên hiển thị" required>
                 </div>
-                <div class="form-group col-md-4">
+
+                <div class="form-group col-md-6">
+                    <label class="filter-label"><i class="fas fa-sign-in-alt"></i> Tên đăng nhập <span class="text-danger">*</span></label>
+                    <input type="text" name="tenDangNhap" id="tenDangNhap" class="form-control" placeholder="Tên đăng nhập hệ thống" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <label class="filter-label"><i class="fas fa-key"></i> Mật khẩu <span class="text-danger">*</span></label>
                     <input type="text" name="matKhau" id="matKhau" class="form-control" placeholder="Mật khẩu" required>
                 </div>
-                <div class="form-group col-md-4">
+
+                <div class="form-group col-md-6">
                     <label class="filter-label"><i class="fas fa-user-tag"></i> Vai trò <span class="text-danger">*</span></label>
                     <select name="vaiTro" id="vaiTro" class="form-control custom-select" required>
                         <option value="admin">Admin</option>
@@ -126,6 +137,7 @@
                     </select>
                 </div>
             </div>
+
             <hr>
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-outline-secondary mr-2" onclick="hideTKForm()">
@@ -137,6 +149,7 @@
             </div>
         </form>
     </div>
+
     <div class="search-bar mb-4">
         <form action="<%= contextPath %>/Admin" method="GET" class="d-flex w-100">
             <input type="hidden" name="activeTab" value="quanlytaikhoan">
@@ -149,7 +162,7 @@
                     <i class="fas fa-search"></i> Tìm kiếm:
                 </label>
                 <input type="text" class="form-control w-100" name="keyword"
-                       placeholder="Tìm theo tên đăng nhập..."
+                       placeholder="Tìm theo tên người dùng hoặc tên đăng nhập..."
                        value="<%= pageRequest.getKeyword() == null ? "" : pageRequest.getKeyword() %>">
             </div>
 
@@ -164,6 +177,7 @@
             </div>
         </form>
     </div>
+
     <div class="card">
         <div class="card-header">
             <h5 class="mb-0">
@@ -176,12 +190,12 @@
                 <table class="table table-hover mb-0">
                     <thead class="thead-light">
                     <tr>
-                        <th style="width:8%;">#</th>
-                        <th style="width:20%;">Tên người dùng</th>
+                        <th style="width:5%;">#</th>
+                        <th style="width:25%;">Tên người dùng</th>
                         <th style="width:20%;">Tên đăng nhập</th>
                         <th style="width:20%;">Mật khẩu</th>
-                        <th style="width:15%;">Vai trò</th>
-                        <th style="width:17%;" class="text-center">Thao Tác</th>
+                        <th style="width:10%;">Vai trò</th>
+                        <th style="width:20%;" class="text-center">Thao Tác</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -189,7 +203,7 @@
                         if (danhSachTaiKhoan.isEmpty()) {
                     %>
                     <tr>
-                        <td colspan="5" class="text-center text-muted py-5">
+                        <td colspan="6" class="text-center text-muted py-5">
                             <i class="fas fa-inbox fa-4x mb-3 d-block" style="opacity:0.3;"></i>
                             <h5>Không có tài khoản nào</h5>
                             <p>Hãy thêm tài khoản mới bằng cách nhấn nút **"Thêm Tài Khoản"** ở trên</p>
@@ -199,24 +213,24 @@
                         for (int i = 0; i < danhSachTaiKhoan.size(); i++) {
                             TaiKhoan tk = danhSachTaiKhoan.get(i);
 
-                            // Gán class cho vai trò
                             String roleClass = "badge-secondary";
                             if ("admin".equals(tk.getVaiTro())) roleClass = "badge-danger";
                             else if ("seller".equals(tk.getVaiTro())) roleClass = "badge-warning";
                             else if ("user".equals(tk.getVaiTro())) roleClass = "badge-info";
 
-                            // Escape mật khẩu và tên đăng nhập cho JS
-                            String tenDangNhapJs = tk.getTenDangNhap().replace("'", "\\'");
-                            String matKhauJs = tk.getMatKhau().replace("'", "\\'");
+                            // Escape chuỗi cho JS
+                            String tenNguoiDungJs = (tk.getTenNguoiDung() != null) ? tk.getTenNguoiDung().replace("'", "\\'") : "";
+                            String tenDangNhapJs = (tk.getTenDangNhap() != null) ? tk.getTenDangNhap().replace("'", "\\'") : "";
+                            String matKhauJs = (tk.getMatKhau() != null) ? tk.getMatKhau().replace("'", "\\'") : "";
                     %>
                     <tr>
                         <td class="align-middle"><strong><%= startIndex + i + 1 %></strong></td>
                         <td class="align-middle">
-                            <i class="fas fa-user-circle text-primary"></i>
+                            <i class="fas fa-id-card text-info mr-1"></i>
                             <strong><%= tk.getTenNguoiDung() %></strong>
                         </td>
                         <td class="align-middle">
-                            <i class="fas fa-user-circle text-primary"></i>
+                            <i class="fas fa-user-circle text-primary mr-1"></i>
                             <strong><%= tk.getTenDangNhap() %></strong>
                         </td>
                         <td class="align-middle"><small class="text-muted"><%= tk.getMatKhau() %></small></td>
@@ -228,7 +242,7 @@
                         <td class="align-middle text-center">
                             <div class="btn-group">
                                 <button class="btn btn-sm btn-info"
-                                        onclick="editTK('<%= tk.getMaTaiKhoan() %>', '<%= tenDangNhapJs %>', '<%= matKhauJs %>', '<%= tk.getVaiTro() %>')" title="Sửa tài khoản">
+                                        onclick="editTK('<%= tk.getMaTaiKhoan() %>', '<%= tenNguoiDungJs %>', '<%= tenDangNhapJs %>', '<%= matKhauJs %>', '<%= tk.getVaiTro() %>')" title="Sửa tài khoản">
                                     <i class="fas fa-edit"></i> Sửa
                                 </button>
                                 <button class="btn btn-sm btn-danger"
@@ -248,7 +262,6 @@
         <%
             int totalPages = taiKhoanPage.getTotalPage();
             int currentPage = taiKhoanPage.getCurrentPage();
-            // Đảm bảo baseUrl trỏ về /Admin để giữ activeTab
             String baseUrl = contextPath + "/Admin?activeTab=quanlytaikhoan&size=" + pageRequest.getPageSize() + "&sort=" + pageRequest.getSortField() + "&order=" + pageRequest.getSortOrder();
 
             if(pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty())
@@ -313,6 +326,9 @@
         document.getElementById("form-tk-title").innerHTML="<i class='fas fa-user'></i> Thêm Tài Khoản";
         document.getElementById("tk-action").value="ADD";
         document.getElementById("maTK").value="";
+
+        // Reset trường mới
+        document.getElementById("tenNguoiDung").value="";
         document.getElementById("tenDangNhap").value="";
         document.getElementById("matKhau").value="";
         document.getElementById("vaiTro").value="admin";
@@ -322,14 +338,20 @@
         document.getElementById("tk-form-container").style.display="none";
     }
 
-    function editTK(maTK, tenDangNhap, matKhau, vaiTro){
+    // Nhận thêm tham số tenNguoiDung
+    function editTK(maTK, tenNguoiDung, tenDangNhap, matKhau, vaiTro){
         document.getElementById("tk-form-container").style.display="block";
         document.getElementById("form-tk-title").innerHTML="<i class='fas fa-edit'></i> Sửa Tài Khoản";
         document.getElementById("tk-action").value="EDIT";
-        document.getElementById("maTK").value=maTK;
-        document.getElementById("tenDangNhap").value=tenDangNhap;
-        document.getElementById("matKhau").value=matKhau;
-        document.getElementById("vaiTro").value=vaiTro;
+
+        document.getElementById("maTK").value = maTK;
+        // Đổ dữ liệu vào trường mới
+        document.getElementById("tenNguoiDung").value = tenNguoiDung;
+        document.getElementById("tenDangNhap").value = tenDangNhap;
+        document.getElementById("matKhau").value = matKhau; // Hiển thị pass thường
+        document.getElementById("vaiTro").value = vaiTro;
+
+        document.getElementById("tk-form-container").scrollIntoView({ behavior: 'smooth' });
     }
 
     function confirmDelete(name,url){
@@ -339,9 +361,7 @@
         return false;
     }
 
-    // Hiển thị thông báo (Nếu có logic từ trang Đơn hàng/Món ăn)
     <%
-        // Giả định logic thông báo (từ các trang trước)
         String successMsg = (String) session.getAttribute("success");
         String errorMsg = (String) session.getAttribute("error");
 

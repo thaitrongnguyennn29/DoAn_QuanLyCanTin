@@ -7,453 +7,193 @@ import Model.PageRequest;
 import Repository.MenuNgayRepository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
 
 public class MenuNgayRepositoryImp extends DBConnect implements MenuNgayRepository {
+
     public MenuNgayRepositoryImp() {
         super();
     }
+
     private static final DateTimeFormatter SQL_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private MenuNgay mapRowToMenuNgay(ResultSet rs) throws SQLException {
         MenuNgay menu = new MenuNgay();
-
-        menu.setMaMenuNgay(rs.getInt("MaMenu"));
-        menu.setMaQuay(rs.getInt("MaQuay"));
-        menu.setMaMonAn(rs.getInt("MaMon"));
-        menu.setTrangThai(rs.getString("TrangThai"));
-
-        Date ngaySql = rs.getDate("Ngay");
-        if (ngaySql != null) {
-            menu.setNgay(ngaySql.toLocalDate());
-        }
-
-        return menu;
-    }
-    private MenuNgayDTO mapRowToMenuNgayDTO(ResultSet rs) throws SQLException {
-        MenuNgayDTO menu = new MenuNgayDTO();
-
-        // Thuộc tính từ MenuNgay
         menu.setMaMenu(rs.getInt("MaMenu"));
-        Date ngaySql = rs.getDate("Ngay");
-        if (ngaySql != null) {
-            menu.setNgay(ngaySql.toLocalDate());
-        }
         menu.setMaQuay(rs.getInt("MaQuay"));
         menu.setMaMon(rs.getInt("MaMon"));
-        menu.setTrangThai(rs.getString("TrangThai"));
 
-        menu.setTenMon(rs.getString("TenMon"));
-        menu.setHinhAnh(rs.getString("HinhAnh"));
-        menu.setTenQuay(rs.getString("TenQuay"));
-        menu.setGiaMon(rs.getBigDecimal("Gia"));
-
+        Date ngaySql = rs.getDate("Ngay");
+        if (ngaySql != null) {
+            menu.setNgay(ngaySql.toLocalDate());
+        }
         return menu;
     }
-    private String getBaseSelectDTOQuery(boolean isCount) {
-        StringBuilder sql = new StringBuilder();
-        if (isCount) {
-            sql.append("SELECT COUNT(mn.MaMenu) ");
-        } else {
-            sql.append("SELECT mn.*, ma.TenMon, ma.HinhAnh, ma.Gia, q.TenQuay ");
-        }
 
-        sql.append("FROM MenuNgay mn ");
-        sql.append("JOIN MonAn ma ON mn.MaMon = ma.MaMon ");
-        sql.append("JOIN Quay q ON mn.MaQuay = q.MaQuay ");
-
-        return sql.toString();
-    }
     @Override
-    public List<MenuNgay> findAll() {
-        List<MenuNgay> menuList = new ArrayList<>();
-        String sql = "SELECT * FROM MenuNgay ORDER BY Ngay DESC, MaQuay ASC";
+    public boolean luuMenuNgay(LocalDate ngay, int maQuay, List<Integer> danhSachMaMon) {
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            conn.setAutoCommit(false);
+
+            List<Integer> currentList = getCurrentMaMonList(conn, ngay, maQuay);
+
+            List<Integer> toInsert = new ArrayList<>(danhSachMaMon);
+            toInsert.removeAll(currentList);
+
+            List<Integer> toDelete = new ArrayList<>(currentList);
+            toDelete.removeAll(danhSachMaMon);
+
+            themMenuMoi(conn, ngay, maQuay, toInsert);
+            xoaMonKhoiMenu(conn, ngay, maQuay, toDelete);
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            rollbackQuietly(conn);
+            e.printStackTrace();
+            return false;
+        } finally {
+            closeQuietly(conn);
+        }
+    }
+
+    private void themMenuMoi(Connection conn, LocalDate ngay, int maQuay, List<Integer> listMon) throws SQLException {
+        if (listMon == null || listMon.isEmpty()) return;
+
+        String sql = "INSERT INTO MenuNgay (Ngay, MaQuay, MaMon) VALUES (?, ?, ?)";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Integer maMon : listMon) {
+                ps.setDate(1, Date.valueOf(ngay));
+                ps.setInt(2, maQuay);
+                ps.setInt(3, maMon);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private void xoaMonKhoiMenu(Connection conn, LocalDate ngay, int maQuay, List<Integer> listMon) throws SQLException {
+        if (listMon == null || listMon.isEmpty()) return;
+
+        String sql = "DELETE FROM MenuNgay WHERE Ngay = ? AND MaQuay = ? AND MaMon = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            for (Integer maMon : listMon) {
+                ps.setDate(1, Date.valueOf(ngay));
+                ps.setInt(2, maQuay);
+                ps.setInt(3, maMon);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+
+    @Override
+    public boolean xoaMenuNgay(LocalDate ngay, int maQuay) {
+        String sql = "DELETE FROM MenuNgay WHERE Ngay = ? AND MaQuay = ?";
         try (Connection conn = getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                menuList.add(mapRowToMenuNgay(rs));
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(ngay));
+            ps.setInt(2, maQuay);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public List<MenuNgayDTO> layDanhSachMenuNgay(int maQuay, LocalDate tuNgay, LocalDate denNgay, int page, int size) {
+        List<MenuNgayDTO> danhSach = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT Ngay, COUNT(MaMon) as SoMon FROM MenuNgay WHERE MaQuay = ? "
+        );
+
+        if (tuNgay != null) sql.append(" AND Ngay >= ?");
+        if (denNgay != null) sql.append(" AND Ngay <= ?");
+
+        sql.append(" GROUP BY Ngay ORDER BY Ngay DESC LIMIT ? OFFSET ?");
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            int paramIndex = 1;
+            ps.setInt(paramIndex++, maQuay);
+
+            if (tuNgay != null) ps.setDate(paramIndex++, Date.valueOf(tuNgay));
+            if (denNgay != null) ps.setDate(paramIndex++, Date.valueOf(denNgay));
+
+            int offset = (page - 1) * size;
+            ps.setInt(paramIndex++, size);
+            ps.setInt(paramIndex++, offset);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MenuNgayDTO dto = new MenuNgayDTO();
+                    Date ngaySql = rs.getDate("Ngay");
+                    if (ngaySql != null) dto.setNgay(ngaySql.toLocalDate());
+                    dto.setSoMon(rs.getInt("SoMon"));
+                    danhSach.add(dto);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return menuList;
+        return danhSach;
+    }
+
+    private List<Integer> getCurrentMaMonList(Connection conn, LocalDate ngay, int maQuay) throws SQLException {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT MaMon FROM MenuNgay WHERE Ngay = ? AND MaQuay = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, Date.valueOf(ngay));
+            ps.setInt(2, maQuay);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getInt("MaMon"));
+                }
+            }
+        }
+        return list;
+    }
+
+    private void rollbackQuietly(Connection conn) {
+        if (conn != null) try { conn.rollback(); } catch (SQLException e) {}
+    }
+
+    private void closeQuietly(Connection conn) {
+        if (conn != null) try { conn.setAutoCommit(true); conn.close(); } catch (SQLException e) {}
     }
 
     @Override
     public Page<MenuNgay> findAll(PageRequest pageRequest) {
         List<MenuNgay> list = new ArrayList<>();
-
-        // Cần JOIN với MonAn và Quay để tìm kiếm theo tên món/tên quầy
         StringBuilder sql = new StringBuilder("SELECT mn.* FROM MenuNgay mn JOIN MonAn ma ON mn.MaMon = ma.MaMon JOIN Quay q ON mn.MaQuay = q.MaQuay WHERE 1=1");
 
-        // Lấy các tham số lọc từ PageRequest
-        String keyword = pageRequest.getKeyword();
-        String trangThai = pageRequest.getTrangThai(); // Dùng trường trangThai cho trạng thái MenuNgay
-        String filterQuay = pageRequest.getLocNgay(); // Dùng trường locNgay cho lọc MaQuay (hoặc bạn có thể thêm trường MaQuay vào PageRequest)
-        String filterNgay = pageRequest.getSortOrder(); // Dùng trường sortOrder cho lọc Ngày (Hoặc bạn có thể thêm trường Ngay vào PageRequest)
-
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-
-        // 1. Điều kiện tìm kiếm theo keyword (Tên món, Tên quầy)
-        if (hasKeyword) {
-            sql.append(" AND (ma.TenMon LIKE ? OR q.TenQuay LIKE ?)");
-        }
-
-        // 2. Lọc theo Quầy
-        if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-            sql.append(" AND mn.MaQuay = ?");
-        }
-
-        // 3. Lọc theo Ngày
-        if (filterNgay != null && !filterNgay.isEmpty()) {
-            sql.append(" AND DATE(mn.Ngay) = ?");
-        }
-
-        // 4. Lọc theo trạng thái
-        if (trangThai != null && !trangThai.isEmpty()) {
-            sql.append(" AND mn.TrangThai = ?");
-        }
-
-        // 5. Sắp xếp (Mặc định là theo Ngày và MaQuay)
-        String sortField = pageRequest.getSortField() != null ? pageRequest.getSortField() : "Ngay";
-        String sqlSortField;
-
-        if (sortField.equalsIgnoreCase("ngay")) {
-            sqlSortField = "mn.Ngay";
-        } else if (sortField.equalsIgnoreCase("mon")) {
-            sqlSortField = "ma.TenMon";
-        } else {
-            sqlSortField = "mn.MaMenu";
-        }
-
-        String sortOrder = pageRequest.getSortOrder().toUpperCase();
-        sql.append(" ORDER BY ").append(sqlSortField).append(" ").append(sortOrder);
-
-        // 6. Phân trang
-        sql.append(" LIMIT ? OFFSET ?");
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
-            int paramIndex = 1;
-            String kw = "%" + keyword + "%";
-
-            // Gán tham số TÌM KIẾM
-            if (hasKeyword) {
-                ps.setString(paramIndex++, kw); // TenMon (cho LIKE)
-                ps.setString(paramIndex++, kw); // TenQuay (cho LIKE)
-            }
-
-            // Gán tham số LỌC QUẦY
-            if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-                ps.setInt(paramIndex++, Integer.parseInt(filterQuay));
-            }
-
-            // Gán tham số LỌC NGÀY
-            if (filterNgay != null && !filterNgay.isEmpty()) {
-                ps.setString(paramIndex++, filterNgay);
-            }
-
-            // Gán tham số LỌC TRẠNG THÁI
-            if (trangThai != null && !trangThai.isEmpty()) {
-                ps.setString(paramIndex++, trangThai);
-            }
-
-            // Gán tham số PHÂN TRANG
-            ps.setInt(paramIndex++, pageRequest.getPageSize());
-            ps.setInt(paramIndex++, pageRequest.getOffset());
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(mapRowToMenuNgay(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Lấy tổng số item
-        int totalItems = countSearch(keyword, filterQuay, filterNgay, trangThai);
-        return new Page<>(list, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
+        return new Page<>(new ArrayList<>(), 1, 10, 0);
     }
 
     @Override
-    public MenuNgay findById(int id) {
-        String sql = "SELECT * FROM MenuNgay WHERE MaMenu = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapRowToMenuNgay(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    public List<MenuNgay> findAll() { return new ArrayList<>(); }
     @Override
-    public MenuNgay create(MenuNgay menuNgay) {
-        String sql = "INSERT INTO MenuNgay (Ngay, MaQuay, MaMon, TrangThai) VALUES (?, ?, ?, ?)";
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, menuNgay.getNgay().format(SQL_DATE_FORMATTER));
-            ps.setInt(2, menuNgay.getMaQuay());
-            ps.setInt(3, menuNgay.getMaMonAn());
-            ps.setString(4, menuNgay.getTrangThai());
-
-            int affected = ps.executeUpdate();
-            if (affected > 0) {
-                try (ResultSet keys = ps.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        menuNgay.setMaMenuNgay(keys.getInt(1));
-                    }
-                }
-                return menuNgay;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
+    public MenuNgay findById(int id) { return null; }
     @Override
-    public boolean update(MenuNgay menuNgay) {
-        // Cập nhật trạng thái
-        String sql = "UPDATE MenuNgay SET Ngay = ?, MaQuay = ?, MaMon = ?, TrangThai = ? WHERE MaMenu = ?";
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, menuNgay.getNgay().format(SQL_DATE_FORMATTER));
-            ps.setInt(2, menuNgay.getMaQuay());
-            ps.setInt(3, menuNgay.getMaMonAn());
-            ps.setString(4, menuNgay.getTrangThai());
-            ps.setInt(5, menuNgay.getMaMenuNgay());
-
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
+    public MenuNgay create(MenuNgay menuNgay) { return null; }
     @Override
-    public boolean delete(MenuNgay menuNgay) {
-        String sql = "DELETE FROM MenuNgay WHERE MaMenu = ?";
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, menuNgay.getMaMenuNgay());
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
+    public boolean update(MenuNgay menuNgay) { return false; }
     @Override
-    public int countSearch(String keyword) {
-        return countSearch(keyword, null, null, null);
-    }
-
-    public int countSearch(String keyword, String filterQuay, String filterNgay, String trangThai) {
-        int count = 0;
-
-        StringBuilder sql = new StringBuilder("SELECT COUNT(mn.MaMenu) FROM MenuNgay mn JOIN MonAn ma ON mn.MaMon = ma.MaMon JOIN Quay q ON mn.MaQuay = q.MaQuay WHERE 1=1");
-
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        if (hasKeyword) {
-            sql.append(" AND (ma.TenMon LIKE ? OR q.TenQuay LIKE ?)");
-        }
-
-        if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-            sql.append(" AND mn.MaQuay = ?");
-        }
-
-        if (filterNgay != null && !filterNgay.isEmpty()) {
-            sql.append(" AND DATE(mn.Ngay) = ?");
-        }
-
-        if (trangThai != null && !trangThai.isEmpty()) {
-            sql.append(" AND mn.TrangThai = ?");
-        }
-
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
-            int paramIndex = 1;
-            String kw = "%" + keyword + "%";
-
-            // Gán tham số TÌM KIẾM
-            if (hasKeyword) {
-                ps.setString(paramIndex++, kw); // TenMon
-                ps.setString(paramIndex++, kw); // TenQuay
-            }
-
-            // Gán tham số LỌC QUẦY
-            if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-                ps.setInt(paramIndex++, Integer.parseInt(filterQuay));
-            }
-
-            // Gán tham số LỌC NGÀY
-            if (filterNgay != null && !filterNgay.isEmpty()) {
-                ps.setString(paramIndex++, filterNgay);
-            }
-
-            // Gán tham số LỌC TRẠNG THÁI
-            if (trangThai != null && !trangThai.isEmpty()) {
-                ps.setString(paramIndex++, trangThai);
-            }
-
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    count = rs.getInt(1);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
-    }
-
-
+    public boolean delete(MenuNgay menuNgay) { return false; }
     @Override
-    public List<MenuNgayDTO> findAllMenuNgayDTO() {
-        List<MenuNgayDTO> menuList = new ArrayList<>();
-
-        String sql = getBaseSelectDTOQuery(false) + " ORDER BY mn.Ngay DESC, mn.MaQuay ASC";
-
-        try (Connection conn = getConnection();
-             Statement st = conn.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
-
-            while (rs.next()) {
-                menuList.add(mapRowToMenuNgayDTO(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return menuList;
-    }
-
+    public int countSearch(String keyword) { return 0; }
     @Override
-    public Page<MenuNgayDTO> findAllMenuNgayDTO(PageRequest pageRequest) {
-        List<MenuNgayDTO> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder(getBaseSelectDTOQuery(false));
-        sql.append(" WHERE 1=1"); // Bắt đầu các điều kiện WHERE
-
-        // Lấy các tham số lọc từ PageRequest
-        String keyword = pageRequest.getKeyword();
-        String trangThai = pageRequest.getTrangThai();
-        // Giả sử:
-        // - filterQuay dùng cho lọc MaQuay
-        String filterQuay = pageRequest.getLocNgay();
-        // - filterNgay dùng cho lọc Ngày
-        String filterNgay = pageRequest.getSortOrder();
-
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-
-        // 1. Điều kiện tìm kiếm theo keyword (TenMon, TenQuay)
-        if (hasKeyword) {
-            sql.append(" AND (ma.TenMon LIKE ? OR q.TenQuay LIKE ?)");
-        }
-
-        // 2. Lọc theo Quầy
-        if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-            sql.append(" AND mn.MaQuay = ?");
-        }
-
-        // 3. Lọc theo Ngày
-        if (filterNgay != null && !filterNgay.isEmpty()) {
-            sql.append(" AND DATE(mn.Ngay) = ?");
-        }
-
-        // 4. Lọc theo trạng thái
-        if (trangThai != null && !trangThai.isEmpty()) {
-            sql.append(" AND mn.TrangThai = ?");
-        }
-
-        // 5. Sắp xếp (Mặc định là theo Ngày và MaQuay)
-        String sortField = pageRequest.getSortField() != null ? pageRequest.getSortField() : "Ngay";
-        String sqlSortField;
-
-        if (sortField.equalsIgnoreCase("ngay")) {
-            sqlSortField = "mn.Ngay";
-        } else if (sortField.equalsIgnoreCase("mon")) {
-            sqlSortField = "ma.TenMon";
-        } else {
-            sqlSortField = "mn.MaMenu"; // Hoặc một trường mặc định khác
-        }
-
-        // Giả sử sortOrder trong PageRequest có thể là "ASC" hoặc "DESC"
-        String sortOrder = pageRequest.getSortOrder() != null && (pageRequest.getSortOrder().equalsIgnoreCase("ASC") || pageRequest.getSortOrder().equalsIgnoreCase("DESC"))
-                ? pageRequest.getSortOrder().toUpperCase() : "DESC";
-
-        sql.append(" ORDER BY ").append(sqlSortField).append(" ").append(sortOrder);
-        // Thêm sắp xếp phụ để đảm bảo thứ tự ổn định
-        if (!sqlSortField.equals("mn.MaMenu")) {
-            sql.append(", mn.MaMenu ASC");
-        }
-
-
-        // 6. Phân trang
-        sql.append(" LIMIT ? OFFSET ?");
-
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
-            int paramIndex = 1;
-            String kw = "%" + keyword + "%";
-
-            // Gán tham số TÌM KIẾM
-            if (hasKeyword) {
-                ps.setString(paramIndex++, kw); // TenMon (cho LIKE)
-                ps.setString(paramIndex++, kw); // TenQuay (cho LIKE)
-            }
-
-            // Gán tham số LỌC QUẦY
-            if (filterQuay != null && !filterQuay.isEmpty() && filterQuay.matches("\\d+")) {
-                ps.setInt(paramIndex++, Integer.parseInt(filterQuay));
-            }
-
-            // Gán tham số LỌC NGÀY
-            if (filterNgay != null && !filterNgay.isEmpty()) {
-                // Đảm bảo định dạng ngày phù hợp với cơ sở dữ liệu (ví dụ: "yyyy-MM-dd")
-                ps.setString(paramIndex++, filterNgay);
-            }
-
-            // Gán tham số LỌC TRẠNG THÁI
-            if (trangThai != null && !trangThai.isEmpty()) {
-                ps.setString(paramIndex++, trangThai);
-            }
-
-            // Gán tham số PHÂN TRANG
-            ps.setInt(paramIndex++, pageRequest.getPageSize());
-            ps.setInt(paramIndex++, pageRequest.getOffset());
-
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(mapRowToMenuNgayDTO(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        int totalItems = countSearch(keyword, filterQuay, filterNgay, trangThai);
-
-        return new Page<>(list, pageRequest.getPage(), pageRequest.getPageSize(), totalItems);
-    }
-
+    public int demTongSoMenuNgay(int maQuay, LocalDate tuNgay, LocalDate denNgay) { return 0; }
+    @Override
+    public boolean kiemTraMenuTonTai(LocalDate ngay, int maQuay) { return false; }
 }

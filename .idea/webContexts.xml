@@ -7,7 +7,9 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/admin.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/menu.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/quan-ly-don-hang-admin.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/quan-ly-don-hang-seller.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/quan-ly-menu-ngay-admin.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/quan-ly-menu-ngay-seller.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/quan-ly-mon-an-admin.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
       </map>
     </option>

@@ -3,29 +3,27 @@ package Model;
 import java.time.LocalDate;
 
 public class MenuNgay {
-    private int maMenuNgay;
+    private int maMenu;
     private LocalDate ngay;
     private int maQuay;
-    private int maMonAn;
-    private String trangThai;
+    private int maMon;
 
-    public MenuNgay(int maMenuNgay, LocalDate ngay, int maQuay, int maMonAn, String trangThai) {
-        this.maMenuNgay = maMenuNgay;
+    public MenuNgay(int maMenu, LocalDate ngay, int maQuay, int maMon) {
+        this.maMenu = maMenu;
         this.ngay = ngay;
         this.maQuay = maQuay;
-        this.maMonAn = maMonAn;
-        this.trangThai = trangThai;
+        this.maMon = maMon;
     }
 
     public MenuNgay() {
     }
 
-    public int getMaMenuNgay() {
-        return maMenuNgay;
+    public int getMaMenu() {
+        return maMenu;
     }
 
-    public void setMaMenuNgay(int maMenuNgay) {
-        this.maMenuNgay = maMenuNgay;
+    public void setMaMenu(int maMenu) {
+        this.maMenu = maMenu;
     }
 
     public LocalDate getNgay() {
@@ -44,19 +42,12 @@ public class MenuNgay {
         this.maQuay = maQuay;
     }
 
-    public int getMaMonAn() {
-        return maMonAn;
+    public int getMaMon() {
+        return maMon;
     }
 
-    public void setMaMonAn(int maMonAn) {
-        this.maMonAn = maMonAn;
+    public void setMaMon(int maMon) {
+        this.maMon = maMon;
     }
 
-    public String getTrangThai() {
-        return trangThai;
-    }
-
-    public void setTrangThai(String trangThai) {
-        this.trangThai = trangThai;
-    }
 }

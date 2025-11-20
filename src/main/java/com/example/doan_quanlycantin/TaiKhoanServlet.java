@@ -43,11 +43,12 @@ public class TaiKhoanServlet extends HttpServlet {
     }
     private void addTaiKhoan(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
+            String tenNguoiDung = req.getParameter("tenNguoiDung");
             String tenDangNhap = req.getParameter("tenDangNhap");
             String matKhau = req.getParameter("matKhau");
             String vaiTro = req.getParameter("vaiTro");
-
             TaiKhoan tk = new TaiKhoan();
+            tk.setTenNguoiDung(tenNguoiDung);
             tk.setTenDangNhap(tenDangNhap);
             tk.setMatKhau(matKhau);
             tk.setVaiTro(vaiTro);
@@ -66,11 +67,13 @@ public class TaiKhoanServlet extends HttpServlet {
     private void updateTaiKhoan(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
             int maTK = Integer.parseInt(req.getParameter("maTK"));
+            String tenNguoiDung = req.getParameter("tenNguoiDung");
             String tenDangNhap = req.getParameter("tenDangNhap");
             String matKhau = req.getParameter("matKhau");
             String vaiTro = req.getParameter("vaiTro");
 
             TaiKhoan tk = new TaiKhoan();
+            tk.setTenNguoiDung(tenNguoiDung);
             tk.setMaTaiKhoan(maTK);
             tk.setTenDangNhap(tenDangNhap);
             tk.setMatKhau(matKhau);

@@ -14,4 +14,5 @@ public interface DonHangService {
     boolean update(DonHang donHang);
     boolean delete(DonHang donHang);
     boolean autoUpdateTrangThai(int maDonHang);
+    Page<DonHang>  findDonHangByMaQuay(int maQuay, PageRequest pageRequest);
 }

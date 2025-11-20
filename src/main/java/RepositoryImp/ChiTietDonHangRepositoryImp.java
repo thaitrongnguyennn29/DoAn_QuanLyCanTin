@@ -1,5 +1,6 @@
 package RepositoryImp;
 
+import DTO.ChiTietDonHangDTO;
 import Model.ChiTietDonHang;
 import Model.Page;
 import Model.PageRequest;
@@ -157,5 +158,46 @@ public class ChiTietDonHangRepositoryImp extends DBConnect implements ChiTietDon
             e.printStackTrace();
         }
         return ctdhs;
+    }
+
+    @Override
+    public List<ChiTietDonHangDTO> findDTOByMaDon(int maDon) {
+        List<ChiTietDonHangDTO> list = new ArrayList<>();
+
+        // SQL CHUẨN: Lấy MaQuay từ bảng MonAn
+        String sql = "SELECT ct.*, m.TenMon, m.HinhAnh, m.MaQuay " +
+                "FROM ChiTietDonHang ct " +
+                "JOIN MonAn m ON ct.MaMon = m.MaMon " + // Chú ý tên cột MaMon/MaMonAn
+                "WHERE ct.MaDon = ?"; // Chú ý tên cột MaDon/MaDonHang
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, maDon);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                ChiTietDonHangDTO dto = new ChiTietDonHangDTO();
+
+                // Map dữ liệu
+                dto.setMaCT(rs.getInt("MaCT")); // Hoặc cột ID của bảng chi tiết
+                dto.setMaDonHang(rs.getInt("MaDon"));
+                dto.setMaMonAn(rs.getInt("MaMon"));
+                dto.setSoLuong(rs.getInt("SoLuong"));
+                dto.setDonGia(rs.getBigDecimal("DonGia"));
+                dto.setTrangThai(rs.getString("TrangThai"));
+
+                // Map dữ liệu từ bảng MonAn
+                dto.setTenMonAn(rs.getString("TenMon"));
+                dto.setHinhAnhMonAn(rs.getString("HinhAnh"));
+
+                // --- CỰC KỲ QUAN TRỌNG ---
+                dto.setMaQuay(rs.getInt("MaQuay"));
+                // Nếu dòng này không chạy, Servlet sẽ lọc sai -> List rỗng
+
+                list.add(dto);
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return list;
     }
 }

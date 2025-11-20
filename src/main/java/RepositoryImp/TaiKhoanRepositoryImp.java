@@ -131,13 +131,13 @@ public class TaiKhoanRepositoryImp extends DBConnect implements TaiKhoanReposito
 
     @Override
     public TaiKhoan create(TaiKhoan taiKhoan) {
-        String sql = "INSERT INTO TaiKhoan (TenDangNhap, MatKhau, VaiTro) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO TaiKhoan (TenNguoiDung ,TenDangNhap, MatKhau, VaiTro) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, taiKhoan.getTenDangNhap());
-            ps.setString(2, taiKhoan.getMatKhau());
-            ps.setString(3, taiKhoan.getVaiTro());
+            ps.setString(1, taiKhoan.getTenNguoiDung());
+            ps.setString(2, taiKhoan.getTenDangNhap());
+            ps.setString(3, taiKhoan.getMatKhau());
+            ps.setString(4, taiKhoan.getVaiTro());
 
             int affected = ps.executeUpdate();
             if (affected > 0) {
@@ -157,15 +157,15 @@ public class TaiKhoanRepositoryImp extends DBConnect implements TaiKhoanReposito
     @Override
     public boolean update(TaiKhoan taiKhoan) {
         // Lưu ý: Mật khẩu (MatKhau) nên được hash trước khi update
-        String sql = "UPDATE TaiKhoan SET TenDangNhap = ?, MatKhau = ?, VaiTro = ? WHERE MaTK = ?";
+        String sql = "UPDATE TaiKhoan SET TenNguoiDung = ?, TenDangNhap = ?, MatKhau = ?, VaiTro = ? WHERE MaTK = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, taiKhoan.getTenDangNhap());
-            ps.setString(2, taiKhoan.getMatKhau());
-            ps.setString(3, taiKhoan.getVaiTro());
-            ps.setInt(4, taiKhoan.getMaTaiKhoan());
+            ps.setString(1, taiKhoan.getTenNguoiDung());
+            ps.setString(2, taiKhoan.getTenDangNhap());
+            ps.setString(3, taiKhoan.getMatKhau());
+            ps.setString(4, taiKhoan.getVaiTro());
+            ps.setInt(5, taiKhoan.getMaTaiKhoan());
 
             return ps.executeUpdate() > 0;
 

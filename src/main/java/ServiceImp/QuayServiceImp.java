@@ -32,6 +32,11 @@ public class QuayServiceImp implements QuayService {
     }
 
     @Override
+    public Quay findByMaTK(int maTK) {
+        return quayRepository.findByMaTK(maTK);
+    }
+
+    @Override
     public boolean create(Quay quay) {
         return quayRepository.create(quay) != null;
     }

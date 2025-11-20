@@ -10,6 +10,7 @@ public interface QuayService {
     List<Quay> finAll();
     Page<Quay> finAll(PageRequest pageRequest);
     Quay findById(int id);
+    Quay findByMaTK(int maTK);
     boolean create(Quay quay);
     boolean update(Quay quay);
     boolean delete(Quay quay);

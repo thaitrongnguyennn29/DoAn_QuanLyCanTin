@@ -1,5 +1,6 @@
 package ServiceImp;
 
+import DTO.ChiTietDonHangDTO;
 import Model.ChiTietDonHang;
 import Repository.ChiTietDonHangRepository;
 import RepositoryImp.ChiTietDonHangRepositoryImp;
@@ -30,5 +31,10 @@ public class ChiTietDonHangServiceImp implements ChiTietDonHangService {
     @Override
     public boolean update(ChiTietDonHang chiTietDonHang) {
         return chiTietDonHangRepository.update(chiTietDonHang);
+    }
+
+    @Override
+    public List<ChiTietDonHangDTO> findAllByMaDon(int maDon) {
+        return chiTietDonHangRepository.findDTOByMaDon(maDon);
     }
 }
