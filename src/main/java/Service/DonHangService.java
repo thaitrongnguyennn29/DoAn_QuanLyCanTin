@@ -1,8 +1,7 @@
 package Service;
 
-import Model.DonHang;
-import Model.Page;
-import Model.PageRequest;
+import DTO.ChiTietDonHangDTO;
+import Model.*;
 
 import java.util.List;
 
@@ -14,4 +13,7 @@ public interface DonHangService {
     boolean update(DonHang donHang);
     boolean delete(DonHang donHang);
     boolean autoUpdateTrangThai(int maDonHang);
+    boolean placeOrder(TaiKhoan user, List<GioHang> cart);
+    List<DonHang> getOrdersByUserId(int userId);
+    List<ChiTietDonHangDTO> getOrderDetailsDTO(int orderId);
 }

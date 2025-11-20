@@ -1,5 +1,6 @@
 package ServiceImp;
 
+import DTO.ChiTietDonHangDTO;
 import Model.*;
 import Repository.ChiTietDonHangRepository;
 import Repository.DonHangRepository;
@@ -7,12 +8,18 @@ import RepositoryImp.ChiTietDonHangRepositoryImp;
 import RepositoryImp.DonHangRepositoryImp;
 import Service.DonHangService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class DonHangServiceImp implements DonHangService {
+
+
     private final DonHangRepository donHangRepository;
+    private final ChiTietDonHangRepository chiTietDonHangRepository;
+
     public DonHangServiceImp() {
         this.donHangRepository = new DonHangRepositoryImp();
+        this.chiTietDonHangRepository = new ChiTietDonHangRepositoryImp();
     }
     @Override
     public List<DonHang> finAll() {
@@ -110,5 +117,38 @@ public class DonHangServiceImp implements DonHangService {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean placeOrder(TaiKhoan user, List<GioHang> cart) {
+        if (user == null || cart == null || cart.isEmpty()) {
+            return false;
+        }
+
+        // 1. Nghiệp vụ: Tính tổng tiền server-side (Bảo mật)
+        double totalAmount = 0;
+        for (GioHang item : cart) {
+            totalAmount += item.getTotalPrice();
+        }
+
+        // 2. Tạo object DonHang
+        DonHang donHang = new DonHang();
+        donHang.setMaTaiKhoan(user.getMaTaiKhoan());
+        donHang.setTongTien(BigDecimal.valueOf(totalAmount));
+        donHang.setTrangThai("Đang xử lí");
+        // Nếu bạn có trường ghi chú trong DonHang thì set ở đây: donHang.setGhiChu(note);
+
+        // 3. Gọi Repository để lưu xuống DB
+        return donHangRepository.createOrderbyCart(donHang, cart);
+    }
+
+    @Override
+    public List<DonHang> getOrdersByUserId(int userId) {
+        return donHangRepository.findByUserId(userId);
+    }
+
+    @Override
+    public List<ChiTietDonHangDTO> getOrderDetailsDTO(int orderId) {
+        return chiTietDonHangRepository.findDTOByOrderId(orderId);
     }
 }

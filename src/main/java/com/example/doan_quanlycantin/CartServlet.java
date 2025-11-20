@@ -30,11 +30,40 @@ public class CartServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         List<GioHang> cart = getCart(request);
 
-        // Đếm số món (không phải tổng số lượng)
-        request.setAttribute("cartItemCount", cart.size());
+        if (cart != null && !cart.isEmpty()) {
 
+            // 1. Tạo danh sách chứa các món cần xóa
+            List<GioHang> itemsToRemove = new ArrayList<>();
+
+            // 2. Duyệt qua từng món
+            for (GioHang item : cart) {
+                int maMon = item.getMonAn().getMaMonAn();
+                MonAn monAnDb = monAnService.findById(maMon);
+
+                if (monAnDb == null) {
+                    // Nếu Admin đã xóa món này -> Thêm vào danh sách chờ xóa
+                    itemsToRemove.add(item);
+                } else {
+                    // Nếu món còn -> Cập nhật lại thông tin (đề phòng Admin đổi tên/giá/ảnh)
+                    item.setMonAn(monAnDb);
+                }
+            }
+
+            // 3. Kiểm tra danh sách chờ xóa có phần tử nào không
+            if (!itemsToRemove.isEmpty()) {
+                // Thực hiện xóa thật sự
+                cart.removeAll(itemsToRemove);
+
+                // Cập nhật lại Session và thông báo
+                request.getSession().setAttribute("cart", cart);
+                request.setAttribute("errorMessage", "Một số món ăn trong giỏ hàng đã bị xóa bởi Admin.");
+            }
+        }
+
+        request.setAttribute("cartItemCount", cart.size());
         calculateOrderSummary(request, cart);
         request.getRequestDispatcher("cart.jsp").forward(request, response);
     }
@@ -118,5 +147,6 @@ public class CartServlet extends HttpServlet {
         request.setAttribute("subtotal", subtotal);
         request.setAttribute("discount", discount);
         request.setAttribute("total", subtotal - discount);
+
     }
 }

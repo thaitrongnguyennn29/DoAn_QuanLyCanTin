@@ -156,16 +156,18 @@ public class TaiKhoanRepositoryImp extends DBConnect implements TaiKhoanReposito
 
     @Override
     public boolean update(TaiKhoan taiKhoan) {
-        // Lưu ý: Mật khẩu (MatKhau) nên được hash trước khi update
-        String sql = "UPDATE TaiKhoan SET TenDangNhap = ?, MatKhau = ?, VaiTro = ? WHERE MaTK = ?";
+        // Cập nhật Tên hiển thị, Mật khẩu, Vai trò.
+        // KHÔNG cập nhật Tên Đăng Nhập (WHERE TenDangNhap = ...) hoặc giữ nguyên nó.
+
+        String sql = "UPDATE TaiKhoan SET TenNguoiDung = ?, MatKhau = ?, VaiTro = ? WHERE MaTK = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, taiKhoan.getTenDangNhap());
-            ps.setString(2, taiKhoan.getMatKhau());
-            ps.setString(3, taiKhoan.getVaiTro());
-            ps.setInt(4, taiKhoan.getMaTaiKhoan());
+            ps.setString(1, taiKhoan.getTenNguoiDung()); // Cập nhật tên
+            ps.setString(2, taiKhoan.getMatKhau());      // Cập nhật pass
+            ps.setString(3, taiKhoan.getVaiTro());       // Cập nhật quyền
+            ps.setInt(4, taiKhoan.getMaTaiKhoan());      // Điều kiện ID
 
             return ps.executeUpdate() > 0;
 

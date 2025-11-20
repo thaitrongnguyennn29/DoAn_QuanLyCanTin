@@ -52,8 +52,9 @@
                         <div class="cart-item">
                             <div class="row align-items-center">
                                 <div class="col-md-2 col-3">
-                                    <img src="<%= request.getContextPath() + "/" + item.getMonAn().getHinhAnh() %>"
-                                         alt="<%= item.getMonAn().getTenMonAn() %>" class="cart-item-img">
+                                    <img src="<%= request.getContextPath() %>/assets/images/MonAn/<%= item.getMonAn().getHinhAnh() %>"
+                                         alt="<%= item.getMonAn().getTenMonAn() %>"
+                                         class="cart-item-img">
                                 </div>
                                 <div class="col-md-4 col-9">
                                     <h5 class="cart-item-name mb-0"><%= item.getMonAn().getTenMonAn() %></h5>
@@ -106,7 +107,7 @@
                             <span class="summary-value"><%= String.format("%,.0f", total) %>đ</span>
                         </div>
                         <button class="btn btn-checkout w-100 mt-4"
-                                onclick="window.location.href='<%= request.getContextPath() %>/checkout'">
+                                onclick="window.location.href='<%= request.getContextPath() %>/kiemtradonhang'">
                             Đặt Hàng Ngay
                         </button>
                     </div>

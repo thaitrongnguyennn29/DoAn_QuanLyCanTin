@@ -116,19 +116,20 @@
             </p>
 
             <div class="row g-4 mb-5 justify-content-center">
+
                 <div class="col-md-4">
                     <div class="card shadow-sm p-4 h-100 text-center border-0">
-                        <img src="${pageContext.request.contextPath}/assets/images/canteen.jpg" alt="Tấn" class="rounded-circle mb-4 mx-auto" style="width:140px;height:140px;object-fit:cover;">
-                        <h5 class="fw-semibold"><i class="bi bi-person-circle me-2"></i>Hoàng Tấn</h5>
-                        <p class="text-muted mb-0">Chủ Kênh</p>
+                        <img src="${pageContext.request.contextPath}/assets/images/Nguyen.jpg" alt="Nguyễn" class="rounded-circle mb-4 mx-auto" style="width:140px;height:140px;object-fit:cover;">
+                        <h5 class="fw-semibold"><i class="bi bi-person-circle me-2"></i>Thái Nguyễn</h5>
+                        <p class="text-muted mb-0">Developer</p>
                     </div>
                 </div>
 
                 <div class="col-md-4">
                     <div class="card shadow-sm p-4 h-100 text-center border-0">
-                        <img src="${pageContext.request.contextPath}/assets/images/Nguyen.png" alt="Nguyễn" class="rounded-circle mb-4 mx-auto" style="width:140px;height:140px;object-fit:cover;">
-                        <h5 class="fw-semibold"><i class="bi bi-person-circle me-2"></i>Thái Nguyễn</h5>
-                        <p class="text-muted mb-0">Developer</p>
+                        <img src="${pageContext.request.contextPath}/assets/images/Tan.jpg" alt="Tấn" class="rounded-circle mb-4 mx-auto" style="width:140px;height:140px;object-fit:cover;">
+                        <h5 class="fw-semibold"><i class="bi bi-person-circle me-2"></i>Hoàng Tấn</h5>
+                        <p class="text-muted mb-0">Chủ Kênh</p>
                     </div>
                 </div>
 
