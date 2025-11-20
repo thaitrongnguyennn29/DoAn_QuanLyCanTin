@@ -1452,3 +1452,502 @@ body {
     box-shadow: 0 4px 15px rgba(0, 92, 151, 0.3);
     color: white;
 }
+
+
+/* =================================================== checkout-page =================================================== */
+/* ================= HERO SECTION ================= */
+.checkout-page .hero-section {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+.checkout-page .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 1;
+}
+.checkout-page .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+.checkout-page .hero-subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* ================== SECTION TITLES ================== */
+.checkout-page .section-title {
+    font-size: 2.25rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.checkout-page .section-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.checkout-page .cart-items-wrapper {
+    background: white;
+    border-radius: 16px;
+    padding: 2.5rem; /* Tăng padding một chút cho thoáng */
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0; /* Viền siêu mỏng cho sắc nét */
+}
+
+.checkout-page .summary-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #2d3748; /* Màu chữ đậm đồng bộ */
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #edf2f7; /* Màu viền nhạt hơn */
+    display: flex;
+    align-items: center;
+}
+
+.checkout-page .summary-title i {
+    color: #005C97; /* Màu icon theo tông chủ đạo */
+}
+
+/* 3. Form Input (Ô nhập liệu readonly) */
+.checkout-page .form-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #718096; /* Màu chữ xám nhẹ */
+    margin-bottom: 0.5rem;
+}
+
+.checkout-page .form-control {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    background-color: #f7fafc !important; /* Màu nền xám rất nhạt */
+    transition: all 0.3s ease;
+}
+
+.checkout-page .form-control {
+    border: 2px solid #005C97;
+    border-radius: 12px;
+    padding: 0.75rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    background-color: #f7fafc !important;
+    pointer-events: none; /* Chặn hoàn toàn việc bấm chuột vào */
+    user-select: none;    /* (Tùy chọn) Không cho bôi đen text */
+}
+
+/* 4. Danh sách món ăn (List Items) */
+.checkout-page .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px dashed #e2e8f0; /* Đường kẻ nét đứt tinh tế */
+}
+
+.checkout-page .summary-item:last-child {
+    border-bottom: none;
+}
+
+.checkout-page .summary-item .fw-bold {
+    font-size: 1.05rem;
+    color: #2d3748;
+}
+
+.checkout-page .summary-item .text-muted {
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.checkout-page .summary-item .summary-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #4a5568; /* Màu giá tiền từng món (không đỏ để đỡ rối) */
+}
+
+/* 5. Tổng tiền (Highlight) */
+.checkout-page .summary-total {
+    margin-top: 1rem;
+    padding-top: 0;      /* Bỏ padding top vì đã có margin của thẻ trên */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.checkout-page .summary-total span:first-child {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+}
+
+.checkout-page .summary-total .summary-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #e53e3e;
+}
+
+/* 6. Nút Thanh Toán (Đồng bộ hoàn toàn với giỏ hàng) */
+.checkout-page .btn-checkout {
+    margin-top: 1.5rem;
+    background: linear-gradient(to right, #005C97, #363795); /* Giả định màu gradient của bạn */
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 92, 151, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.checkout-page .btn-checkout:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 92, 151, 0.4);
+    color: white;
+}
+
+/* 7. Nút quay lại */
+.checkout-page a.text-muted {
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.checkout-page a.text-muted:hover {
+    color: #005C97 !important; /* Hover chuyển màu xanh */
+}
+
+/* ================== MY ORDER PAGE (QUẢN LÝ ĐƠN HÀNG) ================== */
+
+/* ================= HERO SECTION ================= */
+.my-order-page .hero-section {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+.my-order-page .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.my-order-page .hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* 1. Cấu trúc chung */
+.my-order-page {
+    min-height: 80vh;
+    background-color: #f8f9fa; /* Nền xám rất nhạt cho toàn trang */
+}
+
+.my-order-page .page-title {
+    color: #2d3748;
+    font-weight: 800;
+    margin-bottom: 2rem;
+}
+
+/* 2. Tabs Custom (Đồng bộ màu xanh chủ đạo) */
+.my-order-page .nav-tabs {
+    border-bottom: 2px solid #edf2f7;
+    margin-bottom: 2rem;
+}
+
+.my-order-page .nav-tabs .nav-link {
+    color: #718096; /* Màu xám khi chưa active */
+    font-weight: 600;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 1rem 2rem;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.my-order-page .nav-tabs .nav-link::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* 2. Định dạng lại Tab Link */
+.my-order-page .nav-tabs .nav-link {
+    color: #718096 !important;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border: none !important; /* Bỏ hết viền cũ */
+    border-bottom: 3px solid transparent !important; /* Viền dưới trong suốt */
+    padding: 0.8rem 2rem;
+    background: transparent !important;
+    position: relative; /* Reset position */
+}
+
+/* 3. Khi Hover: Chỉ đổi màu chữ, KHÔNG hiện gạch dưới */
+.my-order-page .nav-tabs .nav-link:hover {
+    color: #005C97 !important;
+    text-decoration: none !important;
+    border-bottom-color: transparent !important; /* Vẫn để trong suốt */
+}
+
+/* 4. Khi Active (Đang chọn): Mới hiện gạch dưới màu xanh */
+.my-order-page .nav-tabs .nav-link.active {
+    color: #005C97 !important;
+    background: transparent !important;
+    border-bottom: 3px solid #005C97 !important; /* Chỉ hiện lúc này */
+}
+
+/* 3. Order Card (Thẻ đơn hàng đang mua) */
+.my-order-page .order-card {
+    background: white;
+    border: 1px solid #edf2f7; /* Viền mỏng */
+    border-radius: 16px; /* Bo góc lớn (rounded-4) */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+.my-order-page .order-card:hover {
+    transform: translateY(-5px); /* Bay lên nhẹ */
+    box-shadow: 0 10px 25px rgba(0, 92, 151, 0.15); /* Đổ bóng màu xanh nhạt */
+    border-color: transparent;
+}
+
+.my-order-page .card-title {
+    color: #005C97;
+}
+
+/* 4. Bảng lịch sử (Table) */
+.my-order-page .table-container {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.my-order-page .table th {
+    font-weight: 600;
+    color: #4a5568;
+    border-bottom: 2px solid #edf2f7;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.my-order-page .table td {
+    vertical-align: middle;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    color: #2d3748;
+}
+
+/* 5. Các thành phần nhỏ (Badge, Button) */
+.my-order-page .btn-outline-primary {
+    color: #005C97;
+    border-color: #005C97;
+}
+
+.my-order-page .btn-outline-primary:hover {
+    background-color: #005C97;
+    color: white;
+}
+
+/* 6. Trạng thái trống (Empty state) */
+.my-order-page .empty-state p {
+    color: #718096;
+    font-size: 1.1rem;
+}
+
+/* ================== PROFILE PAGE (VERTICAL STACK LAYOUT) ================== */
+
+/* 1. Background & Layout */
+.profile-page .content-wrapper {
+    background-color: #f8f9fa;
+    min-height: 80vh;
+    padding: 3rem 0;
+}
+
+/* 2. Hero Section */
+.profile-page .hero-section {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 3.5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+.profile-page .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; width: 50%; height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    transform: skewX(-15deg);
+    pointer-events: none;
+}
+.profile-page .hero-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+/* 3. Cards Style */
+.profile-page .profile-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.03);
+    background: white;
+}
+
+/* 4. Heading trong Card (Tiêu đề từng khối) */
+.profile-page .card-heading {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+/* 5. User Header Info (Cập nhật Layout Dọc - Ngang) */
+.profile-page .user-header {
+    /* Các class Bootstrap đã xử lý layout chính, CSS chỉ lo style phụ */
+    width: 100%;
+}
+
+.profile-page .user-avatar {
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+    border: 3px solid white;
+    box-shadow: 0 4px 10px rgba(0, 92, 151, 0.2);
+}
+
+.profile-page .user-name {
+    font-weight: 700;
+    color: #2d3748;
+    font-size: 1.25rem;
+    /* Đã bỏ margin-bottom trong HTML bằng class mb-0 */
+}
+
+.profile-page .user-meta {
+    color: #718096;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    /* Đã bỏ margin-bottom trong HTML bằng class mb-0 */
+}
+
+.profile-page .role-badge {
+    background-color: #e3f2fd;
+    color: #005C97;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+    border: 1px solid #bbdefb;
+    white-space: nowrap; /* Giữ text không bị xuống dòng */
+}
+
+/* 6. Form Elements */
+.profile-page .form-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #4a5568;
+    margin-bottom: 0.4rem;
+}
+
+.profile-page .form-control {
+    padding: 0.7rem 1rem;
+    border-radius: 0 10px 10px 0; /* Bo góc bên phải */
+    border: 1px solid #e2e8f0;
+    border-left: none; /* Bỏ viền trái để nối với icon */
+    font-size: 1rem;
+    color: #2d3748;
+}
+
+.profile-page .form-control:focus {
+    border-color: #005C97;
+    box-shadow: none; /* Bỏ shadow mặc định */
+    border-left: 1px solid #005C97; /* Hiện lại viền trái khi focus */
+}
+
+/* Style cho icon đầu dòng input */
+.profile-page .input-group-text {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+    color: #64748b;
+    border-radius: 10px 0 0 10px; /* Bo góc bên trái */
+    font-size: 1.1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Input Readonly */
+.profile-page .readonly-input {
+    background-color: #f1f5f9 !important;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+/* 7. Buttons */
+.profile-page .btn-primary {
+    background: var(--primary-gradient);
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 92, 151, 0.2);
+    transition: transform 0.2s;
+}
+
+.profile-page .btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    font-weight: 600;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+    transition: transform 0.2s;
+}
+
+.profile-page .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}

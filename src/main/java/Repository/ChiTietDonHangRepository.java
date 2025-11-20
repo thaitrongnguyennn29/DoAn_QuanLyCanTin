@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChiTietDonHangRepository extends Repository<ChiTietDonHang>{
     List<ChiTietDonHang> findAllByMaDon(int maDonHang);
-    List<ChiTietDonHangDTO> findDTOByMaDon(int maDonHang);
+    List<ChiTietDonHangDTO> findDTOByOrderId(int orderId);
 }

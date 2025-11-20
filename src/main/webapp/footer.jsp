@@ -65,9 +65,36 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    // 1. Context Path
     window.contextPath = "${pageContext.request.contextPath}";
+
+    // 2. Xử lý thông báo thành công (SweetAlert2)
+    <%
+        String msgSuccess = (String) session.getAttribute("successMessage");
+        if (msgSuccess != null) {
+    %>
+    window.sessionSuccessMessage = "<%= msgSuccess %>";
+    <%
+            session.removeAttribute("successMessage");
+        }
+    %>
+
+    // 3. Xử lý tự động mở Modal (Dùng cho F5 trang chi tiết)
+    <%
+        // Kiểm tra nếu Servlet có gửi yêu cầu mở Modal
+        if (request.getAttribute("autoOpenModal") != null) {
+    %>
+    window.autoOpenModal = true;
+    <%
+        } else {
+    %>
+    window.autoOpenModal = false;
+    <%
+        }
+    %>
 </script>
 
 <script src="${pageContext.request.contextPath}/assets/js/script.js"></script>

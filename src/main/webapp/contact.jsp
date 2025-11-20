@@ -43,25 +43,25 @@
                 <!-- MEMBER 1 -->
                 <div class="col-lg-4 col-md-6">
                     <div class="card team-card text-center shadow-sm border-0">
-                        <img src="${pageContext.request.contextPath}/assets/images/Nguyen.png"
+                        <img src="${pageContext.request.contextPath}/assets/images/Nguyen.jpg"
                              class="team-avatar card-img-top">
 
                         <div class="card-body">
-                            <h5 class="fw-bold">Nguyễn Văn A</h5>
-                            <p class="mb-1">Team Leader / Back-end</p>
-                            <p class="text-muted">MSSV: 20012345</p>
+                            <h5 class="fw-bold">Thái Trọng Nguyễn</h5>
+                            <p class="mb-1">Font-end Developer</p>
+                            <p class="text-muted">MSSV: 24810118</p>
 
                             <p class="mb-1">
-                                <i class="bi bi-envelope-fill text-primary"></i> an.nguyen@student.edu.vn
+                                <i class="bi bi-envelope-fill text-primary"></i> thaitrongnguyennn29@gmail.com
                             </p>
                             <p>
-                                <i class="bi bi-telephone-fill text-primary"></i> 0900 111 222
+                                <i class="bi bi-telephone-fill text-primary"></i> 0833 644 646
                             </p>
 
                             <div class="d-flex justify-content-center gap-3 fs-5 social-links">
-                                <a href="#" class="text-primary"><i class="bi bi-facebook"></i></a>
-                                <a href="#" class="text-dark"><i class="bi bi-github"></i></a>
-                                <a href="#" class="text-danger"><i class="bi bi-google"></i></a>
+                                <a href="https://www.facebook.com/thainguyenn1710" class="text-primary"><i class="bi bi-facebook"></i></a>
+                                <a href="https://github.com/thaitrongnguyennn29" class="text-dark"><i class="bi bi-github"></i></a>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=thaitrongnguyennn29@gmail.com&su=Liên hệ với tôi" class="text-danger"><i class="bi bi-google"></i></a>
                             </div>
                         </div>
                     </div>
@@ -70,25 +70,25 @@
                 <!-- MEMBER 2 -->
                 <div class="col-lg-4 col-md-6">
                     <div class="card team-card text-center shadow-sm border-0">
-                        <img src="https://via.placeholder.com/300x300/363795/FFFFFF?text=Avatar+2"
+                        <img src="${pageContext.request.contextPath}/assets/images/Tan.jpg"
                              class="team-avatar card-img-top">
 
                         <div class="card-body">
-                            <h5 class="fw-bold">Trần Thị B</h5>
-                            <p class="mb-1">Front-end Developer</p>
-                            <p class="text-muted">MSSV: 20054321</p>
+                            <h5 class="fw-bold">Trần Hoàng Tấn</h5>
+                            <p class="mb-1">Back-end Developer</p>
+                            <p class="text-muted">MSSV: 24810126</p>
 
                             <p class="mb-1">
-                                <i class="bi bi-envelope-fill text-primary"></i> b.tran@student.edu.vn
+                                <i class="bi bi-envelope-fill text-primary"></i> oxygiang123@gmail.com
                             </p>
                             <p>
-                                <i class="bi bi-telephone-fill text-primary"></i> 0900 333 444
+                                <i class="bi bi-telephone-fill text-primary"></i> 0866 604 057
                             </p>
 
                             <div class="d-flex justify-content-center gap-3 fs-5 social-links">
-                                <a href="#" class="text-primary"><i class="bi bi-facebook"></i></a>
-                                <a href="#" class="text-dark"><i class="bi bi-github"></i></a>
-                                <a href="#" class="text-danger"><i class="bi bi-google"></i></a>
+                                <a href="https://www.facebook.com/hoang.tan.735972" class="text-primary"><i class="bi bi-facebook"></i></a>
+                                <a href="https://github.com/htan03" class="text-dark"><i class="bi bi-github"></i></a>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=oxygiang123@gmail.com&su=Liên hệ với tôi" class="text-danger"><i class="bi bi-google"></i></a>
                             </div>
                         </div>
                     </div>
@@ -97,25 +97,25 @@
                 <!-- MEMBER 3 -->
                 <div class="col-lg-4 col-md-6">
                     <div class="card team-card text-center shadow-sm border-0">
-                        <img src="https://via.placeholder.com/300x300/6c757d/FFFFFF?text=Avatar+3"
+                        <img src="${pageContext.request.contextPath}/assets/images/Chien.jpg"
                              class="team-avatar card-img-top">
 
                         <div class="card-body">
-                            <h5 class="fw-bold">Lê Văn C</h5>
+                            <h5 class="fw-bold">Trần Minh Chiến</h5>
                             <p class="mb-1">Database / Tester</p>
-                            <p class="text-muted">MSSV: 20098765</p>
+                            <p class="text-muted">MSSV: 24810106</p>
 
                             <p class="mb-1">
-                                <i class="bi bi-envelope-fill text-primary"></i> c.le@student.edu.vn
+                                <i class="bi bi-envelope-fill text-primary"></i> chien180203@gmail.com
                             </p>
                             <p>
-                                <i class="bi bi-telephone-fill text-primary"></i> 0900 555 666
+                                <i class="bi bi-telephone-fill text-primary"></i> 0786 160 270
                             </p>
 
                             <div class="d-flex justify-content-center gap-3 fs-5 social-links">
-                                <a href="#" class="text-primary"><i class="bi bi-facebook"></i></a>
-                                <a href="#" class="text-dark"><i class="bi bi-github"></i></a>
-                                <a href="#" class="text-danger"><i class="bi bi-google"></i></a>
+                                <a href="https://www.facebook.com/chien.tran.89693" class="text-primary"><i class="bi bi-facebook"></i></a>
+                                <a href="https://github.com/tranminhchien1802" class="text-dark"><i class="bi bi-github"></i></a>
+                                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=chien180203@gmail.com&su=Liên hệ với tôi" class="text-danger"><i class="bi bi-google"></i></a>
                             </div>
                         </div>
                     </div>

@@ -1,10 +1,12 @@
 package RepositoryImp;
 
 import Model.DonHang;
+import Model.GioHang;
 import Model.Page;
 import Model.PageRequest;
 import Repository.DonHangRepository;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -296,6 +298,107 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
     @Override
     public int countSearch(String keyword) {
         return countSearch(keyword, null, null);
+    }
+
+    @Override
+    public boolean createOrderbyCart(DonHang donHang, List<GioHang> listGioHang) {
+        Connection conn = null;
+        PreparedStatement psOrder = null;
+        PreparedStatement psDetail = null;
+        ResultSet rs = null;
+        boolean result = false;
+
+        try {
+            conn = getConnection();
+            if (conn == null) return false;
+
+            // 1. Bắt đầu Transaction
+            conn.setAutoCommit(false);
+
+            // 2. Insert bảng DonHang
+            String sqlOrder = "INSERT INTO DonHang (MaTK, TongTien, TrangThai, NgayDat) VALUES (?, ?, ?, NOW())";
+            psOrder = conn.prepareStatement(sqlOrder, Statement.RETURN_GENERATED_KEYS);
+            psOrder.setInt(1, donHang.getMaTaiKhoan());
+            psOrder.setBigDecimal(2, donHang.getTongTien());
+            psOrder.setString(3, donHang.getTrangThai());
+
+            if (psOrder.executeUpdate() == 0) {
+                throw new SQLException("Creating order failed, no rows affected.");
+            }
+
+            // 3. Lấy MaDon vừa tạo
+            int maDonHang = 0;
+            try (ResultSet generatedKeys = psOrder.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    maDonHang = generatedKeys.getInt(1);
+                } else {
+                    throw new SQLException("Creating order failed, no ID obtained.");
+                }
+            }
+
+            // 4. Insert bảng ChiTietDonHang (Dùng Batch)
+            String sqlDetail = "INSERT INTO ChiTietDonHang (MaDon, MaMon, SoLuong, DonGia, TrangThai) VALUES (?, ?, ?, ?, ?)";
+            psDetail = conn.prepareStatement(sqlDetail);
+
+            for (GioHang item : listGioHang) {
+                psDetail.setInt(1, maDonHang);
+                psDetail.setInt(2, item.getMonAn().getMaMonAn());
+                psDetail.setInt(3, item.getQuantity());
+                psDetail.setBigDecimal(4, BigDecimal.valueOf(item.getMonAn().getGia()));
+                psDetail.setString(5, "Mới đặt");
+                psDetail.addBatch();
+            }
+
+            psDetail.executeBatch();
+
+            // 5. Commit Transaction
+            conn.commit();
+            result = true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Rollback nếu có lỗi
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } finally {
+            // Đóng kết nối và trả về chế độ auto-commit mặc định
+            try {
+                if (psOrder != null) psOrder.close();
+                if (psDetail != null) psDetail.close();
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    closeConnection(conn);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<DonHang> findByUserId(int userId) {
+        List<DonHang> list = new ArrayList<>();
+        // Lấy đơn hàng của user, đơn mới nhất lên đầu
+        String sql = "SELECT * FROM DonHang WHERE MaTK = ? ORDER BY NgayDat DESC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToDonHang(rs)); // Hàm mapRowToDonHang bạn đã có sẵn
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     @Override

@@ -90,7 +90,7 @@
 
                         <!-- Thông tin tài khoản -->
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="thongtin-taikhoan">
                                 <i class="bi bi-person-gear me-2"></i>
                                 <span>Thông tin tài khoản</span>
                             </a>
@@ -98,31 +98,29 @@
 
                         <% String role = user.getVaiTro(); %>
 
-                        <!-- Menu theo vai trò -->
                         <% if ("admin".equals(role)) { %>
                         <li>
                             <a class="dropdown-item" href="Admin">
                                 <i class="bi bi-speedometer2 me-2"></i>
-                                <span>Quản lý</span>
+                                <span>Truy cập trang quản lý</span>
                             </a>
                         </li>
                         <% } else if ("seller".equals(role)) { %>
                         <li>
                             <a class="dropdown-item" href="#">
                                 <i class="bi bi-shop me-2"></i>
-                                <span>Bán hàng</span>
-                            </a>
-                        </li>
-                        <% } else { %>
-                        <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="bi bi-bag-check me-2"></i>
-                                <span>Theo dõi đơn hàng</span>
+                                <span>Truy cập trang bán hàng</span>
                             </a>
                         </li>
                         <% } %>
 
-                        <!-- Cài đặt -->
+                        <li>
+                            <a class="dropdown-item" href="donhang-cuatoi">
+                                <i class="bi bi-bag-check me-2"></i>
+                                <span>Xem đơn hàng của tôi</span>
+                            </a>
+                        </li>
+
                         <li>
                             <a class="dropdown-item" href="#">
                                 <i class="bi bi-gear me-2"></i>

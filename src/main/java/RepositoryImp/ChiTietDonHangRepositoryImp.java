@@ -161,43 +161,47 @@ public class ChiTietDonHangRepositoryImp extends DBConnect implements ChiTietDon
     }
 
     @Override
-    public List<ChiTietDonHangDTO> findDTOByMaDon(int maDon) {
+    public List<ChiTietDonHangDTO> findDTOByOrderId(int orderId) {
         List<ChiTietDonHangDTO> list = new ArrayList<>();
 
-        // SQL CHUẨN: Lấy MaQuay từ bảng MonAn
-        String sql = "SELECT ct.*, m.TenMon, m.HinhAnh, m.MaQuay " +
+        // JOIN 3 bảng để lấy đủ thông tin cho DTO
+        String sql = "SELECT ct.*, m.TenMon, m.HinhAnh, q.MaQuay, q.TenQuay " +
                 "FROM ChiTietDonHang ct " +
-                "JOIN MonAn m ON ct.MaMon = m.MaMon " + // Chú ý tên cột MaMon/MaMonAn
-                "WHERE ct.MaDon = ?"; // Chú ý tên cột MaDon/MaDonHang
+                "JOIN MonAn m ON ct.MaMon = m.MaMon " +
+                "JOIN Quay q ON m.MaQuay = q.MaQuay " +
+                "WHERE ct.MaDon = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, maDon);
-            ResultSet rs = ps.executeQuery();
+            ps.setInt(1, orderId);
 
-            while (rs.next()) {
-                ChiTietDonHangDTO dto = new ChiTietDonHangDTO();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ChiTietDonHangDTO dto = new ChiTietDonHangDTO();
 
-                // Map dữ liệu
-                dto.setMaCT(rs.getInt("MaCT")); // Hoặc cột ID của bảng chi tiết
-                dto.setMaDonHang(rs.getInt("MaDon"));
-                dto.setMaMonAn(rs.getInt("MaMon"));
-                dto.setSoLuong(rs.getInt("SoLuong"));
-                dto.setDonGia(rs.getBigDecimal("DonGia"));
-                dto.setTrangThai(rs.getString("TrangThai"));
+                    // 1. Set thông tin từ ChiTietDonHang
+                    dto.setMaCT(rs.getInt("MaCT"));
+                    dto.setMaDonHang(rs.getInt("MaDon"));
+                    dto.setMaMonAn(rs.getInt("MaMon"));
+                    dto.setSoLuong(rs.getInt("SoLuong"));
+                    dto.setDonGia(rs.getBigDecimal("DonGia"));
+                    dto.setTrangThai(rs.getString("TrangThai"));
 
-                // Map dữ liệu từ bảng MonAn
-                dto.setTenMonAn(rs.getString("TenMon"));
-                dto.setHinhAnhMonAn(rs.getString("HinhAnh"));
+                    // 2. Set thông tin từ MonAn
+                    dto.setTenMonAn(rs.getString("TenMon"));
+                    dto.setHinhAnhMonAn(rs.getString("HinhAnh")); // Map cột HinhAnh vào hinhAnhMonAn
 
-                // --- CỰC KỲ QUAN TRỌNG ---
-                dto.setMaQuay(rs.getInt("MaQuay"));
-                // Nếu dòng này không chạy, Servlet sẽ lọc sai -> List rỗng
+                    // 3. Set thông tin từ Quay
+                    dto.setMaQuay(rs.getInt("MaQuay"));
+                    dto.setTenQuay(rs.getString("TenQuay"));
 
-                list.add(dto);
+                    list.add(dto);
+                }
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return list;
     }
 }

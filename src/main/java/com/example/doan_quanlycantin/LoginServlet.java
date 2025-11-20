@@ -86,12 +86,20 @@ public class LoginServlet extends HttpServlet {
         if (tk != null) {
             HttpSession session = req.getSession();
             session.setAttribute("user", tk);
+            // ... (Code session manager) ...
+
             String role = tk.getVaiTro();
-            if ("admin".equals(role)) {
-                resp.sendRedirect(req.getContextPath() + "/trangchu");
-            } else if ("seller".equals(role)) {
-                resp.sendRedirect(req.getContextPath() + "/trangchu");
+
+            // PHÂN LUỒNG SAU KHI LOGIN
+            if ("admin".equalsIgnoreCase(role)) {
+                // Admin vào thẳng trang quản lý
+                resp.sendRedirect(req.getContextPath() + "/Admin");
+            } else if ("seller".equalsIgnoreCase(role)) {
+                // Seller cũng vào thẳng trang quản lý của họ (nếu bạn tách riêng)
+                // Hoặc vào Admin nhưng load data của seller
+                resp.sendRedirect(req.getContextPath() + "/Admin");
             } else {
+                // User thường thì ra trang chủ mua hàng
                 resp.sendRedirect(req.getContextPath() + "/trangchu");
             }
         } else {

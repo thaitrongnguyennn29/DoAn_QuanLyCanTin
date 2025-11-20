@@ -4,17 +4,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // Lấy đường dẫn gốc từ biến toàn cục (đã khai báo ở Footer)
     const contextPath = window.contextPath || "";
 
-    // -------------------------
-    // 1. TRANG ĐĂNG NHẬP
-    // -------------------------
+    // ============================================================
+    // 0. XỬ LÝ POPUP THÔNG BÁO (SWEETALERT2)
+    // ============================================================
+    if (window.sessionSuccessMessage && window.sessionSuccessMessage.trim() !== "") {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Thành công!',
+                text: window.sessionSuccessMessage,
+                icon: 'success',
+                iconColor: '#005C97',
+                confirmButtonText: 'Tuyệt vời',
+                confirmButtonColor: '#005C97',
+                timer: 5000,
+                timerProgressBar: true
+            });
+        } else {
+            alert(window.sessionSuccessMessage);
+        }
+        window.sessionSuccessMessage = null;
+    }
+
+    // ============================================================
+    // 1. TRANG ĐĂNG NHẬP (LOGIN / REGISTER)
+    // ============================================================
     if (window.location.pathname.includes("dangnhap") ||
-        window.location.pathname.includes("dangky") || // Thêm check dangky
+        window.location.pathname.includes("dangky") ||
         window.location.pathname.includes("login")) {
 
         console.log("Login page script active");
 
         window.showTab = function(tabName, evt) {
-            // 1. Ẩn/Hiện tab content
             const contents = document.querySelectorAll('.tab-content');
             contents.forEach(c => c.classList.remove('active'));
 
@@ -24,50 +44,40 @@ document.addEventListener("DOMContentLoaded", () => {
             const targetTab = document.getElementById(tabName);
             if (targetTab) targetTab.classList.add('active');
 
-            // 2. Active nút bấm
             if (evt && evt.currentTarget) {
                 evt.currentTarget.classList.add('active');
             } else {
-                // Fallback nếu gọi hàm tự động
                 if (tabName === 'login') document.getElementById('tabLogin')?.classList.add('active');
                 if (tabName === 'register') document.getElementById('tabRegister')?.classList.add('active');
             }
 
-            // 3.Thay đổi URL mà không reload trang
             if (tabName === 'register') {
-                // Đổi URL thành .../dangky
-                window.history.pushState({path: 'dangky'}, '', 'dangky');
+                window.history.replaceState({path: 'dangky'}, '', 'dangky'); // <-- DÒNG MỚI
             } else {
-                // Đổi URL thành .../dangnhap
-                window.history.pushState({path: 'dangnhap'}, '', 'dangnhap');
+                window.history.replaceState({path: 'dangnhap'}, '', 'dangnhap'); // <-- DÒNG MỚI
             }
         };
 
-        // B. Logic tự động chuyển Tab dựa trên dữ liệu Server trả về
         const activeTabInput = document.getElementById('serverActiveTab');
         if (activeTabInput) {
             const activeTabValue = activeTabInput.value;
-
             if (activeTabValue === 'register') {
-                // Kích hoạt tab đăng ký
-                // Cách 1: Giả lập click (sẽ kích hoạt hàm showTab ở trên)
                 const regBtn = document.getElementById('tabRegister');
                 if (regBtn) regBtn.click();
             } else {
-                // Mặc định là login
                 const loginBtn = document.getElementById('tabLogin');
                 if (loginBtn) loginBtn.click();
             }
         }
     }
 
-    // -------------------------
+    // ============================================================
     // 2. TRANG THỰC ĐƠN (MENU)
-    // -------------------------
+    // ============================================================
     else if (window.location.pathname.includes("thucdon")) {
         console.log("Menu page script active");
 
-        // A. Logic Lọc món ăn (Filter)
+        // A. Logic Lọc món ăn
         const filterBtns = document.querySelectorAll(".filter-btn");
         const items = document.querySelectorAll(".menu-card-item");
 
@@ -75,10 +85,8 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.addEventListener("click", function(e) {
                 e.preventDefault();
                 const filter = this.dataset.filter;
-
                 filterBtns.forEach(b => b.classList.remove("active"));
                 this.classList.add("active");
-
                 items.forEach(item => {
                     if (filter === "all" || item.dataset.category === filter) {
                         item.style.display = "block";
@@ -89,15 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // B. Logic Thêm vào giỏ hàng (ĐÃ CHỈNH SỬA LOGIC ĐẾM)
-        // B. Logic Thêm vào giỏ hàng (BẢN FULL: KHÓA NÚT + HIỆU ỨNG ICON)
+        // B. Logic Thêm vào giỏ hàng
         document.querySelectorAll('.btn-add-cart').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-
-                // 1. Khóa nút ngay lập tức để chống spam click
                 this.disabled = true;
-
                 const originalText = this.innerHTML;
                 const maMon = this.dataset.mamon;
 
@@ -106,77 +110,53 @@ document.addEventListener("DOMContentLoaded", () => {
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                     body: 'action=add&maMon=' + maMon
                 })
-                .then(response => {
-                    if (response.ok) {
-                        return response.text().then(newCount => {
-
-                            // --- CẬP NHẬT ICON GIỎ HÀNG (Đã thêm lại) ---
-                            const cartBadge = document.querySelector('.cart-badge');
-                            if (cartBadge) {
-                                // Cập nhật số lượng
-                                cartBadge.textContent = newCount;
-
-                                // Hiệu ứng rung icon (Đoạn này bị thiếu ở code trước)
-                                const cartIcon = document.querySelector('.cart');
-                                if(cartIcon) {
-                                    cartIcon.style.transform = "scale(1.2)";
-                                    setTimeout(() => cartIcon.style.transform = "scale(1)", 200);
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text().then(newCount => {
+                                const cartBadge = document.querySelector('.cart-badge');
+                                if (cartBadge) {
+                                    cartBadge.textContent = newCount;
+                                    const cartIcon = document.querySelector('.cart');
+                                    if(cartIcon) {
+                                        cartIcon.style.transform = "scale(1.2)";
+                                        setTimeout(() => cartIcon.style.transform = "scale(1)", 200);
+                                    }
                                 }
-                            }
-
-                            // --- HIỆU ỨNG NÚT THÀNH CÔNG ---
-                            this.innerHTML = '<i class="bi bi-check2"></i> Xong';
-                            this.classList.remove('btn-primary');
-                            this.classList.add('btn-success');
-
-                            // Đảm bảo nút vẫn bị khóa khi hiện chữ Xong
-                            this.disabled = true;
-
-                            // Sau 1 giây thì trả lại trạng thái ban đầu
-                            setTimeout(() => {
-                                this.innerHTML = originalText;
-
-                                // Mở khóa lại nút để mua tiếp
-                                this.disabled = false;
-
-                                this.classList.remove('btn-success');
-                                this.classList.add('btn-outline-primary');
-                                this.style.width = '';
-                            }, 1000);
-                        });
-                    } else {
-                        throw new Error('Server response not ok');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert("Có lỗi kết nối, vui lòng thử lại!");
-                    this.innerHTML = originalText;
-
-                    // Mở lại nút nếu gặp lỗi
-                    this.disabled = false;
-                    this.style.width = '';
-                });
+                                this.innerHTML = '<i class="bi bi-check2"></i> Xong';
+                                this.classList.remove('btn-primary', 'btn-outline-primary');
+                                this.classList.add('btn-success');
+                                setTimeout(() => {
+                                    this.innerHTML = originalText;
+                                    this.disabled = false;
+                                    this.classList.remove('btn-success');
+                                    this.classList.add('btn-outline-primary');
+                                }, 1000);
+                            });
+                        } else {
+                            throw new Error('Server response not ok');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error:', err);
+                        alert("Có lỗi kết nối, vui lòng thử lại!");
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    });
             });
         });
     }
 
-    // -------------------------
-    // 3. TRANG GIỎ HÀNG
-    // -------------------------
+    // ============================================================
+    // 3. TRANG GIỎ HÀNG (CART)
+    // ============================================================
     else if (window.location.pathname.includes("giohang") ||
-        window.location.pathname.includes("cart")) {
+        window.location.pathname.includes("cart") ||
+        window.location.pathname.includes("kiemtradonhang")) {
 
         console.log("Cart page script active");
 
-        // --- HELPER FUNCTIONS ---
-        const formatCurrency = (amount) => {
-            return amount.toLocaleString('vi-VN') + 'đ';
-        };
-
-        const parseCurrency = (str) => {
-            return parseFloat(str.replace(/[^\d]/g, ''));
-        };
+        const formatCurrency = (amount) => amount.toLocaleString('vi-VN') + 'đ';
+        const parseCurrency = (str) => parseFloat(str.replace(/[^\d]/g, ''));
 
         const updateSummary = () => {
             let subtotal = 0;
@@ -184,26 +164,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 const priceText = item.querySelector('.cart-item-price').textContent;
                 subtotal += parseCurrency(priceText);
             });
-
             let discount = 0;
             const discountEl = document.querySelector('.order-summary .text-success');
-            if (discountEl) {
-                discount = parseCurrency(discountEl.textContent);
-            }
-
+            if (discountEl) discount = parseCurrency(discountEl.textContent);
             const total = subtotal - discount;
+
             const summaryValues = document.querySelectorAll('.order-summary .summary-value');
-            if (summaryValues.length > 0) {
-                summaryValues[0].textContent = formatCurrency(subtotal);
-            }
+            if (summaryValues.length > 0) summaryValues[0].textContent = formatCurrency(subtotal);
 
             const totalEl = document.querySelector('.summary-total .summary-value');
-            if (totalEl) {
-                totalEl.textContent = formatCurrency(total > 0 ? total : 0);
-            }
+            if (totalEl) totalEl.textContent = formatCurrency(total > 0 ? total : 0);
         };
 
-        // --- EVENTS: THAY ĐỔI SỐ LƯỢNG ---
         document.querySelectorAll('.qty-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -211,7 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const control = this.closest('.quantity-control');
                 const input = control.querySelector('.qty-input');
                 let val = parseInt(input.value);
-
                 if (this.classList.contains('plus')) val++;
                 else if (this.classList.contains('minus') && val > 1) val--;
                 else return;
@@ -222,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cartItem = this.closest('.cart-item');
                 const priceEl = cartItem.querySelector('.cart-item-price');
                 const unitPrice = parseCurrency(cartItem.querySelector('.text-muted').textContent);
-
                 priceEl.textContent = formatCurrency(unitPrice * val);
 
                 fetch(contextPath + '/giohang', {
@@ -239,12 +209,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // --- EVENTS: XÓA MÓN ---
         document.querySelectorAll('.btn-remove').forEach(btn => {
             btn.addEventListener('click', function() {
                 const maMon = this.dataset.mamon;
                 const cartItem = this.closest('.cart-item');
-
                 fetch(contextPath + '/giohang', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -261,10 +229,97 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-        // -------------------------
-        // 4. CÁC TRANG KHÁC
-    // -------------------------
+    // ============================================================
+    // 5. TRANG QUẢN LÝ ĐƠN HÀNG (MY ORDER) - MỚI THÊM
+    // ============================================================
+    // Kiểm tra xem có element Tabs đơn hàng không để chạy logic này
+    else if (document.getElementById('orderTabs')) {
+        console.log("Order Management page script active");
+
+        // --- A. GIỮ NGUYÊN TAB KHI F5 ---
+        var savedTab = localStorage.getItem('activeOrderTab');
+        if (savedTab) {
+            var tabTrigger = document.getElementById(savedTab);
+            if (tabTrigger) {
+                var tabInstance = new bootstrap.Tab(tabTrigger);
+                tabInstance.show();
+            }
+        }
+        var tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+        tabEls.forEach(function(tabEl) {
+            tabEl.addEventListener('shown.bs.tab', function (event) {
+                localStorage.setItem('activeOrderTab', event.target.id);
+            });
+        });
+
+        // --- B. TỰ ĐỘNG MỞ MODAL KHI F5 (Biến global từ Footer) ---
+        if (window.autoOpenModal) {
+            const modalEl = document.getElementById('orderDetailModal');
+            if(modalEl) {
+                var myModal = new bootstrap.Modal(modalEl);
+                myModal.show();
+            }
+        }
+
+        // --- C. XỬ LÝ URL KHI ĐÓNG MODAL ---
+        var myModalEl = document.getElementById('orderDetailModal');
+        if (myModalEl) {
+            myModalEl.addEventListener('hidden.bs.modal', function (event) {
+                var currentUrl = window.location.href;
+                if(currentUrl.includes('chitiet-donhang')) {
+                    const backUrl = contextPath ? contextPath + "/donhang-cuatoi" : "donhang-cuatoi";
+                    window.history.pushState({page: "list"}, "Danh sách đơn hàng", backUrl);
+                }
+            });
+        }
+    }
+
+    // ============================================================
+    // 6. CÁC TRANG KHÁC
+    // ============================================================
     else {
         console.log("No specific script for:", window.location.pathname);
     }
 });
+
+
+// ============================================================
+// HÀM GLOBAL (Nằm ngoài DOMContentLoaded để HTML gọi được)
+// ============================================================
+window.viewOrderDetail = function(orderId) {
+    // Lấy contextPath (Nếu hàm này chạy thì DOM đã load xong, biến contextPath ở footer đã có)
+    const ctx = window.contextPath || "";
+
+    const modalEl = document.getElementById('orderDetailModal');
+    if (!modalEl) return;
+
+    // 1. Mở Modal
+    var myModal = new bootstrap.Modal(modalEl);
+    myModal.show();
+
+    // 2. Đổi URL
+    const detailUrl = (ctx ? ctx + "/" : "") + "chitiet-donhang?id=" + orderId;
+    window.history.pushState({page: "detail"}, "Chi tiết đơn hàng", detailUrl);
+
+    // 3. Loading
+    const contentEl = document.getElementById('modalContent');
+    if(contentEl) {
+        contentEl.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div><p class="mt-2 text-muted">Đang tải dữ liệu...</p></div>';
+    }
+
+    // 4. Ajax
+    fetch((ctx ? ctx + "/" : "") + 'chitiet-donhang?id=' + orderId, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+        .then(response => {
+            if (!response.ok) throw new Error("Network response was not ok");
+            return response.text();
+        })
+        .then(html => {
+            if(contentEl) contentEl.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if(contentEl) contentEl.innerHTML = '<div class="text-center text-danger py-4">Có lỗi xảy ra.</div>';
+        });
+};

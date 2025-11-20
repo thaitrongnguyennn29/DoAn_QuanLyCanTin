@@ -26,7 +26,7 @@ public class MonAnServlet extends HttpServlet {
 
     private MonAnService monAnService;
 
-    private static final String PROJECT_PATH = "D:/Program Files/SPKT/Web/DoAn_QuanLyCantin";
+    private static final String PROJECT_DIR_NAME = "DoAn_QuanLyCanTin";
 
     @Override
     public void init() throws ServletException {
@@ -166,79 +166,111 @@ public class MonAnServlet extends HttpServlet {
 
         String originalFileName = Paths.get(part.getSubmittedFileName()).getFileName().toString();
 
-        // ========== 1. LƯU VÀO DEPLOY (Tomcat webapps) ==========
+        // Làm sạch tên file để tránh lỗi ký tự đặc biệt hoặc trùng lặp (Optional)
+        String safeFileName = System.currentTimeMillis() + "_" + originalFileName;
+
+        // ========== 1. LƯU VÀO THƯ MỤC DEPLOY (Để hiển thị ngay lập tức) ==========
+        // Đường dẫn thực tế nơi Tomcat đang chạy (thường là trong folder target)
         String webappPath = getServletContext().getRealPath("/");
-        String deployDir = webappPath + "assets" + File.separator + "images" + File.separator + "MonAn" + File.separator;
+        String deployDir = webappPath + File.separator + "assets" + File.separator + "images" + File.separator + "MonAn" + File.separator;
 
-        File deployFolder = new File(deployDir);
-        if (!deployFolder.exists()) {
-            deployFolder.mkdirs();
+        saveFile(part.getInputStream(), deployDir, safeFileName);
+        System.out.println("Đã lưu vào DEPLOY: " + deployDir + safeFileName);
+
+        // ========== 2. LƯU VÀO THƯ MỤC SOURCE CODE (Để giữ ảnh không bị mất khi Rebuild) ==========
+        // Tự động tìm đường dẫn source code thay vì hardcode
+        File sourceRoot = getProjectSourceDir(webappPath);
+
+        if (sourceRoot != null) {
+            String sourceDir = sourceRoot.getAbsolutePath() + File.separator + "assets" + File.separator + "images" + File.separator + "MonAn" + File.separator;
+            // Chúng ta cần mở lại InputStream vì stream cũ đã được đọc hết ở bước 1
+            // Tuy nhiên, Part.getInputStream() có thể không hỗ trợ đọc lại tuỳ server.
+            // Cách an toàn là copy từ file đã lưu ở bước 1 sang source.
+
+            Path sourcePath = Paths.get(sourceDir + safeFileName);
+            Path deployPath = Paths.get(deployDir + safeFileName);
+
+            try {
+                // Tạo thư mục nếu chưa có
+                new File(sourceDir).mkdirs();
+
+                // Copy từ deploy sang source
+                Files.copy(deployPath, sourcePath, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("Đã copy vào SOURCE: " + sourcePath.toAbsolutePath());
+            } catch (IOException e) {
+                System.err.println("Lỗi copy sang Source: " + e.getMessage());
+            }
+        } else {
+            System.err.println("Cảnh báo: Không tìm thấy thư mục Source code. Ảnh chỉ được lưu tạm thời.");
         }
 
-        Path deployFilePath = Paths.get(deployDir + originalFileName);
-        try (InputStream input = part.getInputStream()) {
-            Files.copy(input, deployFilePath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Đã lưu vào DEPLOY: " + deployFilePath.toAbsolutePath());
+        return safeFileName;
+    }
+
+    // Hàm hỗ trợ lưu file
+    private void saveFile(InputStream input, String dir, String fileName) throws IOException {
+        File folder = new File(dir);
+        if (!folder.exists()) {
+            folder.mkdirs();
         }
+        Path filePath = Paths.get(dir + fileName);
+        Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
+    }
 
-        // ========== 2. COPY VÀO SOURCE CODE ==========
-        try {
-            // DÙNG ĐƯỜNG DẪN CỐ ĐỊNH thay vì user.dir
-            String sourceDir = PROJECT_PATH + File.separator + "src" + File.separator + "main"
-                    + File.separator + "webapp" + File.separator + "assets"
-                    + File.separator + "images" + File.separator + "MonAn" + File.separator;
+    /**
+     * Hàm thông minh để tìm thư mục src/main/webapp dựa trên thư mục chạy thực tế
+     */
+    /**
+     * Hàm thông minh tìm thư mục Source Code (src/main/webapp)
+     * Hỗ trợ tìm cả trong thư mục cha và thư mục anh em (Sibling)
+     */
+    private File getProjectSourceDir(String webappPath) {
+        File current = new File(webappPath);
 
-            File sourceFolder = new File(sourceDir);
-            if (!sourceFolder.exists()) {
-                boolean created = sourceFolder.mkdirs();
-                if (created) {
-                    System.out.println("Đã tạo thư mục SOURCE: " + sourceDir);
-                } else {
-                    System.err.println("Không thể tạo thư mục SOURCE: " + sourceDir);
+        // Đi ngược lên tối đa 10 cấp thư mục
+        for (int i = 0; i < 10 && current != null; i++) {
+
+            // TRƯỜNG HỢP 1: Chạy trực tiếp trong folder project (target)
+            // Kiểm tra xem folder hiện tại có chứa "src" không
+            if (new File(current, "src" + File.separator + "main" + File.separator + "webapp").exists()) {
+                return new File(current, "src" + File.separator + "main" + File.separator + "webapp");
+            }
+
+            // TRƯỜNG HỢP 2: Chạy Tomcat bên ngoài (Thư mục anh em)
+            // Kiểm tra xem folder hiện tại có chứa folder con nào trùng tên PROJECT_DIR_NAME không
+            File siblingProject = new File(current, PROJECT_DIR_NAME);
+            if (siblingProject.exists() && siblingProject.isDirectory()) {
+                // Nếu tìm thấy folder tên project, kiểm tra xem nó có chứa src không
+                File srcCheck = new File(siblingProject, "src" + File.separator + "main" + File.separator + "webapp");
+                if (srcCheck.exists()) {
+                    return srcCheck;
                 }
             }
 
-            Path sourceFilePath = Paths.get(sourceDir + originalFileName);
-            Files.copy(deployFilePath, sourceFilePath, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Đã copy vào SOURCE: " + sourceFilePath.toAbsolutePath());
-
-        } catch (Exception e) {
-            System.err.println("Không thể copy vào source: " + e.getMessage());
-            System.err.println("Kiểm tra lại PROJECT_PATH trong MonAnServlet.java");
-            e.printStackTrace();
+            // Đi lên 1 cấp
+            current = current.getParentFile();
         }
 
-        return originalFileName;
+        return null; // Không tìm thấy
     }
 
     // ====================== DELETE IMAGE ==========================
     private void deleteImageFromSource(String imageName) {
-        if (imageName == null || imageName.trim().isEmpty()) {
-            return;
-        }
+        if (imageName == null || imageName.trim().isEmpty()) return;
 
         try {
-            // 1. Xóa từ DEPLOY
             String webappPath = getServletContext().getRealPath("/");
-            String deployPath = webappPath + "assets" + File.separator + "images"
-                    + File.separator + "MonAn" + File.separator + imageName;
 
-            File deployFile = new File(deployPath);
-            if (deployFile.exists() && deployFile.delete()) {
-                System.out.println("Đã xóa từ DEPLOY: " + deployPath);
+            // 1. Xóa ở Deploy
+            String deployPath = webappPath + File.separator + "assets" + File.separator + "images" + File.separator + "MonAn" + File.separator + imageName;
+            new File(deployPath).delete();
+
+            // 2. Xóa ở Source
+            File sourceRoot = getProjectSourceDir(webappPath);
+            if (sourceRoot != null) {
+                String sourcePath = sourceRoot.getAbsolutePath() + File.separator + "assets" + File.separator + "images" + File.separator + "MonAn" + File.separator + imageName;
+                new File(sourcePath).delete();
             }
-
-            // 2. Xóa từ SOURCE
-            String sourcePath = PROJECT_PATH + File.separator + "src" + File.separator + "main"
-                    + File.separator + "webapp" + File.separator + "assets"
-                    + File.separator + "images" + File.separator + "MonAn"
-                    + File.separator + imageName;
-
-            File sourceFile = new File(sourcePath);
-            if (sourceFile.exists() && sourceFile.delete()) {
-                System.out.println("Đã xóa từ SOURCE: " + sourcePath);
-            }
-
         } catch (Exception e) {
             System.err.println("Lỗi khi xóa ảnh: " + e.getMessage());
         }
