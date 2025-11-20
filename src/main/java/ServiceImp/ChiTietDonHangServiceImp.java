@@ -35,6 +35,6 @@ public class ChiTietDonHangServiceImp implements ChiTietDonHangService {
 
     @Override
     public List<ChiTietDonHangDTO> findAllByMaDon(int maDon) {
-        return chiTietDonHangRepository.findDTOByMaDon(maDon);
+        return chiTietDonHangRepository.findDTOByOrderId(maDon);
     }
 }
