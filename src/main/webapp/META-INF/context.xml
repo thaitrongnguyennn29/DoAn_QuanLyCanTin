@@ -1,0 +1,15 @@
+<Context>
+    <Resource
+            name="jdbc/quanly_cantin"
+            auth="Container"
+            type="javax.sql.DataSource"
+            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+            driverClassName="com.mysql.cj.jdbc.Driver"
+            url="jdbc:mysql://localhost:3306/QuanLy_CanTin?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;serverTimezone=Asia/Ho_Chi_Minh"
+            username="root"
+            password="123456"
+            maxTotal="20"
+            maxIdle="10"
+            minIdle="5"
+            initialSize="5"/>
+</Context>

@@ -1,0 +1,182 @@
+/* === RESET & FONT === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #005C97, #363795);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* === FORM CONTAINER === */
+.form-container {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    max-width: 450px;
+    width: 100%;
+    border: none;
+}
+
+/* === HEADER === */
+.form-header {
+    background: linear-gradient(135deg, #363795, #005C97);
+    padding: 30px;
+    text-align: center;
+    color: #fff;
+}
+
+.form-header h2 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+/* === TABS === */
+.form-tabs {
+    display: flex;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #777;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.tab-btn.active {
+    color: #005C97;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #005C97, #363795);
+}
+
+/* === TAB CONTENT === */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.4s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === FORM CONTROLS === */
+.form-control {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    transition: all 0.3s;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: #005C97;
+    box-shadow: 0 0 0 0.2rem rgba(0, 92, 151, 0.25);
+}
+
+/* === FLOATING LABEL === */
+.form-floating-group {
+    position: relative;
+}
+
+.form-floating-group .form-label {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: #999;
+    background-color: transparent;
+    padding: 0 5px;
+    transition: all 0.2s ease-out;
+    pointer-events: none;
+    font-size: 16px;
+}
+
+.form-floating-group .form-control:focus ~ .form-label,
+.form-floating-group .form-control:not(:placeholder-shown) ~ .form-label {
+    top: 0;
+    font-size: 13px;
+    color: #005C97;
+    background-color: #ffffff;
+    font-weight: 600;
+}
+
+/* === BUTTON === */
+.btn-submit {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    background: linear-gradient(90deg, #005C97, #363795);
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* HOVER */
+.btn-submit:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 20px rgba(0, 92, 151, 0.35);
+    color: white; /* giữ chữ trắng */
+}
+
+/* ACTIVE / NHẤN */
+.btn-submit:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 10px rgba(0, 92, 151, 0.25);
+    color: white !important; /* bắt buộc giữ chữ trắng */
+}
+
+/* === LINKS === */
+a {
+    color: #005C97;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #363795;
+    text-decoration: underline;
+}
+
+/* === CHECKBOX LABEL === */
+.form-check-label {
+    color: #555;
+}
