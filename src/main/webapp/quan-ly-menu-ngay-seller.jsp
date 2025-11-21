@@ -66,7 +66,16 @@
                 <input type="hidden" name="maQuay" value="<%= maQuay %>">
                 <div class="form-row">
                     <div class="col-md-4"><input type="text" class="form-control" name="tenMon" placeholder="Tên món" required></div>
-                    <div class="col-md-3"><input type="number" class="form-control" name="gia" placeholder="Giá" required></div>
+                    <div class="col-md-3"><input type="number"
+                                                 class="form-control"
+                                                 id="gia"
+                                                 name="gia"
+                                                 placeholder="VD: 25000"
+                                                 min="1000"
+                                                 step="1000"
+                                                 required
+                                                 onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                                 title="Vui lòng nhập số tiền là bội số của 1000 (VD: 10000, 15000)"></div>
                     <div class="col-md-3"><input type="file" class="form-control-file" name="hinhAnh"></div>
                     <div class="col-md-2"><button type="submit" class="btn btn-success btn-block">Lưu</button></div>
                 </div>
@@ -106,10 +115,11 @@
                     <div id="availableDishes">
                         <% for (MonAn mon : danhSachMon) {
                             if (mon == null) continue;
-                            String img = (mon.getHinhAnh() != null) ? contextPath + "/assets/images/MonAn/" + mon.getHinhAnh() : contextPath + "/assets/images/no-image.png";
+                            boolean coHinhAnh = (mon.getHinhAnh() != null && !mon.getHinhAnh().trim().isEmpty());
+                            String img = coHinhAnh ? contextPath + "/assets/images/MonAn/" + mon.getHinhAnh() : contextPath + "/assets/images/no-image.png";
                         %>
                         <div class="dish-item" id="dish-<%= mon.getMaMonAn() %>" onclick="addToMenu(<%= mon.getMaMonAn() %>)">
-                            <img src="<%= img %>" onerror="this.src='<%= contextPath %>/assets/images/no-image.png'">
+                            <img src="<%= img %>" onerror="this.onerror=null; this.src='<%= contextPath %>/assets/images/no-image.png'">
                             <div class="flex-grow-1">
                                 <div class="font-weight-bold"><%= mon.getTenMonAn() %></div>
                                 <div class="text-success"><%= currencyFormatter.format(mon.getGia()) %></div>
@@ -186,9 +196,11 @@
     var allDishes = [
         <% for (MonAn mon : danhSachMon) {
              if (mon != null) {
-                 // Xử lý chuỗi để tránh lỗi Syntax JS
                  String safeName = (mon.getTenMonAn()!=null) ? mon.getTenMonAn().replace("\"", "\\\"").replace("\r", "").replace("\n", "") : "";
-                 String safeImg = (mon.getHinhAnh()!=null) ? contextPath+"/assets/images/MonAn/"+mon.getHinhAnh() : contextPath+"/assets/images/no-image.png";
+
+                 // FIX 3: Logic kiểm tra ảnh rỗng tương tự như trên
+                 boolean coHinhJs = (mon.getHinhAnh() != null && !mon.getHinhAnh().trim().isEmpty());
+                 String safeImg = coHinhJs ? contextPath+"/assets/images/MonAn/"+mon.getHinhAnh() : contextPath+"/assets/images/no-image.png";
         %>
         {
             id: <%= mon.getMaMonAn() %>,
@@ -249,10 +261,10 @@
             selectedIds.forEach(function(id) {
                 var dish = allDishes.find(function(d){ return d.id === id; });
                 if (dish) {
-                    // Dùng cộng chuỗi an toàn
                     var html =
                         '<div class="dish-item bg-white border shadow-sm p-2 mb-2 d-flex align-items-center">' +
-                        '<img src="' + dish.img + '" style="width:50px;height:50px;object-fit:cover;border-radius:5px;margin-right:10px;">' +
+                        // FIX 4: Thêm onerror chặn vòng lặp vào đây
+                        '<img src="' + dish.img + '" onerror="this.onerror=null; this.src=\'<%= contextPath %>/assets/images/no-image.png\'" style="width:50px;height:50px;object-fit:cover;border-radius:5px;margin-right:10px;">' +
                         '<div class="flex-grow-1"><b>' + dish.name + '</b><br><small>' + dish.price + '</small></div>' +
                         '<div onclick="removeFromMenu(' + dish.id + ')" style="cursor:pointer;color:red;"><i class="fas fa-times-circle"></i></div>' +
                         '</div>';
@@ -283,6 +295,26 @@
                 }
             }
         });
+    }
+
+    // [THÊM MỚI] Nhận dữ liệu từ Server
+    var preSelectedIds = <%= request.getAttribute("selectedMenuIds") != null ? request.getAttribute("selectedMenuIds") : "[]" %>;
+
+    // Khi trang load xong
+    document.addEventListener('DOMContentLoaded', function() {
+        // ... (Code cũ xử lý active tab giữ nguyên) ...
+
+        // [THÊM MỚI] Tự động điền món đã chọn
+        if (preSelectedIds && preSelectedIds.length > 0) {
+            selectedIds = preSelectedIds; // Gán mảng ID
+            render(); // Vẽ lại giao diện bên phải
+        }
+    });
+
+    // [THÊM MỚI] Hàm xử lý khi đổi ngày
+    function onDateChange() {
+        var newDate = document.getElementById('dateInput').value;
+        window.location.href = '<%= contextPath %>/Seller?page=quanlymenungay&ngay=' + newDate;
     }
 
     // Thông báo

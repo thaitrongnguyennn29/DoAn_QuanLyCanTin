@@ -10,6 +10,11 @@
 
     // 2. Lấy User từ Session ra
     TaiKhoan user = (TaiKhoan) session.getAttribute("user");
+
+    // Ngăn trình duyệt lưu cache (Để khi đăng xuất, ấn Back không thấy lại trang cũ)
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+    response.setHeader("Pragma", "no-cache"); // HTTP 1.0
+    response.setDateHeader("Expires", 0); // Proxies
 %>
 
 <html lang="vi">
@@ -140,7 +145,7 @@
 
                         <!-- Đăng xuất -->
                         <li>
-                            <a class="dropdown-item text-danger" href="dangnhap?action=logout">
+                            <a class="dropdown-item text-danger" href="<%= request.getContextPath() %>/dangnhap?action=logout">
                                 <i class="bi bi-box-arrow-right me-2"></i>
                                 <span>Đăng xuất</span>
                             </a>

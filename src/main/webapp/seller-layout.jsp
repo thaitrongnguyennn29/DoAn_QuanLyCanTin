@@ -115,12 +115,6 @@
     <h3 class="text-center mb-4 font-weight-bold">
         <i class="fas fa-utensils mr-2"></i>Seller Portal
     </h3>
-
-    <a href="<%= contextPath %>/Seller?page=ThongKeSeller"
-       class="<%= "dashboard".equals(currentPage) ? "active" : "" %>">
-        <i class="fas fa-tachometer-alt mr-2" style="width: 20px;"></i> Tổng Quan
-    </a>
-
     <a href="<%= contextPath %>/Seller?page=quanlymenungay"
        class="<%= "quanlymenungay".equals(currentPage) ? "active" : "" %>">
         <i class="fas fa-hamburger mr-2" style="width: 20px;"></i> Quản Lý Menu Ngày
@@ -133,7 +127,11 @@
 
     <hr style="border-color: rgba(255,255,255,0.1); margin: 20px;">
 
-    <a href="<%= contextPath %>/trangchu" class="mt-2">
+    <a href="<%= contextPath %>/trangchu" class="mt-3">
+        <i class="fas fa-sign-out-alt"></i> Về trang chủ
+    </a>
+
+    <a href="<%= request.getContextPath() %>/dangnhap?action=logout" class="mt-2">
         <i class="fas fa-sign-out-alt mr-2" style="width: 20px;"></i> Đăng Xuất
     </a>
 </div>

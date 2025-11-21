@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-// 1. SỬA: Map cả 2 đường dẫn vào Servlet này
 @WebServlet(urlPatterns = {"/dangnhap", "/dangky"})
 public class LoginServlet extends HttpServlet {
 
@@ -26,29 +25,51 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // --- XỬ LÝ ĐĂNG XUẤT Ở ĐÂY ---
         String action = req.getParameter("action");
 
+        // =================================================================
+        // 1. XỬ LÝ ĐĂNG XUẤT (Ưu tiên xử lý trước)
+        // =================================================================
         if ("logout".equals(action)) {
-            // 1. Xóa session
             HttpSession session = req.getSession(false);
             if (session != null) {
-                session.invalidate();
+                session.invalidate(); // 1. Hủy session server
             }
 
-            // 2. Quay lại trang cũ (Referer) hoặc về trang chủ
-            String urlCu = req.getHeader("Referer");
-            if (urlCu != null && !urlCu.isEmpty()) {
-                resp.sendRedirect(urlCu);
+            // 2. Bắt buộc trình duyệt xóa cache để không hiện lại trang cũ
+            resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+            resp.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+            resp.setDateHeader("Expires", 0); // Proxies.
+
+            // 3. Luôn chuyển hướng về Trang Chủ (Tránh lỗi khi quay lại trang cần quyền Admin/Seller)
+            resp.sendRedirect(req.getContextPath() + "/trangchu");
+            return;
+        }
+
+        // =================================================================
+        // 2. [MỚI] KIỂM TRA ĐÃ ĐĂNG NHẬP CHƯA?
+        // Nếu đã đăng nhập rồi -> Không cho xem form Login nữa -> Đá về trang chủ
+        // =================================================================
+        HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            TaiKhoan user = (TaiKhoan) session.getAttribute("user");
+            String role = user.getVaiTro();
+
+            // Điều hướng dựa trên vai trò (Giống lúc đăng nhập thành công)
+            if ("admin".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/Admin");
+            } else if ("seller".equalsIgnoreCase(role)) {
+                resp.sendRedirect(req.getContextPath() + "/Seller");
             } else {
                 resp.sendRedirect(req.getContextPath() + "/trangchu");
             }
-            return; // Kết thúc hàm luôn, không chạy phần bên dưới nữa
+            return; // Quan trọng: Kết thúc hàm ngay, không chạy xuống phần hiển thị JSP
         }
-        // ------------------------------------
 
-        // 2. SỬA: Kiểm tra đường dẫn để set tab mặc định
-        String path = req.getServletPath(); // Lấy phần đuôi URL (/dangnhap hoặc /dangky)
+        // =================================================================
+        // 3. HIỂN THỊ TRANG ĐĂNG NHẬP/ĐĂNG KÝ (Nếu chưa đăng nhập)
+        // =================================================================
+        String path = req.getServletPath();
 
         if (path.equals("/dangky")) {
             req.setAttribute("activeTab", "register");
@@ -61,7 +82,6 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // (Giữ nguyên code doPost cũ của bạn không thay đổi gì)
         req.setCharacterEncoding("UTF-8");
         String action = req.getParameter("action");
 
@@ -72,11 +92,6 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // ... (Giữ nguyên các hàm handleLogin, handleRegister cũ) ...
-    // Lưu ý: Trong handleRegister, đoạn if (!pass.equals(confirmPass)) {...}
-    // Bạn không cần sửa gì cả, vì biến activeTab="register" đã lo việc hiển thị rồi.
-
-    // Code handleLogin và handleRegister của bạn ở đây...
     private void handleLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String u = req.getParameter("username");
         String p = req.getParameter("password");
@@ -86,20 +101,18 @@ public class LoginServlet extends HttpServlet {
         if (tk != null) {
             HttpSession session = req.getSession();
             session.setAttribute("user", tk);
-            // ... (Code session manager) ...
+
+            // Lưu giỏ hàng vào session nếu cần (ví dụ logic giỏ hàng của bạn)
+            // session.setAttribute("cart", ...);
 
             String role = tk.getVaiTro();
 
-            // PHÂN LUỒNG SAU KHI LOGIN
+            // PHÂN LUỒNG
             if ("admin".equalsIgnoreCase(role)) {
-                // Admin vào thẳng trang quản lý
                 resp.sendRedirect(req.getContextPath() + "/Admin");
             } else if ("seller".equalsIgnoreCase(role)) {
-                // Seller cũng vào thẳng trang quản lý của họ (nếu bạn tách riêng)
-                // Hoặc vào Admin nhưng load data của seller
-                resp.sendRedirect(req.getContextPath() + "/Admin");
+                resp.sendRedirect(req.getContextPath() + "/Seller");
             } else {
-                // User thường thì ra trang chủ mua hàng
                 resp.sendRedirect(req.getContextPath() + "/trangchu");
             }
         } else {

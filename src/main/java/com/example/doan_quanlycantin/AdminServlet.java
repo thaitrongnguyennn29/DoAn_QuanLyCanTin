@@ -43,41 +43,28 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. [SỬA] KIỂM TRA SESSION (SESSION CHECK)
-        // Mặc dù Admin_Seller_Filter đã chặn, ta nên lấy user ra để hiển thị tên và check lại cho chắc
+        // --- ĐÃ XÓA PHẦN KIỂM TRA SESSION Ở ĐÂY ---
+        // Servlet này mặc định tin tưởng là Filter đã kiểm tra rồi.
+
+        // Vẫn lấy user để hiển thị tên "Xin chào..." nếu cần
         HttpSession session = request.getSession();
-        TaiKhoan user = (TaiKhoan) session.getAttribute("user"); // Key phải khớp với Filter là "user"
-
-        // Nếu chưa đăng nhập hoặc không phải admin -> Đá về trang đăng nhập
-        if (user == null || !"admin".equalsIgnoreCase(user.getVaiTro())) {
-            response.sendRedirect(request.getContextPath() + "/dangnhap");
-            return;
-        }
-
-        // Đẩy thông tin user sang JSP để hiển thị "Xin chào, [Ten]"
+        TaiKhoan user = (TaiKhoan) session.getAttribute("user");
         request.setAttribute("currentUser", user);
 
-
-        // 2. XỬ LÝ TAB (Logic cũ của bạn)
+        // 2. XỬ LÝ TAB
         String activeTab = request.getParameter("activeTab");
         if (activeTab == null || activeTab.isEmpty()) {
             activeTab = "dashboard";
         }
 
         try {
-            // Load data theo tab
             loadDataForTab(activeTab, request);
-
-            // Set content page
             request.setAttribute("contentPage", getContentPage(activeTab));
-
-            // Forward to layout
             request.getRequestDispatcher("/admin-layout.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-            // Fallback về dashboard nếu lỗi
+            // Fallback
             response.sendRedirect(request.getContextPath() + "/Admin?activeTab=dashboard");
         }
     }
@@ -88,59 +75,32 @@ public class AdminServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    /**
-     * Load data tương ứng với từng tab
-     */
+    // ... GIỮ NGUYÊN CÁC HÀM LOAD DATA DƯỚI ĐÂY KHÔNG THAY ĐỔI ...
     private void loadDataForTab(String activeTab, HttpServletRequest request) {
         switch (activeTab) {
-            case "dashboard":
-                loadDashboardData(request);
-                break;
-            case "quanlymonan":
-                loadMonAnData(request);
-                break;
-            case "quanlyquay":
-                loadQuayData(request);
-                break;
-            case "quanlytaikhoan":
-                loadTaiKhoanData(request);
-                break;
-            case "quanlydonhang":
-                loadDonHangData(request);
-                break;
-            default:
-                loadDashboardData(request);
-                break;
+            case "dashboard": loadDashboardData(request); break;
+            case "quanlymonan": loadMonAnData(request); break;
+            case "quanlyquay": loadQuayData(request); break;
+            case "quanlytaikhoan": loadTaiKhoanData(request); break;
+            case "quanlydonhang": loadDonHangData(request); break;
+            default: loadDashboardData(request); break;
         }
     }
 
-    /**
-     * Trả về đường dẫn file JSP tương ứng với tab
-     */
     private String getContentPage(String activeTab) {
         switch (activeTab) {
-            case "dashboard":
-                return "/dashboard-admin.jsp";
-            case "quanlymonan":
-                return "/quan-ly-mon-an-admin.jsp";
-            case "quanlyquay":
-                return "/quan-ly-quay-admin.jsp";
-            case "quanlytaikhoan":
-                return "/quan-ly-tai-khoan-admin.jsp";
-            case "quanlydonhang":
-                return "/quan-ly-don-hang-admin.jsp";
-            default:
-                return "/dashboard-admin.jsp";
+            case "dashboard": return "/dashboard-admin.jsp";
+            case "quanlymonan": return "/quan-ly-mon-an-admin.jsp";
+            case "quanlyquay": return "/quan-ly-quay-admin.jsp";
+            case "quanlytaikhoan": return "/quan-ly-tai-khoan-admin.jsp";
+            case "quanlydonhang": return "/quan-ly-don-hang-admin.jsp";
+            default: return "/dashboard-admin.jsp";
         }
     }
-
-    // ========== LOAD DATA CHO TỪNG TAB ==========
 
     private void loadDashboardData(HttpServletRequest request) {
         ThongKeTongQuatDTO thongKeTong = thongKeService.getThongKeTongQuat();
-        if (thongKeTong == null) {
-            thongKeTong = new ThongKeTongQuatDTO();
-        }
+        if (thongKeTong == null) thongKeTong = new ThongKeTongQuatDTO();
         request.setAttribute("thongKeTong", thongKeTong);
 
         List<ThongKeDTO> listDoanhThu = thongKeService.getDoanhThuToanSan();
@@ -154,7 +114,6 @@ public class AdminServlet extends HttpServlet {
         PageRequest pageRequest = buildPageRequest(request, "gia");
         Page<MonAn> monAnPage = monAnService.finAll(pageRequest);
         List<Quay> danhSachQuay = quayService.finAll();
-
         request.setAttribute("monAnPage", monAnPage);
         request.setAttribute("DanhSachQuay", danhSachQuay);
         request.setAttribute("pageRequest", pageRequest);
@@ -164,7 +123,6 @@ public class AdminServlet extends HttpServlet {
         PageRequest pageRequest = buildPageRequest(request, "tenQuay");
         Page<Quay> quayPage = quayService.finAll(pageRequest);
         List<TaiKhoan> taiKhoans = taiKhoanService.finAll();
-
         request.setAttribute("DanhSachTK", taiKhoans);
         request.setAttribute("quayPage", quayPage);
         request.setAttribute("pageRequest", pageRequest);
@@ -197,44 +155,30 @@ public class AdminServlet extends HttpServlet {
                 List<ChiTietDonHangDTO> chiTietDTOList = new ArrayList<>();
 
                 for (ChiTietDonHang ct : chiTietList) {
-                    String tenMon = "";
-                    String hinhAnh = "";
-                    int maQuay = 0;
+                    String tenMon = ""; String hinhAnh = ""; int maQuay = 0;
                     for (MonAn mon : danhSachMonAn) {
                         if (mon.getMaMonAn() == ct.getMaMonAn()) {
-                            tenMon = mon.getTenMonAn();
-                            hinhAnh = mon.getHinhAnh();
-                            maQuay = mon.getMaQuay();
-                            break;
+                            tenMon = mon.getTenMonAn(); hinhAnh = mon.getHinhAnh(); maQuay = mon.getMaQuay(); break;
                         }
                     }
                     String tenQuay = "";
                     for (Quay quay : danhSachQuay) {
-                        if (quay.getMaQuay() == maQuay) {
-                            tenQuay = quay.getTenQuay();
-                            break;
-                        }
+                        if (quay.getMaQuay() == maQuay) { tenQuay = quay.getTenQuay(); break; }
                     }
                     ChiTietDonHangDTO dto = new ChiTietDonHangDTO(ct, tenMon, hinhAnh, maQuay, tenQuay);
                     chiTietDTOList.add(dto);
                 }
-
                 TaiKhoan khachHang = null;
                 if (donHangDetail != null) {
                     for (TaiKhoan tk : taiKhoans) {
-                        if (tk.getMaTaiKhoan() == donHangDetail.getMaTaiKhoan()) {
-                            khachHang = tk;
-                            break;
-                        }
+                        if (tk.getMaTaiKhoan() == donHangDetail.getMaTaiKhoan()) { khachHang = tk; break; }
                     }
                 }
-
                 request.setAttribute("donHangDetail", donHangDetail);
                 request.setAttribute("chiTietDTOList", chiTietDTOList);
                 request.setAttribute("khachHang", khachHang);
                 request.setAttribute("viewMode", "detail");
-
-            } catch (NumberFormatException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 request.setAttribute("error", "Mã đơn hàng không hợp lệ");
             }
@@ -242,10 +186,6 @@ public class AdminServlet extends HttpServlet {
             request.setAttribute("viewMode", "list");
         }
     }
-
-    // Hàm menu và thống kê cũ tôi đã ẩn đi vì đã tích hợp vào dashboard hoặc chưa dùng tới
-    // private void loadMenuData...
-    // private void loadThongKeData...
 
     private PageRequest buildPageRequest(HttpServletRequest request, String defaultSort) {
         int page = RequestUtil.getInt(request, "page", 1);

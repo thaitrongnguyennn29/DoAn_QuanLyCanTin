@@ -177,7 +177,11 @@
 
     <hr style="border-color: rgba(255,255,255,0.2);">
 
-    <a href="<%= contextPath %>/Logout" class="mt-3">
+    <a href="<%= contextPath %>/trangchu" class="mt-3">
+        <i class="fas fa-sign-out-alt"></i> Về trang chủ
+    </a>
+
+    <a href="<%= request.getContextPath() %>/dangnhap?action=logout" class="mt-3">
         <i class="fas fa-sign-out-alt"></i> Đăng Xuất
     </a>
 </div>

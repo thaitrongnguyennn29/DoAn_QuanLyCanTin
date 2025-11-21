@@ -122,7 +122,7 @@
             <div class="row align-items-center gy-4">
 
                 <div class="col-md-6">
-                    <img src="${pageContext.request.contextPath}/assets/images/canteen.jpg"
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop"
                          class="menu-about-img img-fluid rounded" alt="Căn tin VN">
                 </div>
 
