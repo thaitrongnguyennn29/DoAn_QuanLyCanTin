@@ -1,3 +1,6 @@
+<%@ page import="Model.MonAn" %>
+<%@ page import="java.text.NumberFormat" %>
+<%@ page import="java.util.Locale" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     request.setAttribute("pageTitle", "Trang Chủ");
@@ -41,23 +44,37 @@
             </div>
 
             <div class="row g-4">
+                <%
+                    // Lấy list từ Servlet
+                    List<MonAn> listNoiBat = (List<MonAn>) request.getAttribute("listNoiBat");
+                    NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-                <!-- Dish Card 1 -->
+                    if (listNoiBat != null) {
+                        for (MonAn mon : listNoiBat) {
+                            String imgPath = request.getContextPath() + "/assets/images/MonAn/" +
+                                    (mon.getHinhAnh() != null ? mon.getHinhAnh() : "no-image.png");
+                %>
+
                 <div class="col-lg-3 col-md-6">
                     <div class="dish-card">
 
                         <div class="dish-image-wrapper">
                             <span class="hot-badge">HOT</span>
-                            <img src="${pageContext.request.contextPath}/assets/images/MonAn/com_ComSuon.jpg"
+                            <img src="<%= imgPath %>"
                                  class="dish-image w-100"
-                                 alt="Cơm Tấm Sườn Nướng">
-                        </div>
+                                 alt="<%= mon.getTenMonAn() %>"
+                                 style="height: 200px; object-fit: cover;"> </div>
 
                         <div class="p-3">
-                            <h5 class="dish-name">Cơm Tấm Sườn Nướng</h5>
+                            <h5 class="dish-name text-truncate" title="<%= mon.getTenMonAn() %>">
+                                <%= mon.getTenMonAn() %>
+                            </h5>
+
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">45.000đ</span>
-                                <button class="btn-add-cart btn-sm" onclick="addToCart()">
+                            <span class="dish-price text-danger fw-bold">
+                                <%= vnFormat.format(mon.getGia()) %>
+                            </span>
+                                <button class="btn-add-cart btn-sm" onclick="addToCart(<%= mon.getMaMonAn() %>)">
                                     <i class="bi bi-cart-plus"></i> Thêm
                                 </button>
                             </div>
@@ -65,79 +82,14 @@
 
                     </div>
                 </div>
-
-                <!-- Dish Card 2 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="dish-card">
-
-                        <div class="dish-image-wrapper">
-                            <span class="hot-badge">HOT</span>
-                            <img src="${pageContext.request.contextPath}/assets/images/MonAn/pho_PhoBo.jpg"
-                                 class="dish-image w-100"
-                                 alt="Phở Bò Đặc Biệt">
-                        </div>
-
-                        <div class="p-3">
-                            <h5 class="dish-name">Phở Bò Đặc Biệt</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">50.000đ</span>
-                                <button class="btn-add-cart btn-sm" onclick="addToCart()">
-                                    <i class="bi bi-cart-plus"></i> Thêm
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Dish Card 3 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="dish-card">
-
-                        <div class="dish-image-wrapper">
-                            <span class="hot-badge">HOT</span>
-                            <img src="${pageContext.request.contextPath}/assets/images/MonAn/mi_MiQuang.jpg"
-                                 class="dish-image w-100"
-                                 alt="Mì Quảng">
-                        </div>
-
-                        <div class="p-3">
-                            <h5 class="dish-name">Mì Quảng</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">42.000đ</span>
-                                <button class="btn-add-cart btn-sm" onclick="addToCart()">
-                                    <i class="bi bi-cart-plus"></i> Thêm
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Dish Card 4 -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="dish-card">
-
-                        <div class="dish-image-wrapper">
-                            <span class="hot-badge">HOT</span>
-                            <img src="${pageContext.request.contextPath}/assets/images/MonAn/pho_PhoTron.jpg"
-                                 class="dish-image w-100"
-                                 alt="Phở Trộn">
-                        </div>
-
-                        <div class="p-3">
-                            <h5 class="dish-name">Phở Trộn</h5>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="dish-price">25.000đ</span>
-                                <button class="btn-add-cart btn-sm" onclick="addToCart()">
-                                    <i class="bi bi-cart-plus"></i> Thêm
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
+                <%
+                    }
+                } else {
+                %>
+                <div class="col-12 text-center"><p>Đang cập nhật món ăn nổi bật...</p></div>
+                <%
+                    }
+                %>
             </div>
 
         </div>

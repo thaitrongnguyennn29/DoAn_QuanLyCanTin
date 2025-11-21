@@ -204,4 +204,47 @@ public class ChiTietDonHangRepositoryImp extends DBConnect implements ChiTietDon
         }
         return list;
     }
+
+    @Override
+    public List<ChiTietDonHangDTO> findDTOByOrderIdAndMaQuay(int orderId, int maQuay) {
+        List<ChiTietDonHangDTO> list = new ArrayList<>();
+
+        // Thêm điều kiện: AND m.MaQuay = ?
+        String sql = "SELECT ct.*, m.TenMon, m.HinhAnh, q.MaQuay, q.TenQuay " +
+                "FROM ChiTietDonHang ct " +
+                "JOIN MonAn m ON ct.MaMon = m.MaMon " +
+                "JOIN Quay q ON m.MaQuay = q.MaQuay " +
+                "WHERE ct.MaDon = ? AND m.MaQuay = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, orderId);
+            ps.setInt(2, maQuay); // Lọc theo quầy
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ChiTietDonHangDTO dto = new ChiTietDonHangDTO();
+
+                    dto.setMaCT(rs.getInt("MaCT"));
+                    dto.setMaDonHang(rs.getInt("MaDon"));
+                    dto.setMaMonAn(rs.getInt("MaMon"));
+                    dto.setSoLuong(rs.getInt("SoLuong"));
+                    dto.setDonGia(rs.getBigDecimal("DonGia"));
+                    dto.setTrangThai(rs.getString("TrangThai"));
+
+                    dto.setTenMonAn(rs.getString("TenMon"));
+                    dto.setHinhAnhMonAn(rs.getString("HinhAnh"));
+
+                    dto.setMaQuay(rs.getInt("MaQuay"));
+                    dto.setTenQuay(rs.getString("TenQuay"));
+
+                    list.add(dto);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

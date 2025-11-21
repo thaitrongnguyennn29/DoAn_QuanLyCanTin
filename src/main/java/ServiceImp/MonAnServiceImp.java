@@ -50,4 +50,9 @@ public class MonAnServiceImp implements MonAnService {
     public List<MonAn> getByQuayId(int maQuay) {
         return monAnRepository.findByQuayId(maQuay);
     }
+
+    @Override
+    public List<MonAn> getMonAnNoiBat(int limit) {
+        return monAnRepository.getTopMonAnNoiBat(limit);
+    }
 }

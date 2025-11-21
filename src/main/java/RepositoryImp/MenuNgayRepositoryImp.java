@@ -2,6 +2,7 @@ package RepositoryImp;
 
 import DTO.MenuNgayDTO;
 import Model.MenuNgay;
+import Model.MonAn;
 import Model.Page;
 import Model.PageRequest;
 import Repository.MenuNgayRepository;
@@ -31,6 +32,16 @@ public class MenuNgayRepositoryImp extends DBConnect implements MenuNgayReposito
             menu.setNgay(ngaySql.toLocalDate());
         }
         return menu;
+    }
+    private Model.MonAn mapRowToMonAn(ResultSet rs) throws SQLException {
+        return new Model.MonAn(
+                rs.getInt("MaMon"),      // Tên cột trong Database
+                rs.getString("TenMon"),  // Tên cột trong Database
+                rs.getDouble("Gia"),     // Tên cột trong Database
+                rs.getString("MoTa"),    // Tên cột trong Database
+                rs.getString("HinhAnh"), // Tên cột trong Database
+                rs.getInt("MaQuay")      // Tên cột trong Database
+        );
     }
 
     @Override
@@ -196,4 +207,53 @@ public class MenuNgayRepositoryImp extends DBConnect implements MenuNgayReposito
     public int demTongSoMenuNgay(int maQuay, LocalDate tuNgay, LocalDate denNgay) { return 0; }
     @Override
     public boolean kiemTraMenuTonTai(LocalDate ngay, int maQuay) { return false; }
+
+    @Override
+    public List<MonAn> getMonAnTheoNgay(LocalDate date) {
+        List<Model.MonAn> list = new ArrayList<>();
+        // JOIN bảng MonAn và MenuNgay để lấy chi tiết món của ngày hôm đó
+        String sql = "SELECT m.* FROM MonAn m " +
+                "JOIN MenuNgay mn ON m.MaMon = mn.MaMon " +
+                "WHERE mn.Ngay = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, Date.valueOf(date));
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToMonAn(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
+    public List<MonAn> getMonAnTheoNgayVaQuay(LocalDate date, int maQuay) {
+        List<MonAn> list = new ArrayList<>();
+        // Lọc thêm theo Mã Quầy
+        String sql = "SELECT m.* FROM MonAn m " +
+                "JOIN MenuNgay mn ON m.MaMon = mn.MaMon " +
+                "WHERE mn.Ngay = ? AND mn.MaQuay = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, Date.valueOf(date));
+            ps.setInt(2, maQuay);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapRowToMonAn(rs));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

@@ -1,6 +1,7 @@
 package Service;
 import DTO.MenuNgayDTO;
 import Model.MenuNgay;
+import Model.MonAn;
 import Model.Page;
 import Model.PageRequest;
 
@@ -20,4 +21,8 @@ public interface MenuNgayService {
     boolean xoaMenuNgay(LocalDate ngay, int maQuay);
     Page<MenuNgayDTO> layDanhSachMenuNgay(int maQuay, LocalDate tuNgay, LocalDate denNgay, int page, int size);
     boolean kiemTraMenuTonTai(LocalDate ngay, int maQuay);
+
+    //Load menu ngày trên thực đơn
+    List<MonAn> getMonAnTheoNgay(LocalDate date);
+    List<MonAn> getMonAnTheoNgayVaQuay(LocalDate date, int maQuay);
 }

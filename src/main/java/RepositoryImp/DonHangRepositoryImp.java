@@ -407,50 +407,54 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
         int limit = pageRequest.getPageSize();
         int offset = (pageRequest.getPage() - 1) * limit;
 
-        // SQL CHUẨN: JOIN DonHang -> ChiTiet -> MonAn -> WHERE MaQuay
-        String sql = "SELECT DISTINCT dh.MaDon, dh.MaTK, dh.NgayDat, dh.TongTien, dh.TrangThai " +
-                "FROM DonHang dh " +
-                "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDon " +
-                "JOIN MonAn m ON ct.MaMon = m.MaMon " +
-                "WHERE m.MaQuay = ? ";
+        // SQL: Lấy đơn hàng có chứa ít nhất 1 món của Quầy này
+        // Dùng DISTINCT vì 1 đơn có thể có nhiều món của cùng 1 quầy -> tránh trùng đơn
+        StringBuilder sql = new StringBuilder(
+                "SELECT DISTINCT dh.MaDon, dh.MaTK, dh.NgayDat, dh.TongTien, dh.TrangThai " +
+                        "FROM DonHang dh " +
+                        "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDon " +
+                        "JOIN MonAn m ON ct.MaMon = m.MaMon " +
+                        "WHERE m.MaQuay = ? "
+        );
 
         // Logic tìm kiếm/lọc
         if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
-            sql += " AND dh.TrangThai = ? ";
-        }
-        if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
-            sql += " AND (dh.MaDon LIKE ? OR dh.MaTK LIKE ?) "; // Tìm theo mã đơn hoặc mã khách
+            sql.append(" AND dh.TrangThai = ? ");
         }
 
-        sql += " ORDER BY dh.NgayDat DESC LIMIT ? OFFSET ?";
+        // Tìm kiếm theo Mã đơn hoặc (cần join thêm TaiKhoan nếu muốn tìm tên khách)
+        // Ở đây tìm theo Mã Đơn cho đơn giản và nhanh
+        if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
+            sql.append(" AND CAST(dh.MaDon AS CHAR) LIKE ? ");
+        }
+
+        sql.append(" ORDER BY dh.NgayDat DESC LIMIT ? OFFSET ?");
 
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
             int i = 1;
-            ps.setInt(i++, maQuay); // QUAN TRỌNG: Truyền mã quầy vào
+            ps.setInt(i++, maQuay);
 
             if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
                 ps.setString(i++, pageRequest.getTrangThai());
             }
             if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
-                String kw = "%" + pageRequest.getKeyword() + "%";
-                ps.setString(i++, kw);
-                ps.setString(i++, kw);
+                ps.setString(i++, "%" + pageRequest.getKeyword() + "%");
             }
+
             ps.setInt(i++, limit);
             ps.setInt(i++, offset);
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
+                // Tái sử dụng hàm mapRow hoặc set thủ công (Lưu ý tên cột trong DB của bạn)
                 DonHang dh = new DonHang();
                 dh.setMaDonHang(rs.getInt("MaDon"));
                 dh.setMaTaiKhoan(rs.getInt("MaTK"));
 
-                // Xử lý ngày giờ (Sửa tùy theo kiểu dữ liệu DB của bạn là DateTime hay Timestamp)
-                try {
-                    dh.setNgayDat(rs.getTimestamp("NgayDat").toLocalDateTime());
-                } catch (Exception e) { dh.setNgayDat(null); }
+                Timestamp ts = rs.getTimestamp("NgayDat");
+                if(ts != null) dh.setNgayDat(ts.toLocalDateTime());
 
                 dh.setTongTien(rs.getBigDecimal("TongTien"));
                 dh.setTrangThai(rs.getString("TrangThai"));
@@ -465,42 +469,39 @@ public class DonHangRepositoryImp extends DBConnect implements DonHangRepository
     @Override
     public int countDonHangByMaQuay(int maQuay, PageRequest pageRequest) {
         int count = 0;
-        String sql = "SELECT COUNT(DISTINCT dh.MaDon) " +
-                "FROM DonHang dh " +
-                "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDonHang " +
-                "JOIN MonAn m ON ct.MaMonAn = m.MaMonAn " +
-                "WHERE m.MaQuay = ? ";
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(DISTINCT dh.MaDon) " +
+                        "FROM DonHang dh " +
+                        "JOIN ChiTietDonHang ct ON dh.MaDon = ct.MaDon " +
+                        "JOIN MonAn m ON ct.MaMon = m.MaMon " +
+                        "WHERE m.MaQuay = ? "
+        );
 
-        // (Copy y hệt phần logic nối chuỗi SQL lọc bên trên xuống đây)
         if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
-            sql += " AND dh.TrangThai = ? ";
+            sql.append(" AND dh.TrangThai = ? ");
         }
         if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
-            sql += " AND (dh.MaDon LIKE ? OR dh.MaTK LIKE ?) ";
+            sql.append(" AND CAST(dh.MaDon AS CHAR) LIKE ? ");
         }
 
         try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-            int paramIndex = 1;
-            ps.setInt(paramIndex++, maQuay);
+            int i = 1;
+            ps.setInt(i++, maQuay);
 
             if (pageRequest.getTrangThai() != null && !pageRequest.getTrangThai().isEmpty()) {
-                ps.setString(paramIndex++, pageRequest.getTrangThai());
+                ps.setString(i++, pageRequest.getTrangThai());
             }
             if (pageRequest.getKeyword() != null && !pageRequest.getKeyword().isEmpty()) {
-                String keyword = "%" + pageRequest.getKeyword() + "%";
-                ps.setString(paramIndex++, keyword);
-                ps.setString(paramIndex++, keyword);
+                ps.setString(i++, "%" + pageRequest.getKeyword() + "%");
             }
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 count = rs.getInt(1);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return count;
     }
 }

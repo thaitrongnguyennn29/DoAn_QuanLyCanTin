@@ -4,20 +4,18 @@
 <%
     String contextPath = request.getContextPath();
 
-    // TODO: Lấy tên người dùng từ Session thật
-    // TaiKhoan tk = (TaiKhoan) session.getAttribute("taiKhoan");
-    // String tenNguoiDung = (tk != null) ? tk.getHoTen() : "Seller";
-    String tenNguoiDung = "Seller";
+    // SỬA 1: Đổi "taiKhoan" thành "user" cho khớp với Servlet/Filter
+    Model.TaiKhoan tk = (Model.TaiKhoan) session.getAttribute("user");
 
-    // --- SỬA 1: Lấy tham số "page" thay vì "activeTab" ---
+    // SỬA 2: Kiểm tra null trước khi get dữ liệu (Null Safety)
+    String vaiTro = (tk != null) ? tk.getVaiTro() : "Seller";
+    String tenNguoiDung = (tk != null) ? tk.getTenNguoiDung() : "Khách"; // Dòng này gây lỗi cũ
+
+    // ... code phía dưới giữ nguyên
     String currentPage = request.getParameter("page");
-
-    // Nếu null hoặc rỗng -> Mặc định là quanlymenungay
     if (currentPage == null || currentPage.isEmpty()) {
         currentPage = "quanlymenungay";
     }
-
-    // Lấy đường dẫn file JSP con cần include
     String contentPage = (String) request.getAttribute("contentPage");
 %>
 
@@ -109,7 +107,7 @@
                 margin-left: 0;
             }
         }
-    </style>
+    </style>a
 </head>
 <body>
 
@@ -117,6 +115,11 @@
     <h3 class="text-center mb-4 font-weight-bold">
         <i class="fas fa-utensils mr-2"></i>Seller Portal
     </h3>
+
+    <a href="<%= contextPath %>/Seller?page=ThongKeSeller"
+       class="<%= "dashboard".equals(currentPage) ? "active" : "" %>">
+        <i class="fas fa-tachometer-alt mr-2" style="width: 20px;"></i> Tổng Quan
+    </a>
 
     <a href="<%= contextPath %>/Seller?page=quanlymenungay"
        class="<%= "quanlymenungay".equals(currentPage) ? "active" : "" %>">
@@ -130,7 +133,7 @@
 
     <hr style="border-color: rgba(255,255,255,0.1); margin: 20px;">
 
-    <a href="<%= contextPath %>/Logout" class="mt-2">
+    <a href="<%= contextPath %>/trangchu" class="mt-2">
         <i class="fas fa-sign-out-alt mr-2" style="width: 20px;"></i> Đăng Xuất
     </a>
 </div>

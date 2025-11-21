@@ -1,24 +1,39 @@
 <%@ page import="Model.MonAn" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.time.LocalDate" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <%
+    // 1. Xử lý ngày hiện tại
+    LocalDate today = LocalDate.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    String ngayHienTai = today.format(formatter);
+
+    // 2. Set tiêu đề page
     request.setAttribute("pageTitle", "Thực Đơn");
 %>
+
 <%@ include file="header.jsp" %>
 
 <div class="menu-page">
 
-    <!-- HERO -->
-    <section class="menu-hero  position-relative py-5">
-        <div class="container position-relative z-2">
-            <h1 class="menu-hero-title fw-bold display-5">Thực Đơn Mỗi Ngày</h1>
+    <section class="menu-hero position-relative py-5">
+        <div class="container position-relative z-2 text-center">
+            <h1 class="menu-hero-title fw-bold display-5">Thực Đơn Hôm Nay</h1>
+
+            <div class="mb-3">
+                <span class="badge bg-light text-primary fs-5 shadow-sm px-3 py-2">
+                    <i class="bi bi-calendar-check me-2"></i> <%= ngayHienTai %>
+                </span>
+            </div>
+
             <p class="menu-hero-subtitle lead mb-4">Chọn món ngon – Chuẩn vị – Giá sinh viên</p>
             <a href="#menulist" class="btn menu-hero-btn">Khám phá ngay</a>
         </div>
     </section>
 
-    <!-- FILTER -->
-    <section  class="menu-filter py-5">
+    <section class="menu-filter py-5">
         <div class="container">
 
             <h2 class="menu-section-title fw-bold mb-3 text-center">Phân Loại Món Ăn</h2>
@@ -53,13 +68,12 @@
 
             <div class="row g-4">
                 <%
+                    // Servlet đã gọi MenuNgayService để lấy đúng list món của ngày hôm nay và gán vào 'listMonAn'
                     List<MonAn> list = (List<Model.MonAn>) request.getAttribute("listMonAn");
-                    String imageDirectory = "assets/images/MonAn/"; // <= ĐỊNH NGHĨA ĐƯỜNG DẪN THƯ MỤC CỐ ĐỊNH Ở ĐÂY
+                    String imageDirectory = "assets/images/MonAn/";
 
-                    if (list != null) {
+                    if (list != null && !list.isEmpty()) {
                         for (Model.MonAn mon : list) {
-
-                            // Xử lý đường dẫn ảnh: Ghép thư mục cố định + Tên file từ DB
                             String fullImagePath = imageDirectory + mon.getHinhAnh();
                 %>
 
@@ -76,9 +90,9 @@
                         <div class="p-3">
                             <h5 class="dish-name"><%= mon.getTenMonAn() %></h5>
                             <div class="d-flex justify-content-between align-items-center">
-                <span class="dish-price">
-                    <%= String.format("%,.0f", mon.getGia()) %>đ
-                </span>
+                                <span class="dish-price">
+                                    <%= String.format("%,.0f", mon.getGia()) %>đ
+                                </span>
 
                                 <button class="btn-add-cart btn-sm" data-mamon="<%= mon.getMaMonAn() %>">
                                     <i class="bi bi-cart-plus"></i> Thêm
@@ -89,14 +103,20 @@
                 </div>
 
                 <%
-                        }
+                    }
+                } else {
+                %>
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-inbox fs-1 text-muted"></i>
+                    <p class="mt-3 text-muted">Chưa có thực đơn cho ngày hôm nay (<%= ngayHienTai %>).</p>
+                </div>
+                <%
                     }
                 %>
             </div>
         </div>
     </section>
 
-    <!-- ABOUT -->
     <section class="menu-about py-5">
         <div class="container">
             <div class="row align-items-center gy-4">

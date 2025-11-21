@@ -14,4 +14,5 @@ public interface MonAnService {
     boolean update(MonAn monAn);
     boolean delete(MonAn monAn);
     List<MonAn> getByQuayId(int maQuay);
+    List<MonAn> getMonAnNoiBat(int limit);
 }

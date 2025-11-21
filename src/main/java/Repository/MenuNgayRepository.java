@@ -16,4 +16,8 @@ public interface MenuNgayRepository extends Repository<MenuNgay> {
     int demTongSoMenuNgay(int maQuay, LocalDate tuNgay, LocalDate denNgay);
 
     boolean kiemTraMenuTonTai(LocalDate ngay, int maQuay);
+
+    // Load menu ngày trên thực đơn
+    List<Model.MonAn> getMonAnTheoNgay(LocalDate date);
+    List<Model.MonAn> getMonAnTheoNgayVaQuay(LocalDate date, int maQuay);
 }

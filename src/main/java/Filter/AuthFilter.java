@@ -22,20 +22,29 @@ public class AuthFilter implements Filter {
         TaiKhoan user = (TaiKhoan) session.getAttribute("user");
 
         // 2. Kiểm tra xem có phải đang Đăng xuất không?
-        // (Nếu đang logout thì phải cho qua để Servlet xử lý xóa session)
         String action = req.getParameter("action");
         boolean isLogout = "logout".equals(action);
 
         if (user != null && !isLogout) {
             // === ĐÃ ĐĂNG NHẬP RỒI MÀ CỐ TÌNH VÀO LẠI TRANG LOGIN ===
 
+            String role = user.getVaiTro(); // Lấy vai trò
+
             // Kiểm tra vai trò để điều hướng đúng chỗ
-            if ("admin".equalsIgnoreCase(user.getVaiTro())) {
+            if ("admin".equalsIgnoreCase(role)) {
+                // Nếu là Admin -> Về trang quản trị
                 resp.sendRedirect(req.getContextPath() + "/Admin");
+
+            } else if ("seller".equalsIgnoreCase(role)) {
+                // === [MỚI] Nếu là Seller -> Về trang kênh người bán ===
+                // Bạn hãy thay "/Seller" bằng đường dẫn thực tế của bạn (ví dụ: /SellerDashboard, /kenhnguoiban, v.v.)
+                resp.sendRedirect(req.getContextPath() + "/Seller");
+
             } else {
+                // Các trường hợp còn lại (User thường) -> Về trang chủ
                 resp.sendRedirect(req.getContextPath() + "/trangchu");
             }
-            return; // Dừng lại, không cho vào trang login nữa
+            return; // Dừng lại
         }
 
         // Nếu chưa đăng nhập (hoặc đang logout) thì cho đi tiếp

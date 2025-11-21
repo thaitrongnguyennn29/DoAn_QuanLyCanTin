@@ -111,7 +111,7 @@
                                     <label class="form-label">Mật khẩu hiện tại</label>
                                     <div class="input-group">
                                         <span class="input-group-text"><i class="bi bi-key"></i></span>
-                                        <input type="password" class="form-control" name="currentPass" required placeholder="••••••">
+                                        <input type="password" class="form-control" name="currentPass">
                                     </div>
                                 </div>
 

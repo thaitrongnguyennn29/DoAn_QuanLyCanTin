@@ -78,6 +78,42 @@ public class MonAnRepositoryImp extends DBConnect implements MonAnRepository {
     }
 
     @Override
+    public List<MonAn> getTopMonAnNoiBat(int limit) {
+        List<MonAn> list = new ArrayList<>();
+        // SQL: Lấy món ăn và sắp xếp theo tổng số lượng bán (SoLuong) trong ChiTietDonHang
+        String sql = "SELECT m.* " +
+                "FROM MonAn m " +
+                "LEFT JOIN ChiTietDonHang ct ON m.MaMon = ct.MaMon " +
+                "GROUP BY m.MaMon " +
+                "ORDER BY COALESCE(SUM(ct.SoLuong), 0) DESC " +
+                "LIMIT ?";
+
+        // Sử dụng getConnection() từ lớp cha DBConnect (đã fix lỗi kết nối)
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, limit);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    // Map dữ liệu từ SQL vào Object Java
+                    list.add(new MonAn(
+                            rs.getInt("MaMon"),
+                            rs.getString("TenMon"),
+                            rs.getDouble("Gia"),
+                            rs.getString("MoTa"),
+                            rs.getString("HinhAnh"),
+                            rs.getInt("MaQuay")
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    @Override
     public Page<MonAn> findAll(PageRequest pageRequest) {
         List<MonAn> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("SELECT * FROM MonAn WHERE 1=1");

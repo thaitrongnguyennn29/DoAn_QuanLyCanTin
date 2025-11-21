@@ -107,7 +107,7 @@
                         </li>
                         <% } else if ("seller".equals(role)) { %>
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="Seller">
                                 <i class="bi bi-shop me-2"></i>
                                 <span>Truy cập trang bán hàng</span>
                             </a>

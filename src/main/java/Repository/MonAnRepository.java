@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface MonAnRepository extends Repository<MonAn> {
     List<MonAn> findByQuayId(int maQuay);
+    List<MonAn> getTopMonAnNoiBat(int limit);
 }

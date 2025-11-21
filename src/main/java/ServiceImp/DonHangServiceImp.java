@@ -15,7 +15,6 @@ import java.util.List;
 
 public class DonHangServiceImp implements DonHangService {
 
-
     private final DonHangRepository donHangRepository;
     private final ChiTietDonHangRepository chiTietDonHangRepository;
 
@@ -23,6 +22,7 @@ public class DonHangServiceImp implements DonHangService {
         this.donHangRepository = new DonHangRepositoryImp();
         this.chiTietDonHangRepository = new ChiTietDonHangRepositoryImp();
     }
+
     @Override
     public List<DonHang> finAll() {
         return donHangRepository.findAll();
@@ -55,60 +55,57 @@ public class DonHangServiceImp implements DonHangService {
         return donHangRepository.delete(donHang);
     }
 
+    // --- [QUAN TRỌNG] HÀM TỰ ĐỘNG CẬP NHẬT TRẠNG THÁI ---
     @Override
     public boolean autoUpdateTrangThai(int maDonHang) {
         try {
             // 1. Lấy thông tin đơn hàng
             DonHang donHang = donHangRepository.findById(maDonHang);
-            if (donHang == null) {
-                return false;
-            }
+            if (donHang == null) return false;
 
-            // 2. Lấy tất cả chi tiết của đơn hàng
-            ChiTietDonHangRepository ctdhRepo = new ChiTietDonHangRepositoryImp();
-            List<ChiTietDonHang> danhSachChiTiet = ctdhRepo.findAllByMaDon(maDonHang);
+            // 2. Lấy danh sách chi tiết
+            List<ChiTietDonHang> danhSachChiTiet = chiTietDonHangRepository.findAllByMaDon(maDonHang);
+            if (danhSachChiTiet == null || danhSachChiTiet.isEmpty()) return false;
 
-            if (danhSachChiTiet == null || danhSachChiTiet.isEmpty()) {
-                return false;
-            }
-
-            // 3. Kiểm tra trạng thái của tất cả chi tiết
-            boolean tatCaDaGiao = true;
-            boolean tatCaHuy = true;
-            boolean coItNhatMotDangXuLy = false;
+            // 3. Biến cờ để kiểm tra
+            boolean conMonDangXuLy = false; // Có món nào chưa xong không?
+            boolean coMonDaGiao = false;    // Có món nào giao thành công chưa?
 
             for (ChiTietDonHang ct : danhSachChiTiet) {
-                String trangThai = ct.getTrangThai();
+                String tt = ct.getTrangThai();
 
-                if (!"Đã giao".equals(trangThai)) {
-                    tatCaDaGiao = false;
+                // Kiểm tra nhóm "Đang thực hiện"
+                if ("Mới đặt".equals(tt) || "Đã xác nhận".equals(tt) || "Đang giao".equals(tt)) {
+                    conMonDangXuLy = true;
+                    // Nếu thấy có món đang làm, thì chắc chắn đơn cha chưa xong -> Break luôn cho nhanh
+                    break;
                 }
 
-                if (!"Đã hủy".equals(trangThai)) {
-                    tatCaHuy = false;
-                }
-
-                if ("Mới đặt".equals(trangThai) || "Đã xác nhận".equals(trangThai) || "Đang giao".equals(trangThai)) {
-                    coItNhatMotDangXuLy = true;
+                // Kiểm tra xem có món nào giao thành công không
+                if ("Đã giao".equals(tt)) {
+                    coMonDaGiao = true;
                 }
             }
 
-            // 4. Quyết định trạng thái mới của đơn hàng
-            String trangThaiMoi = null;
+            // 4. Quyết định trạng thái mới cho Đơn Cha
+            String trangThaiMoi = "";
 
-            if (tatCaDaGiao) {
-                // Tất cả món đã giao → Đơn hàng hoàn thành
-                trangThaiMoi = "Đã hoàn thành";
-            } else if (tatCaHuy) {
-                // Tất cả món đều hủy → Đơn hàng hủy
-                trangThaiMoi = "Đã hủy";
-            } else if (coItNhatMotDangXuLy) {
-                // Có ít nhất 1 món đang xử lý → Đơn hàng đang xử lý
-                trangThaiMoi = "Đang xử lý";
+            if (conMonDangXuLy) {
+                // Trường hợp 1: Vẫn còn món đang làm -> Đơn cha Đang xử lí
+                trangThaiMoi = "Đang xử lí";
+            } else {
+                // Trường hợp 2: Không còn món nào đang làm (Tất cả đã xong)
+                if (coMonDaGiao) {
+                    // Có ít nhất 1 món giao thành công (dù các món khác bị hủy) -> Đã hoàn thành
+                    trangThaiMoi = "Đã hoàn thành";
+                } else {
+                    // Không có món nào giao thành công (nghĩa là Toàn bộ đã Hủy) -> Đã hủy
+                    trangThaiMoi = "Đã hủy";
+                }
             }
 
-            // 5. Cập nhật nếu trạng thái thay đổi
-            if (trangThaiMoi != null && !trangThaiMoi.equals(donHang.getTrangThai())) {
+            // 5. Cập nhật vào DB nếu trạng thái thay đổi
+            if (!trangThaiMoi.equals(donHang.getTrangThai())) {
                 donHang.setTrangThai(trangThaiMoi);
                 return donHangRepository.update(donHang);
             }
@@ -132,20 +129,16 @@ public class DonHangServiceImp implements DonHangService {
             return false;
         }
 
-        // 1. Nghiệp vụ: Tính tổng tiền server-side (Bảo mật)
         double totalAmount = 0;
         for (GioHang item : cart) {
             totalAmount += item.getTotalPrice();
         }
 
-        // 2. Tạo object DonHang
         DonHang donHang = new DonHang();
         donHang.setMaTaiKhoan(user.getMaTaiKhoan());
         donHang.setTongTien(BigDecimal.valueOf(totalAmount));
-        donHang.setTrangThai("Đang xử lí");
-        // Nếu bạn có trường ghi chú trong DonHang thì set ở đây: donHang.setGhiChu(note);
+        donHang.setTrangThai("Đang xử lí"); // [LƯU Ý] DB dùng 'lí'
 
-        // 3. Gọi Repository để lưu xuống DB
         return donHangRepository.createOrderbyCart(donHang, cart);
     }
 
@@ -156,6 +149,7 @@ public class DonHangServiceImp implements DonHangService {
 
     @Override
     public List<ChiTietDonHangDTO> getOrderDetailsDTO(int orderId) {
+        // Bạn có thể ép kiểu hoặc thêm hàm vào Interface nếu cần dùng logic lọc theo Quầy
         return chiTietDonHangRepository.findDTOByOrderId(orderId);
     }
 }

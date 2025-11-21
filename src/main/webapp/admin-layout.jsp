@@ -175,16 +175,6 @@
         <i class="fas fa-shopping-cart"></i> Quản Lý Đơn Hàng
     </a>
 
-    <a href="<%= contextPath %>/Admin?activeTab=quanlymenu"
-       class="<%= currentTab.equals("quanlymenu") ? "active" : "" %>">
-        <i class="fas fa-calendar-alt"></i> Menu Theo Ngày
-    </a>
-
-    <a href="<%= contextPath %>/Admin?activeTab=thongke"
-       class="<%= currentTab.equals("thongke") ? "active" : "" %>">
-        <i class="fas fa-chart-bar"></i> Thống Kê
-    </a>
-
     <hr style="border-color: rgba(255,255,255,0.2);">
 
     <a href="<%= contextPath %>/Logout" class="mt-3">
@@ -205,8 +195,6 @@
                     case "quanlyquay": pageTitle = "Quản Lý Quầy"; break;
                     case "quanlytaikhoan": pageTitle = "Quản Lý Tài Khoản"; break;
                     case "quanlydonhang": pageTitle = "Quản Lý Đơn Hàng"; break;
-                    case "quanlymenu": pageTitle = "Menu Theo Ngày"; break;
-                    case "thongke": pageTitle = "Thống Kê"; break;
                 }
             %>
             <%= pageTitle %>
