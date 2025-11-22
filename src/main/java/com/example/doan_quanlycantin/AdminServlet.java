@@ -43,15 +43,11 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // --- ĐÃ XÓA PHẦN KIỂM TRA SESSION Ở ĐÂY ---
-        // Servlet này mặc định tin tưởng là Filter đã kiểm tra rồi.
-
-        // Vẫn lấy user để hiển thị tên "Xin chào..." nếu cần
         HttpSession session = request.getSession();
         TaiKhoan user = (TaiKhoan) session.getAttribute("user");
         request.setAttribute("currentUser", user);
 
-        // 2. XỬ LÝ TAB
+        // XỬ LÝ TAB
         String activeTab = request.getParameter("activeTab");
         if (activeTab == null || activeTab.isEmpty()) {
             activeTab = "dashboard";
@@ -75,7 +71,6 @@ public class AdminServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    // ... GIỮ NGUYÊN CÁC HÀM LOAD DATA DƯỚI ĐÂY KHÔNG THAY ĐỔI ...
     private void loadDataForTab(String activeTab, HttpServletRequest request) {
         switch (activeTab) {
             case "dashboard": loadDashboardData(request); break;

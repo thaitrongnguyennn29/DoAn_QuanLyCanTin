@@ -3,7 +3,8 @@
 
 <%
     String contextPath = request.getContextPath();
-    String tenNguoiDung = "Admin"; // Tạm thời không check session
+    TaiKhoan tk = (TaiKhoan) request.getAttribute("currentUser");
+    String tenNguoiDung = tk.getTenNguoiDung();
 
     String currentTab = request.getParameter("activeTab");
     if (currentTab == null) currentTab = "dashboard";

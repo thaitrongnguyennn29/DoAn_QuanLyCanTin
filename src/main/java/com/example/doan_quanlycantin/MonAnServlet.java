@@ -233,19 +233,18 @@ public class MonAnServlet extends HttpServlet {
     }
 
     private File getProjectSourceDir(String webappPath) {
-        File current = new File(webappPath);
-        for (int i = 0; i < 10 && current != null; i++) {
-            if (new File(current, "src" + File.separator + "main" + File.separator + "webapp").exists()) {
-                return new File(current, "src" + File.separator + "main" + File.separator + "webapp");
-            }
-            File siblingProject = new File(current, PROJECT_DIR_NAME);
-            if (siblingProject.exists() && siblingProject.isDirectory()) {
-                File srcCheck = new File(siblingProject, "src" + File.separator + "main" + File.separator + "webapp");
-                if (srcCheck.exists()) return srcCheck;
-            }
-            current = current.getParentFile();
+
+        String SOURCE_PATH = "D:\\Program Files\\SPKT\\Web\\DoAn_QuanLyCanTin";
+
+        // Trỏ vào thư mục chứa ảnh trong source (src/main/webapp)
+        File sourceRoot = new File(SOURCE_PATH, "src" + File.separator + "main" + File.separator + "webapp");
+
+        if (sourceRoot.exists()) {
+            return sourceRoot;
+        } else {
+            System.err.println("Sai đường dẫn: " + sourceRoot.getAbsolutePath());
+            return null;
         }
-        return null;
     }
 
     private void deleteImageFromSource(String imageName) {
