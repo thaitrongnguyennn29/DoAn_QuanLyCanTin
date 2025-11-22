@@ -5,8 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const contextPath = window.contextPath || "";
 
     // ============================================================
-    // 0. XỬ LÝ POPUP THÔNG BÁO (SWEETALERT2)
+    // 0. XỬ LÝ GLOBAL
     // ============================================================
+
+    // Xử lý thông báo SweetAlert2
     if (window.sessionSuccessMessage && window.sessionSuccessMessage.trim() !== "") {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
@@ -24,6 +26,54 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         window.sessionSuccessMessage = null;
     }
+
+    // Logic Thêm vào giỏ hàng
+    document.querySelectorAll('.btn-add-cart').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.disabled = true;
+            const originalText = this.innerHTML;
+            const maMon = this.dataset.mamon;
+
+            fetch(contextPath + '/giohang', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=add&maMon=' + maMon
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text().then(newCount => {
+                            const cartBadge = document.querySelector('.cart-badge');
+                            if (cartBadge) {
+                                cartBadge.textContent = newCount;
+                                const cartIcon = document.querySelector('.cart');
+                                if(cartIcon) {
+                                    cartIcon.style.transform = "scale(1.2)";
+                                    setTimeout(() => cartIcon.style.transform = "scale(1)", 200);
+                                }
+                            }
+                            this.innerHTML = '<i class="bi bi-check2"></i> Xong';
+                            this.classList.remove('btn-primary', 'btn-outline-primary');
+                            this.classList.add('btn-success');
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.disabled = false;
+                                this.classList.remove('btn-success');
+                                this.classList.add('btn-outline-primary');
+                            }, 1000);
+                        });
+                    } else {
+                        throw new Error('Server response not ok');
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert("Có lỗi kết nối, vui lòng thử lại!");
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                });
+        });
+    });
 
     // ============================================================
     // 1. TRANG ĐĂNG NHẬP (LOGIN / REGISTER)
@@ -94,54 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         item.style.display = "none";
                     }
                 });
-            });
-        });
-
-        // B. Logic Thêm vào giỏ hàng
-        document.querySelectorAll('.btn-add-cart').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                this.disabled = true;
-                const originalText = this.innerHTML;
-                const maMon = this.dataset.mamon;
-
-                fetch(contextPath + '/giohang', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: 'action=add&maMon=' + maMon
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            return response.text().then(newCount => {
-                                const cartBadge = document.querySelector('.cart-badge');
-                                if (cartBadge) {
-                                    cartBadge.textContent = newCount;
-                                    const cartIcon = document.querySelector('.cart');
-                                    if(cartIcon) {
-                                        cartIcon.style.transform = "scale(1.2)";
-                                        setTimeout(() => cartIcon.style.transform = "scale(1)", 200);
-                                    }
-                                }
-                                this.innerHTML = '<i class="bi bi-check2"></i> Xong';
-                                this.classList.remove('btn-primary', 'btn-outline-primary');
-                                this.classList.add('btn-success');
-                                setTimeout(() => {
-                                    this.innerHTML = originalText;
-                                    this.disabled = false;
-                                    this.classList.remove('btn-success');
-                                    this.classList.add('btn-outline-primary');
-                                }, 1000);
-                            });
-                        } else {
-                            throw new Error('Server response not ok');
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error:', err);
-                        alert("Có lỗi kết nối, vui lòng thử lại!");
-                        this.innerHTML = originalText;
-                        this.disabled = false;
-                    });
             });
         });
     }
@@ -322,4 +324,33 @@ window.viewOrderDetail = function(orderId) {
             console.error('Error:', error);
             if(contentEl) contentEl.innerHTML = '<div class="text-center text-danger py-4">Có lỗi xảy ra.</div>';
         });
+};
+
+window.openCancelModal = function(orderId) {
+    // Tận dụng contextPath để nối chuỗi URL cho đúng
+    const ctx = window.contextPath || "";
+
+    // Format số đơn hàng cho đẹp (VD: 1 -> 001) để khớp giao diện
+    const formattedId = String(orderId).padStart(3, '0');
+
+    // Tìm và gán text mã đơn hàng vào modal
+    const displayEl = document.getElementById('cancelOrderIdDisplay');
+    if (displayEl) {
+        displayEl.innerText = "#DH" + formattedId;
+    }
+
+    // Tìm nút xác nhận và gán link hủy đơn (Servlet)
+    const confirmBtn = document.getElementById('btnConfirmCancel');
+    if (confirmBtn) {
+        // LƯU Ý: Sửa 'DonHangServlet' thành đúng đường dẫn map trong Controller của bạn
+        // Ví dụ: ctx + "/donhang/huy?id=" + orderId
+        confirmBtn.href = (ctx ? ctx + "/" : "") + "DonHangServlet?action=cancel&id=" + orderId;
+    }
+
+    // Mở Modal
+    const modalEl = document.getElementById('cancelOrderModal');
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        const myModal = new bootstrap.Modal(modalEl);
+        myModal.show();
+    }
 };

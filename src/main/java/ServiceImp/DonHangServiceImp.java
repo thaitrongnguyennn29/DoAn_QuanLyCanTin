@@ -124,6 +124,34 @@ public class DonHangServiceImp implements DonHangService {
     }
 
     @Override
+    public boolean cancelOrderUser(int maDonHang, int maTaiKhoan) {
+        // 1. Tìm đơn hàng
+        DonHang donHang = donHangRepository.findById(maDonHang);
+
+        if (donHang == null) return false;
+
+        // 2. Check chính chủ
+        if (donHang.getMaTaiKhoan() != maTaiKhoan) return false;
+
+        // 3. CHECK TRẠNG THÁI (Quan trọng nhất)
+        String trangThaiHienTai = donHang.getTrangThai();
+
+        // Database của bạn chỉ cho phép hủy khi đang là 'Đang xử lí'
+        // Lưu ý: Phải viết đúng 'lí' (i ngắn) như trong SQL bạn gửi
+        if ("Đang xử lí".equals(trangThaiHienTai)) {
+
+            // Set trạng thái mới đúng chuẩn ENUM
+            donHang.setTrangThai("Đã hủy");
+
+            // Gọi Repository để lưu
+            return donHangRepository.update(donHang);
+        }
+
+        // Nếu trạng thái là 'Đã hoàn thành' hoặc 'Đã hủy' rồi thì false
+        return false;
+    }
+
+    @Override
     public boolean placeOrder(TaiKhoan user, List<GioHang> cart) {
         if (user == null || cart == null || cart.isEmpty()) {
             return false;

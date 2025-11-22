@@ -17,4 +17,5 @@ public interface DonHangService {
     List<DonHang> getOrdersByUserId(int userId);
     List<ChiTietDonHangDTO> getOrderDetailsDTO(int orderId);
     Page<DonHang>  findDonHangByMaQuay(int maQuay, PageRequest pageRequest);
+    boolean cancelOrderUser(int maDonHang, int maTaiKhoan);
 }

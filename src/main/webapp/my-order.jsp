@@ -58,9 +58,19 @@
                                     <span class="fw-bold fs-5 text-dark">
                                         <%= String.format("%,.0f", dh.getTongTien()) %>đ
                                     </span>
-                                    <button onclick="viewOrderDetail(<%= dh.getMaDonHang() %>)" class="btn btn-outline-primary rounded-pill btn-sm px-4 fw-bold">
-                                        Chi tiết <i class="bi bi-chevron-right"></i>
-                                    </button>
+                                    <div>
+                                        <%-- CHỈ HIỆN NÚT HỦY KHI TRẠNG THÁI LÀ 'Đang xử lí' --%>
+                                        <% if ("Đang xử lí".equals(dh.getTrangThai())) { %>
+                                        <button onclick="openCancelModal(<%= dh.getMaDonHang() %>)"
+                                                class="btn btn-outline-danger rounded-pill btn-sm px-3 fw-bold me-2">
+                                            Hủy đơn <i class="bi bi-x-circle"></i>
+                                        </button>
+                                        <% } %>
+
+                                        <button onclick="viewOrderDetail(<%= dh.getMaDonHang() %>)" class="btn btn-outline-primary rounded-pill btn-sm px-4 fw-bold">
+                                            Chi tiết <i class="bi bi-chevron-right"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -152,5 +162,29 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title text-danger fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Xác nhận hủy đơn
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-0 text-center">
+                    <p class="mb-1 fs-5">Bạn có chắc chắn muốn hủy đơn hàng <b id="cancelOrderIdDisplay">#...</b> không?</p>
+                    <p class="text-muted small">Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer border-top-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
+                    <a id="btnConfirmCancel" href="#" class="btn btn-danger rounded-pill px-4 fw-bold">
+                        <i class="bi bi-trash3-fill me-1"></i> Xác nhận hủy
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <%@ include file="footer.jsp" %>

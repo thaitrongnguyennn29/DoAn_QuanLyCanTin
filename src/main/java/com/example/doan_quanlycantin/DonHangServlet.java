@@ -1,6 +1,6 @@
 package com.example.doan_quanlycantin;
 
-import Model.ChiTietDonHang;
+import Model.TaiKhoan;
 import Service.ChiTietDonHangService;
 import Service.DonHangService;
 import ServiceImp.ChiTietDonHangServiceImp;
@@ -28,6 +28,52 @@ public class DonHangServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String action = request.getParameter("action");
+
+        // Bắt action cancel ở đây
+        if ("cancel".equals(action)) {
+            cancelOrderUser(request, response);
+        } else {
+            // Nếu không phải cancel thì chuyển sang doPost hoặc logic khác
+            doPost(request, response);
+        }
+    }
+
+    private void cancelOrderUser(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        HttpSession session = request.getSession();
+        TaiKhoan user = (TaiKhoan) session.getAttribute("user");
+
+        if (user == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        try {
+            int maDon = Integer.parseInt(request.getParameter("id"));
+
+            // Gọi Service
+            boolean result = donHangService.cancelOrderUser(maDon, user.getMaTaiKhoan());
+
+            if (result) {
+                session.setAttribute("successMessage", "Đã hủy đơn hàng thành công!");
+            } else {
+                session.setAttribute("errorMessage", "Không thể hủy đơn này (Trạng thái không hợp lệ).");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Chuyển hướng về trang danh sách đơn hàng của bạn
+        // Dựa vào code cũ của bạn, trang danh sách đang nằm ở 'chitiet-donhang'
+        response.sendRedirect("chitiet-donhang");
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -42,18 +88,11 @@ public class DonHangServlet extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        doPost(request, response);
-    }
 
-    /**
-     * Cập nhật trạng thái cho 1 chi tiết đơn hàng (Dành cho ADMIN)
-     */
+    // ... (Hàm capNhatTrangThaiDon của Admin giữ nguyên) ...
     private void capNhatTrangThaiDon(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        // ... Code cũ ...
         String maCTParam = request.getParameter("maCT");
         String trangThaiMoi = request.getParameter("trangThai");
         String maDonParam = request.getParameter("maDon");
@@ -64,23 +103,16 @@ public class DonHangServlet extends HttpServlet {
             int maCT = Integer.parseInt(maCTParam);
             int maDon = Integer.parseInt(maDonParam);
 
-            // [THAY ĐỔI QUAN TRỌNG]
-            // Sử dụng hàm updateStatus của Service để có logic chặn trạng thái không hợp lệ
-            // Hàm này sẽ ném Exception nếu vi phạm rule (ví dụ: Đã giao -> Mới đặt)
             chiTietDonHangService.updateStatus(maCT, trangThaiMoi);
-
-            // Sau khi update chi tiết thành công, gọi hàm tự động cập nhật trạng thái đơn cha
             donHangService.autoUpdateTrangThai(maDon);
 
             session.setAttribute("success", "Cập nhật trạng thái thành công!");
 
         } catch (Exception e) {
             e.printStackTrace();
-            // Bắt lỗi logic từ Service (ví dụ: "Không thể quay ngược trạng thái...")
             session.setAttribute("error", "Lỗi: " + e.getMessage());
         }
 
-        // Redirect lại trang chi tiết
         response.sendRedirect(request.getContextPath() +
                 "/Admin?activeTab=quanlydonhang&viewMode=detail&maDon=" + maDonParam);
     }

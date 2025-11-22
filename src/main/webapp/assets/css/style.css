@@ -626,7 +626,7 @@ body {
     font-size: 3.5rem;
     font-weight: 800;
     line-height: 1.2;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.5rem !important;
     position: relative;
     z-index: 2;
 }
@@ -659,6 +659,51 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     background: linear-gradient(135deg, #00467F 0%, #002E73 100%);
     color: #fff;
+}
+
+/* ================== HERO DATE BADGE (GLASSMORPHISM) ================== */
+.menu-page .hero-date-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Hiệu ứng kính mờ */
+    background: rgba(255, 255, 255, 0.15); /* Nền trắng trong suốt 15% */
+    backdrop-filter: blur(8px);             /* Làm mờ hậu cảnh */
+    -webkit-backdrop-filter: blur(8px);     /* Hỗ trợ Safari */
+
+    /* Viền mỏng trong suốt */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    /* Style text */
+    color: #ffffff;
+    padding: 8px 24px;
+    border-radius: 50px; /* Bo tròn viên thuốc */
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+
+    /* Bóng đổ nhẹ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.menu-page .hero-date-badge strong {
+    font-weight: 700;
+    color: #fff; /* Màu trắng tinh cho ngày tháng */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Đổ bóng chữ nhẹ */
+}
+
+.menu-page .hero-date-badge i {
+    font-size: 1.2rem;
+    margin-top: -2px; /* Căn chỉnh icon so với text */
+}
+
+.menu-page .hero-date-badge:hover {
+    background: rgba(255, 255, 255, 0.25); /* Sáng hơn khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    cursor: default;
 }
 
 /* ================== FILTER / SECTION TITLE ================== */

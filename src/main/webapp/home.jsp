@@ -62,8 +62,8 @@
                             <span class="hot-badge">HOT</span>
                             <img src="<%= imgPath %>"
                                  class="dish-image w-100"
-                                 alt="<%= mon.getTenMonAn() %>"
-                                 style="height: 200px; object-fit: cover;"> </div>
+                                 alt="<%= mon.getTenMonAn() %>">
+                        </div>
 
                         <div class="p-3">
                             <h5 class="dish-name text-truncate" title="<%= mon.getTenMonAn() %>">
@@ -74,7 +74,7 @@
                             <span class="dish-price text-danger fw-bold">
                                 <%= vnFormat.format(mon.getGia()) %>
                             </span>
-                                <button class="btn-add-cart btn-sm" onclick="addToCart(<%= mon.getMaMonAn() %>)">
+                                <button class="btn-add-cart btn-sm" data-mamon="<%= mon.getMaMonAn() %>">
                                     <i class="bi bi-cart-plus"></i> Thêm
                                 </button>
                             </div>

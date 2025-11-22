@@ -20,16 +20,18 @@
 
     <section class="menu-hero position-relative py-5">
         <div class="container position-relative z-2 text-center">
-            <h1 class="menu-hero-title fw-bold display-5">Thực Đơn Hôm Nay</h1>
+            <h1 class="menu-hero-title fw-bold display-5 mb-3">Thực Đơn Hôm Nay</h1>
 
-            <div class="mb-3">
-                <span class="badge bg-light text-primary fs-5 shadow-sm px-3 py-2">
-                    <i class="bi bi-calendar-check me-2"></i> <%= ngayHienTai %>
-                </span>
+            <div class="d-flex justify-content-center mb-4">
+                <div class="hero-date-badge">
+                    <i class="bi bi-calendar2-week me-2"></i>
+                    <span>Hôm nay: <strong><%= ngayHienTai %></strong></span>
+                </div>
             </div>
-
             <p class="menu-hero-subtitle lead mb-4">Chọn món ngon – Chuẩn vị – Giá sinh viên</p>
-            <a href="#menulist" class="btn menu-hero-btn">Khám phá ngay</a>
+            <a href="#menulist" class="btn menu-hero-btn">
+                Khám phá ngay <i class="bi bi-arrow-down-short"></i>
+            </a>
         </div>
     </section>
 
@@ -65,10 +67,8 @@
                 %>
             </div>
 
-
             <div class="row g-4">
                 <%
-                    // Servlet đã gọi MenuNgayService để lấy đúng list món của ngày hôm nay và gán vào 'listMonAn'
                     List<MonAn> list = (List<Model.MonAn>) request.getAttribute("listMonAn");
                     String imageDirectory = "assets/images/MonAn/";
 
@@ -88,7 +88,7 @@
                         </div>
 
                         <div class="p-3">
-                            <h5 class="dish-name"><%= mon.getTenMonAn() %></h5>
+                            <h5 class="dish-name text-truncate" title="<%= mon.getTenMonAn() %>"><%= mon.getTenMonAn() %></h5>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="dish-price">
                                     <%= String.format("%,.0f", mon.getGia()) %>đ
@@ -107,8 +107,10 @@
                 } else {
                 %>
                 <div class="col-12 text-center py-5">
-                    <i class="bi bi-inbox fs-1 text-muted"></i>
-                    <p class="mt-3 text-muted">Chưa có thực đơn cho ngày hôm nay (<%= ngayHienTai %>).</p>
+                    <div class="bg-light rounded p-5 d-inline-block">
+                        <i class="bi bi-inbox fs-1 text-muted"></i>
+                        <p class="mt-3 text-muted mb-0">Chưa có thực đơn cho ngày hôm nay (<%= ngayHienTai %>).</p>
+                    </div>
                 </div>
                 <%
                     }
@@ -117,49 +119,55 @@
         </div>
     </section>
 
-    <section class="menu-about py-5">
-        <div class="container">
-            <div class="row align-items-center gy-4">
+    <section class="menu-about py-5 bg-light"> <div class="container">
+        <div class="row align-items-center gy-4">
 
-                <div class="col-md-6">
-                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop"
-                         class="menu-about-img img-fluid rounded" alt="Căn tin VN">
+            <div class="col-md-6">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=400&fit=crop"
+                     class="menu-about-img img-fluid rounded shadow" alt="Căn tin VN">
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="menu-about-title fw-bold mb-3">Vì sao chọn NTC Canteen?</h2>
+                <p class="menu-about-text mb-4">
+                    Mỗi món ăn đều được chế biến từ nguyên liệu tươi ngon, đảm bảo an toàn và dinh dưỡng.
+                    Chúng tôi mang đến hương vị quen thuộc, phục vụ nhanh chóng với giá cả hợp lý.
+                </p>
+
+                <div class="row menu-about-features g-3"> <div class="col-6">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-shield-check text-primary fs-4 me-2"></i>
+                        <span>ATVSTP</span>
+                    </div>
                 </div>
 
-                <div class="col-md-6">
-                    <h2 class="menu-about-title fw-bold mb-3">Vì sao chọn NTC Canteen?</h2>
-                    <p class="menu-about-text mb-4">
-                        Mỗi món ăn đều được chế biến từ nguyên liệu tươi ngon, đảm bảo an toàn và dinh dưỡng.
-                        Chúng tôi mang đến hương vị quen thuộc, phục vụ nhanh chóng với giá cả hợp lý cho sinh viên và tất cả mọi người.
-                    </p>
-
-                    <div class="row menu-about-features">
-                        <div class="col-6 mb-3">
-                            <i class="bi bi-shield-check text-primary fs-4 me-2"></i>
-                            Vệ sinh an toàn thực phẩm
-                        </div>
-
-                        <div class="col-6 mb-3">
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
                             <i class="bi bi-clock-history text-primary fs-4 me-2"></i>
-                            Phục vụ nhanh chóng
-                        </div>
-
-                        <div class="col-6 mb-3">
-                            <i class="bi bi-heart-fill text-danger fs-4 me-2"></i>
-                            Nguyên liệu tươi sạch
-                        </div>
-
-                        <div class="col-6 mb-3">
-                            <i class="bi bi-currency-exchange text-success fs-4 me-2"></i>
-                            Giá sinh viên thân thiện
+                            <span>Nhanh chóng</span>
                         </div>
                     </div>
 
-                    <a href="#menulist" class="btn btn-primary menu-about-btn mt-3">Xem Thực Đơn</a>
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-heart-fill text-danger fs-4 me-2"></i>
+                            <span>Tươi ngon</span>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-currency-exchange text-success fs-4 me-2"></i>
+                            <span>Giá rẻ</span>
+                        </div>
+                    </div>
                 </div>
 
+                <a href="#menulist" class="btn btn-gradient menu-about-btn mt-4 px-4">Xem Thực Đơn</a>
             </div>
+
         </div>
+    </div>
     </section>
 
 </div>
